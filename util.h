@@ -8,15 +8,7 @@
 	array[ index+2 ] = (value & 0x00FF0000)>>16;\
 	array[ index+3 ] = (value & 0xFF000000)>>24
 
-#define READ_LITTLE_ENDIAN_32( value, array, index )\
-	value  = array[ index ];\
-	value |= ((size_t)array[ index+1 ])<<8;\
-	value |= ((size_t)array[ index+2 ])<<16;\
-	value |= ((size_t)array[ index+3 ])<<24
-
 #define WRITE_LITTLE_ENDIAN_16( value, array, index ) array[ index ] = value&0x00FF; array[ index+1 ] = (value&0xFF00)>>8
-
-#define READ_LITTLE_ENDIAN_16( value, array, index ) value = array[ index ] | ((size_t)array[ index+1 ])<<8
 
 namespace util
 {

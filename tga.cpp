@@ -237,6 +237,8 @@ CImage::E_LOAD_RESULT CImage::m_loadTga( std::istream& file )
 	};
 
 	free( colorMap );
+
+	return ELR_SUCESS;
 }
 
 void CImage::m_saveTga( std::ostream& stream )
