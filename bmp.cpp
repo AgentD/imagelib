@@ -2,133 +2,238 @@
 #include "util.h"
 
 #include <cstring>
+#include <iostream>
 
 
 
+#ifdef IMAGE_COMPILE_BMP
 
 /*
 	Bitmap loading facilities.
 
-	What should work('-' means implemented but not tested, 'x' means tested and DOES work)
-	  - Importing 1 bit per pixel black and white images
-	  - Importing 4 bit per pixel color mapped images
-	  - Importing 8 bit per pixel color mapped images
+	What should work('-' means implemented but not tested, 'x' means tested and DOES work, 'o' means not implemented yet)
+	  o Importing 8 bit per pixel color mapped images with RLE compression.
+	  x Importing 8 bit per pixel color mapped images.
+	  x Importing 16 bit per pixel images
 	  x Importing 24 bit per pixel images
-	  - Importing 1 bit per pixel black and white images with RLE compresion
-	  - Importing 4 bit per pixel color mapped images with RLE compresion
-	  - Importing 8 bit per pixel color mapped images with RLE compresion
-	  - Flipping images upside-down while loading if needed to move the origin to the lower left corner
+	  x Importing 32 bit per pixel images
+	  x Importing generic bitfield encoded images
+	  x Flipping images upside-down while loading if needed to move the origin to the lower left corner
 	  x Exporting 24 bit per pixel RGB images
 	  x Exporting 8 bit per pixel gray scale images
- */
+*/
 
+
+
+namespace
+{
+	enum
+	{
+		BI_RGB       = 0,
+		BI_RLE8      = 1,
+		BI_RLE4      = 2,
+		BI_BITFIELDS = 3
+	};
+
+	void loadBMPbitfields( std::istream& src, size_t w, size_t h, void* ptr, size_t bpp, size_t R, size_t G, size_t B, bool flip )
+	{
+		ssize_t ystep = flip ? -3*w : 3*w;		// Add this to the image pointer to skip to the next row
+		size_t bytePerPixel = bpp/8;
+		size_t padding = (w*bytePerPixel) % 4;	// The number of bytes per row is always a multiple of four, if not, a padding is added
+
+		unsigned char *cur = (unsigned char*)ptr, *end = (unsigned char*)ptr + h*3*w;
+
+		if( flip )
+		{
+			end  = cur - 3*w;
+			cur += (h-1)*3*w;
+		}
+
+		// We will read multibyte integers from the file and AND them with the color masks, to get the color values.
+		// The ANDed values have to be shifted to the right to get the final color values. Here we work out how many bits we have to shift.
+		size_t rshift=0, gshift=0, bshift=0;
+
+		for( ; !((R>>rshift) & 1); ++rshift );
+		for( ; !((G>>gshift) & 1); ++gshift );
+		for( ; !((B>>bshift) & 1); ++bshift );
+
+
+		size_t scaleR = 0xFF / (R>>rshift);
+		size_t scaleG = 0xFF / (G>>gshift);
+		size_t scaleB = 0xFF / (B>>bshift);
+
+
+		for( ; cur!=end; cur+=ystep )	// Iterate over all pixel rows
+		{
+			unsigned char* row = cur;
+
+			for( size_t x=0; x<w; ++x, row+=3 )	// Iterate over all pixels in the row
+			{
+				unsigned char v0[4] = {0,0,0,0};
+
+				src.read( (char*)v0, bytePerPixel );	// Read the color value from the file
+
+				size_t v = ((size_t)v0[0]) | ((size_t)v0[1])<<8 | ((size_t)v0[2])<<16 | ((size_t)v0[3])<<24;
+
+				row[2] = (unsigned char)( (v & R)>>rshift )*scaleR;	// And it with the R mask and shift it right to get the red value
+				row[1] = (unsigned char)( (v & G)>>gshift )*scaleG;	// And it with the G mask and shift it right to get the green value
+				row[0] = (unsigned char)( (v & B)>>bshift )*scaleB;	// And it with the B mask and shift it right to get the blue value
+			}
+
+			src.seekg( padding, std::ios_base::cur );	// Skip the zeroes added for padding
+		}
+	}
+
+	void loadBMPcolormap( std::istream& src, size_t w, size_t h, void* ptr, unsigned char* colorMap, bool flip )
+	{
+		ssize_t ystep = flip ? -3*w : 3*w;		// Add this to the image pointer to skip to the next row
+
+		unsigned char *cur = (unsigned char*)ptr, *end = (unsigned char*)ptr + h*3*w;
+
+		if( flip )
+		{
+			end  = cur - 3*w;
+			cur += (h-1)*3*w;
+		}
+
+		size_t padding = w % 4;			// The number of bytes per row is always a multiple of four, if not, a padding is added
+
+		for( ; cur!=end; cur+=ystep )	// Iterate over all pixel rows
+		{
+			unsigned char* row = cur;
+
+			for( size_t x=0; x<w; ++x, row+=3 )	// Iterate over all pixels in the row
+			{
+				size_t i = src.get( );
+
+				row[0] = colorMap[ i*4     ];
+				row[1] = colorMap[ i*4 + 1 ];
+				row[2] = colorMap[ i*4 + 2 ];
+			}
+
+			src.seekg( padding, std::ios_base::cur );	// Skip the zeroes added for padding
+		}
+	}
+
+	void loadBMPtruecolor( std::istream& src, size_t w, size_t h, void* ptr, bool flip )
+	{
+		ssize_t ystep = flip ? -3*w : 3*w;		// Add this to the image pointer to skip to the next row
+		size_t padding = w*3 % 4;				// The number of bytes per row is always a multiple of four, if not, a padding is added
+
+		unsigned char *cur = (unsigned char*)ptr, *end = (unsigned char*)ptr + h*3*w;
+
+		if( flip )
+		{
+			end  = cur - 3*w;
+			cur += (h-1)*3*w;
+		}
+
+		for( ; cur!=end; cur+=ystep )	// Iterate over all pixel rows
+		{
+			src.read( (char*)cur, 3*w );				// Read the current pixel row into the image buffer
+			src.seekg( padding, std::ios_base::cur );	// Skip the zeroes added for padding
+		}
+	}
+
+	void loadBMPrle( std::istream& src, size_t w, size_t h, void* ptr, unsigned char* colorMap, bool flip )
+	{
+	}
+}
 
 
 
 CImage::E_LOAD_RESULT CImage::m_loadBmp( std::istream& file )
 {
-	// Read the file header and extract all interesting information //
-	char header[ 54 ];
+	unsigned char header[ 54 ];
 
-	file.read( header, 54 );
+	size_t initialPosition = file.tellg( );
 
-	char    bfType[3]     = { header[0], header[1], 0 };
-	size_t  bfOffBits     = header[10] | ((size_t)header[11])<<8 | ((size_t)header[12])<<16 | ((size_t)header[13])<<24;
+	file.read( (char*)header, 54 );
 
-	size_t  biSize        = header[14] | ((size_t)header[15])<<8 | ((size_t)header[16])<<8 | ((size_t)header[17])<<8;
-	ssize_t	biWidth       = header[18] | ((size_t)header[19])<<8 | ((size_t)header[20])<<8 | ((size_t)header[21])<<8;
-	ssize_t biHeight      = header[22] | ((size_t)header[23])<<8 | ((size_t)header[24])<<8 | ((size_t)header[25])<<8;
-	size_t  biBitCount    = header[28] | ((size_t)header[29])<<8;
-	size_t  biCompression = header[30] | ((size_t)header[31])<<8 | ((size_t)header[32])<<8 | ((size_t)header[33])<<8;
-	size_t  biClrUsed     = header[46] | ((size_t)header[47])<<8 | ((size_t)header[48])<<8 | ((size_t)header[49])<<8;
 
-	size_t  biByteCount = biBitCount/8;
+	//////////////////////// Extract all >interesting< information from the file header ////////////////////////
+	size_t  bfOffBits     = ((size_t)header[10]) | ((size_t)header[11])<<8 | ((size_t)header[12])<<16 | ((size_t)header[13])<<24;
+	size_t  biWidth       = ((size_t)header[18]) | ((size_t)header[19])<<8 | ((size_t)header[20])<<16 | ((size_t)header[21])<<24;
+	ssize_t biHeight      = ((size_t)header[22]) | ((size_t)header[23])<<8 | ((size_t)header[24])<<16 | ((size_t)header[25])<<24;
+	size_t  biBitCount    = ((size_t)header[28]) | ((size_t)header[29])<<8;
+	size_t  biCompression = ((size_t)header[30]) | ((size_t)header[31])<<8 | ((size_t)header[32])<<16 | ((size_t)header[33])<<24;
+	size_t  biClrUsed     = ((size_t)header[46]) | ((size_t)header[47])<<8 | ((size_t)header[48])<<16 | ((size_t)header[49])<<24;
 
-	// Check the header data for sanity //
-	if( strcmp( bfType, "BM" ) || biSize!=40 || biWidth==0 || biHeight==0 || biCompression>3 ) return ELR_FILE_CORRUPTED;
-	if( !(biBitCount==1 || biBitCount==4 || biBitCount==8 || biBitCount==24)                 ) return ELR_FILE_CORRUPTED;
-	if( biCompression==1 && (biBitCount!=8  || biHeight<0)                                   ) return ELR_FILE_CORRUPTED;
-	if( biCompression==2 && (biBitCount!=4  || biHeight<0)                                   ) return ELR_FILE_CORRUPTED;
-	if( biCompression==3 || biBitCount==32 || biBitCount==16                                 ) return ELR_NOT_SUPPORTED;
+	bool flipImage = (biHeight<0);
 
-	// Read the color map if necessary //
-	unsigned char colorMap[ 4*265 ];
-	bool haveColorMap = false;
+	biHeight = flipImage ? -biHeight : biHeight;
+	biClrUsed = biClrUsed ? biClrUsed : 256;
 
-	if( biClrUsed==0 )
+
+	///////////////////////////////////// Check the header data for sanity /////////////////////////////////////
+	if( header[0]!='B' || header[1]!='M' || biCompression>3                                         ) return ELR_FILE_CORRUPTED;
+	if( biBitCount==1 || biBitCount==2 || biBitCount==4 || biCompression==BI_RLE4 || header[14]!=40 ) return ELR_NOT_SUPPORTED;
+	if( biBitCount!=8 && biBitCount!=16 && biBitCount!=24 && biBitCount!=32                         ) return ELR_FILE_CORRUPTED;
+	if( biCompression==BI_RLE8      && (biBitCount!=8 || flipImage)                                 ) return ELR_FILE_CORRUPTED;
+	if( biCompression==BI_BITFIELDS && biBitCount!=16 && biBitCount!=32                             ) return ELR_FILE_CORRUPTED;
+
+
+	////////////////////////////////////////////// Read color mask /////////////////////////////////////////////
+	size_t maskR=0, maskG=0, maskB=0;
+
+	if( biCompression==BI_BITFIELDS )
 	{
-		if( biBitCount==1 || biBitCount==4 || biBitCount==8 )
-		{
-			file.read( (char*)colorMap, 4<<biBitCount );
-			file.seekg( -4<<biBitCount, std::ios_base::cur );
-			haveColorMap = true;
-		}
+		unsigned char colorMask[12];
+		file.read( (char*)colorMask, 12 );
+
+		maskR = ((size_t)colorMask[0]) | ((size_t)colorMask[1])<<8 | ((size_t)colorMask[ 2])<<16 | ((size_t)colorMask[ 3])<<24;
+		maskG = ((size_t)colorMask[4]) | ((size_t)colorMask[5])<<8 | ((size_t)colorMask[ 6])<<16 | ((size_t)colorMask[ 7])<<24;
+		maskB = ((size_t)colorMask[8]) | ((size_t)colorMask[9])<<8 | ((size_t)colorMask[10])<<16 | ((size_t)colorMask[11])<<24;
+
+		size_t x = (maskR|maskG|maskB);		// ORing the color masks must result in a continous block of set bits
+
+		if( !x || !maskR || !maskG || !maskB )
+			return ELR_FILE_CORRUPTED;
+
+		while( !(x & 1) )			// Shift the block to the right until the first bit is set.
+			x>>=1;					// After that, x+1 MUST be some power of two if the block is continous.
+									// If x+1 is a power of two, ((x+1) & x) must be 0
+
+		// Check wether the block in x is not continous OR the bit masks overlap
+		if( (x & (x+1)) || (maskR & maskG & maskB) )
+			return ELR_FILE_CORRUPTED;
 	}
-	else
-	{
+
+
+	//////////////////////////////////////////// Read the color map ////////////////////////////////////////////
+	unsigned char colorMap[ 4*256 ];
+
+	if( biBitCount==8 )
 		file.read( (char*)colorMap, 4*biClrUsed );
-		file.seekg( -4*biClrUsed, std::ios_base::cur );
-		haveColorMap = true;
-	}
 
-	file.seekg( bfOffBits-54, std::ios_base::cur );
 
-	// Read the image data //
-	bool needVflip = biHeight<0;
-	biHeight = (biHeight<0) ? -biHeight : biHeight;
+	////////////////////////////////////////// Create the image buffer /////////////////////////////////////////
+	allocateBuffer( biWidth, biHeight, 1, EIT_BGR8 );
 
-	allocateBuffer( biWidth, biHeight, 1, biBitCount==1 ? EIT_GRAYSCALE8 : EIT_BGR8 );
 
-	size_t padding = (m_width*biByteCount)%4;
-	ssize_t ystep = 3*m_width;
-	unsigned char *ptr, *end;
+	//////////////////////////////////////////// Read the image data ///////////////////////////////////////////
+	file.seekg( initialPosition + bfOffBits, std::ios_base::beg );
 
-	if( needVflip )
+	switch( biCompression )
 	{
-		ptr = (unsigned char*)m_imageBuffer + (m_height-1)*ystep;
-		end = (unsigned char*)m_imageBuffer - ystep;
-		ystep*=-1;
-	} else {
-		ptr = (unsigned char*)m_imageBuffer;
-		end = (unsigned char*)m_imageBuffer + m_height*ystep;
-	}
-
-
-	if( biCompression==0 )
-	{
-		if( biBitCount==24 )
-		{
-			for( ; ptr!=end; ptr+=ystep )
-			{
-				file.read( (char*)ptr, ystep );
-				file.seekg( padding, std::ios_base::cur );
-			}
-		}
-		else if( biBitCount==1 )
-		{
-		}
+	case BI_BITFIELDS:
+		loadBMPbitfields( file, biWidth, biHeight, m_imageBuffer, biBitCount, maskR, maskG, maskB, flipImage );
+		break;
+	case BI_RGB:
+		if( biBitCount==8 )
+			loadBMPcolormap( file, biWidth, biHeight, m_imageBuffer, colorMap, flipImage );
+		else if( biBitCount==16 )
+			loadBMPbitfields( file, biWidth, biHeight, m_imageBuffer, biBitCount, 0x00007C00, 0x000003E0, 0x0000001F, flipImage );
+		else if( biBitCount==24 )
+			loadBMPtruecolor( file, biWidth, biHeight, m_imageBuffer, flipImage );
 		else
-		{
-			for( ; ptr!=end; ptr+=ystep )
-			{
-				for( size_t i=0; i<m_width; ++i )
-				{
-					ptr[ 3*i     ] = colorMap[ 4*c     ];
-					ptr[ 3*i + 1 ] = colorMap[ 4*c + 1 ];
-					ptr[ 3*i + 2 ] = colorMap[ 4*c + 2 ];
-				}
+			loadBMPbitfields( file, biWidth, biHeight, m_imageBuffer, biBitCount, 0x00FF0000, 0x0000FF00, 0x000000FF, flipImage );
+		break;
+	case BI_RLE8:
+		loadBMPrle( file, biWidth, biHeight, m_imageBuffer, colorMap, flipImage );
+		break;
+	};
 
-				file.seekg( padding, std::ios_base::cur );
-			}
-		}
-	}
-	else if( biCompression==1 )
-	{
-	}
-	if( biCompression==2 )
-	{
-	}
-	
 	return ELR_SUCESS;
 }
 
@@ -138,7 +243,7 @@ void CImage::m_saveBmp( std::ostream& stream )
 	size_t bytePerPixel, realBPP;
 	bool switchRB = false;
 
-	//////////////// Compose us a nice BMP header ////////////////
+	//////////////////////// Compose us a nice BMP header ////////////////////////
 	char header[ 54 ];
 
 	memset( header, 0, 54 );
@@ -172,7 +277,7 @@ void CImage::m_saveBmp( std::ostream& stream )
 
 	stream.write( header, 54 );
 
-	///////// Write a dummy color map for grayscale images ////////
+	///////////////// Write a dummy color map for grayscale images ////////////////
 	if( m_type==EIT_GRAYSCALE8 )
 	{
 		for( size_t i=0; i<256; ++i )
@@ -183,8 +288,8 @@ void CImage::m_saveBmp( std::ostream& stream )
 		}
 	}
 
-	////////////// Write the image data to the file //////////////
-	size_t dy = m_width*realBPP, padding = (m_width*bytePerPixel)%4
+	////////////////////// Write the image data to the file //////////////////////
+	size_t dy = m_width*realBPP, padding = (m_width*bytePerPixel)%4;
 	unsigned char* ptr = (unsigned char*)m_imageBuffer;
 	unsigned char* end = (unsigned char*)m_imageBuffer + m_height*dy;
 
@@ -215,4 +320,6 @@ void CImage::m_saveBmp( std::ostream& stream )
 		}
 	}
 }
+
+#endif
 

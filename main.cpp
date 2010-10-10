@@ -1,12 +1,15 @@
 #include "image.h"
 
+#include <iostream>
+
+
 
 
 int main( int argc, char** argv)
 {
 	CImage image;
 
-	image.load( "test.bmp" );
+	image.load( "lena512.bmp" );
 	image.save( "test.tga" );
 
 	return 0;

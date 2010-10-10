@@ -5,6 +5,10 @@
 #include <cstdlib>
 #include <algorithm>
 
+
+
+#ifdef IMAGE_COMPILE_TGA
+
 /*
 	The TGA loading facilities.
 
@@ -283,4 +287,6 @@ void CImage::m_saveTga( std::ostream& stream )
 		stream.write( (char*)m_imageBuffer, m_width*m_height*bytePerPixel );
 	}
 }
+
+#endif
 
