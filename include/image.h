@@ -8,9 +8,7 @@
 
 
 
-
-#define IMAGE_COMPILE_TGA
-#define IMAGE_COMPILE_BMP
+#include "config.h"
 
 
 
@@ -125,31 +123,24 @@ private:
 	E_IMAGE_TYPE m_type;
 
 
-	#ifdef IMAGE_COMPILE_TGA
+	#ifdef IMAGE_LOAD_TGA
 		E_LOAD_RESULT m_loadTga( std::istream& file );
+	#endif
+
+	#ifdef IMAGE_SAVE_TGA
 		void m_saveTga( std::ostream& stream );
 	#endif
 
-	#ifdef IMAGE_COMPILE_BMP
+	#ifdef IMAGE_LOAD_BMP
 		E_LOAD_RESULT m_loadBmp( std::istream& file );
+	#endif
+
+	#ifdef IMAGE_SAVE_BMP
 		void m_saveBmp( std::ostream& stream );
 	#endif
 };
 
 
-
-
-/**
- * \brief Returns true if the given image file format can be loaded
- *
- * Loaders for different image file formats can be optionally compiled in or not.
- * With this function, you can check whether a specific loader has been compiled in.
- *
- * \param filetype The image file format to check for
- *
- * \return True if the loader for the given file format is compiled in
- */
-bool isSupported( E_IMAGE_FILE filetype );
 
 /**
  * \brief Guess the image file format from the file ending of a given string
@@ -160,9 +151,6 @@ bool isSupported( E_IMAGE_FILE filetype );
  * \return An image file format enumerator, or EIF_AUTODETECT(=0) on failure
  */
 E_IMAGE_FILE guessType( const std::string& filename );
-
-/// Get a string describing the given image file format.
-std::string getTypeName( E_IMAGE_FILE filetype );
 
 
 

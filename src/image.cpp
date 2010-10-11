@@ -9,7 +9,7 @@
 //-----------------------------------------------------------------------------
 //
 // Basic functionality of the CImage class. This should always remain the
-// same, no metter how many image loaders are added or removed.
+// same, no metter how many image loaders or color types are added or removed.
 //
 //-----------------------------------------------------------------------------
 CImage::CImage( ) : m_imageBuffer(NULL), m_width(0), m_height(0), m_depth(0), m_type(EIT_NONE) {                        }
@@ -46,8 +46,7 @@ void CImage::save( const std::string& filename, E_IMAGE_FILE type )
 
 //-----------------------------------------------------------------------------
 //
-// Image buffer allocation method. This method has to be altered if a new
-// color type is implemented.
+// This method has to be altered if a new color type is implemented.
 //
 //-----------------------------------------------------------------------------
 void CImage::allocateBuffer( size_t width, size_t height, size_t depth, E_IMAGE_TYPE type )
@@ -73,10 +72,8 @@ void CImage::allocateBuffer( size_t width, size_t height, size_t depth, E_IMAGE_
 
 //-----------------------------------------------------------------------------
 //
-// The following methods are resposible for loading/saving image data encoded
-// in the form of image file formats from/to stream sources.
-// If a new image file format is added, the following two methods have to be
-// altered.
+// If a new image file format is added, the following two methods and funcions
+// have to be altered.
 //
 //-----------------------------------------------------------------------------
 CImage::E_LOAD_RESULT CImage::load( std::istream& stream, E_IMAGE_FILE type )
@@ -88,11 +85,11 @@ CImage::E_LOAD_RESULT CImage::load( std::istream& stream, E_IMAGE_FILE type )
 
 	switch( type )
 	{
-	#ifdef IMAGE_COMPILE_TGA
+	#ifdef IMAGE_LOAD_TGA
 		case EIF_TGA: r = m_loadTga( stream ); break;
 	#endif
 
-	#ifdef IMAGE_COMPILE_BMP
+	#ifdef IMAGE_LOAD_BMP
 		case EIF_BMP: r = m_loadBmp( stream ); break;
 	#endif
 	};
@@ -111,44 +108,14 @@ void CImage::save( std::ostream& stream, E_IMAGE_FILE type )
 {
 	switch( type )
 	{
-	#ifdef IMAGE_COMPILE_TGA
+	#ifdef IMAGE_SAVE_TGA
 		case EIF_TGA: m_saveTga( stream ); break;
 	#endif
 
-	#ifdef IMAGE_COMPILE_BMP
+	#ifdef IMAGE_SAVE_BMP
 		case EIF_BMP: m_saveBmp( stream ); break;
 	#endif
 	};
-}
-
-
-
-//-----------------------------------------------------------------------------
-//
-// Image format helper functions. The following functions can be used to:
-//  - determine whether a loader for a given file format has been compiled in
-//  - guess the image file format from the file extension
-//  - get a string describing a given image format
-//
-// When adding a new loader, these functions have to be altered.
-//
-//-----------------------------------------------------------------------------
-bool isSupported( E_IMAGE_FILE filetype )
-{
-	switch( filetype )
-	{
-	case EIF_AUTODETECT: return true;
-	
-	#ifdef IMAGE_COMPILE_TGA
-		case EIF_TGA: return true;
-	#endif
-
-	#ifdef IMAGE_COMPILE_BMP
-		case EIF_BMP: return true;
-	#endif
-	};
-
-	return false;
 }
 
 E_IMAGE_FILE guessType( const std::string& filename )
@@ -163,16 +130,5 @@ E_IMAGE_FILE guessType( const std::string& filename )
 	if( extension=="BMP" ) return EIF_BMP;
 
 	return EIF_AUTODETECT;
-}
-
-std::string getTypeName( E_IMAGE_FILE filetype )
-{
-	switch( filetype )
-	{
-	case EIF_TGA: return "Truevision TARGA image file(*.tga)";
-	case EIF_BMP: return "Microsoft Windows bitmap file(*.bmp)";
-	};
-
-	return "unknown image file format";
 }
 

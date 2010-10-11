@@ -7,7 +7,7 @@
 
 
 
-#ifdef IMAGE_COMPILE_TGA
+#ifdef IMAGE_LOAD_TGA
 
 /*
 	The TGA loading facilities.
@@ -21,8 +21,6 @@
 	  x Importing 24&32 bit per pixel RGB/RGBA images with RLE compression
 	  x Flip the image vertically during loading if needed to move the origin to the lower left corner
 	  - Flip the image horizontally during loading if needed to move the origin to the lower left corner
-	  x Export 8 bit per pixel gray scale images
-	  x Export 24&32 bit per pixel RGB/RGBA images
 */
 
 namespace
@@ -243,51 +241,6 @@ CImage::E_LOAD_RESULT CImage::m_loadTga( std::istream& file )
 	free( colorMap );
 
 	return ELR_SUCESS;
-}
-
-void CImage::m_saveTga( std::ostream& stream )
-{
-	char header[ 18 ];
-	bool switchRB = false;
-	size_t bytePerPixel = 0;
-
-	memset( header, 0, 18 );
-
-	WRITE_LITTLE_ENDIAN_16( m_width,  header, 12 );
-	WRITE_LITTLE_ENDIAN_16( m_height, header, 14 );
-
-	switch( m_type )
-	{
-	case EIT_GRAYSCALE8: header[2] = GRAYSCALE; bytePerPixel = 1;                                  break;
-	case EIT_RGB8:       header[2] = RGB;       bytePerPixel = 3;                 switchRB = true; break;
-	case EIT_RGBA8:      header[2] = RGB;       bytePerPixel = 4; header[17] = 8; switchRB = true; break;
-	case EIT_BGR8:       header[2] = RGB;       bytePerPixel = 3;                                  break;
-	case EIT_BGRA8:      header[2] = RGB;       bytePerPixel = 4; header[17] = 8;                  break;
-	};
-
-	header[16] = bytePerPixel*8;
-
-	stream.write( header, 18 );
-
-
-	if( switchRB )
-	{
-		unsigned char* ptr = (unsigned char*)m_imageBuffer;
-		unsigned char* end = ptr + m_width*m_height*bytePerPixel;
-
-		for( ; ptr!=end; ptr+=bytePerPixel )
-		{
-			util::xorSwap( ptr[0], ptr[2] );
-
-			stream.write( (char*)ptr, bytePerPixel );
-
-			util::xorSwap( ptr[0], ptr[2] );
-		}
-	}
-	else
-	{
-		stream.write( (char*)m_imageBuffer, m_width*m_height*bytePerPixel );
-	}
 }
 
 #endif
