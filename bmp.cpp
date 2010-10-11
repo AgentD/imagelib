@@ -2,7 +2,6 @@
 #include "util.h"
 
 #include <cstring>
-#include <iostream>
 
 
 
@@ -12,7 +11,7 @@
 	Bitmap loading facilities.
 
 	What should work('-' means implemented but not tested, 'x' means tested and DOES work, 'o' means not implemented yet)
-	  o Importing 8 bit per pixel color mapped images with RLE compression.
+	  x Importing 8 bit per pixel color mapped images with RLE compression.
 	  x Importing 8 bit per pixel color mapped images.
 	  x Importing 16 bit per pixel images
 	  x Importing 24 bit per pixel images
@@ -135,8 +134,55 @@ namespace
 		}
 	}
 
-	void loadBMPrle( std::istream& src, size_t w, size_t h, void* ptr, unsigned char* colorMap, bool flip )
+	void loadBMPrle( std::istream& src, size_t w, size_t h, void* ptr, unsigned char* colorMap )
 	{
+		unsigned char* beg = (unsigned char*)ptr;
+		unsigned char* cur = beg;
+		unsigned char* end = beg + 3*w*h;
+
+		while( cur!=end && !src.eof() )
+		{
+			unsigned char v[2];
+
+			src.read( (char*)v, 2 );
+
+			if( v[0] )
+			{
+				size_t i = 4*((size_t)v[1]);
+
+				unsigned char B=colorMap[i], G=colorMap[i+1], R=colorMap[i+2];
+
+				for( size_t j=0; j<v[0] && cur!=end; ++j, cur+=3 )
+				{
+					cur[0] = B;
+					cur[1] = G;
+					cur[2] = R;
+				}
+			}
+			else
+			{
+				if( v[1] == 2 )
+				{
+					cur += 3*((size_t)src.get( ));
+					cur += 3*w*((size_t)src.get( ));
+				}
+				else if( v[1]>2 )
+				{
+					for( size_t i=0; i<v[1] && cur!=end; ++i, cur+=3 )
+					{
+						size_t index = 4*((size_t)src.get( ));
+
+						cur[0] = colorMap[index  ];
+						cur[1] = colorMap[index+1];
+						cur[2] = colorMap[index+2];
+					}
+
+					size_t padding = (v[1] % 2);	// TODO: Find an explanation why exactly this and nothing else works
+
+					src.seekg( padding, std::ios_base::cur );
+				}
+			}
+		}
 	}
 }
 
@@ -230,7 +276,7 @@ CImage::E_LOAD_RESULT CImage::m_loadBmp( std::istream& file )
 			loadBMPbitfields( file, biWidth, biHeight, m_imageBuffer, biBitCount, 0x00FF0000, 0x0000FF00, 0x000000FF, flipImage );
 		break;
 	case BI_RLE8:
-		loadBMPrle( file, biWidth, biHeight, m_imageBuffer, colorMap, flipImage );
+		loadBMPrle( file, biWidth, biHeight, m_imageBuffer, colorMap );
 		break;
 	};
 

@@ -21,97 +21,6 @@ size_t       CImage::getHeight   ( ) const { return m_height;      }
 size_t       CImage::getDepth    ( ) const { return m_depth;       }
 E_IMAGE_TYPE CImage::getImageType( ) const { return m_type;        }
 
-//-----------------------------------------------------------------------------
-//
-// Image buffer allocation method. This method has to be altered if a new
-// image data type is implemented.
-//
-//-----------------------------------------------------------------------------
-void CImage::allocateBuffer( size_t width, size_t height, size_t depth, E_IMAGE_TYPE type )
-{
-	if( m_imageBuffer )
-		free( m_imageBuffer );
-
-	size_t byteperpixel;
-
-	switch( type )
-	{
-	case EIT_GRAYSCALE8:                 byteperpixel = 1; break;
-	case EIT_RGB8:       case EIT_BGR8:  byteperpixel = 3; break;
-	case EIT_RGBA8:      case EIT_BGRA8: byteperpixel = 4; break;
-	};
-
-	m_imageBuffer = malloc( width*height*depth*byteperpixel );
-	m_width       = width;
-	m_height      = height;
-	m_depth       = depth;
-	m_type        = type;
-}
-
-//-----------------------------------------------------------------------------
-//
-// Image format helper methods. The following methods can be used to:
-//  - determine whether a loader for a given file format has been compiled in
-//  - guess the image file format from the file extension
-//  - get a string describing a given image format
-//
-// When adding a new loader, these methods have to be altered.
-//
-//-----------------------------------------------------------------------------
-bool CImage::isSupported( E_IMAGE_FILE filetype )
-{
-	switch( filetype )
-	{
-	case EIF_AUTODETECT: return true;
-	
-	#ifdef IMAGE_COMPILE_TGA
-		case EIF_TGA: return true;
-	#endif
-
-	#ifdef IMAGE_COMPILE_BMP
-		case EIF_BMP: return true;
-	#endif
-	};
-
-	return false;
-}
-
-E_IMAGE_FILE CImage::guessType( const std::string& filename )
-{
-	// Get the last 3 characters
-	std::string extension = filename.substr( filename.size()-3 );
-
-	// Transform those 3 characters to uppercase
-	std::transform( extension.begin(), extension.end(), extension.begin(), toupper );
-
-	if( extension=="TGA" ) return EIF_TGA;
-	if( extension=="BMP" ) return EIF_BMP;
-
-	return EIF_AUTODETECT;
-}
-
-std::string CImage::getTypeName( E_IMAGE_FILE filetype )
-{
-	switch( filetype )
-	{
-	case EIF_TGA: return "Truevision TARGA image file(*.tga)";
-	case EIF_BMP: return "Microsoft Windows bitmap file(*.bmp)";
-	};
-
-	return "unknown image file format";
-}
-
-
-
-//-----------------------------------------------------------------------------
-//
-// The following methods are responsible for loading/saving images from/to
-// files. They do not have to be altered even if a new image file format loader
-// is implemented, because they only redirect the input file to the generic
-// loading methods and use the guessType( ) method to touch the list of image
-// file format types.
-//
-//-----------------------------------------------------------------------------
 CImage::E_LOAD_RESULT CImage::load( const std::string& filename, E_IMAGE_FILE type )
 {
 	std::ifstream file( filename.c_str(), std::ios_base::binary );
@@ -135,7 +44,32 @@ void CImage::save( const std::string& filename, E_IMAGE_FILE type )
 	save( dynamic_cast<std::ostream&>( file ), type );
 }
 
+//-----------------------------------------------------------------------------
+//
+// Image buffer allocation method. This method has to be altered if a new
+// color type is implemented.
+//
+//-----------------------------------------------------------------------------
+void CImage::allocateBuffer( size_t width, size_t height, size_t depth, E_IMAGE_TYPE type )
+{
+	if( m_imageBuffer )
+		free( m_imageBuffer );
 
+	size_t byteperpixel;
+
+	switch( type )
+	{
+	case EIT_GRAYSCALE8:                 byteperpixel = 1; break;
+	case EIT_RGB8:       case EIT_BGR8:  byteperpixel = 3; break;
+	case EIT_RGBA8:      case EIT_BGRA8: byteperpixel = 4; break;
+	};
+
+	m_imageBuffer = malloc( width*height*depth*byteperpixel );
+	m_width       = width;
+	m_height      = height;
+	m_depth       = depth;
+	m_type        = type;
+}
 
 //-----------------------------------------------------------------------------
 //
@@ -185,5 +119,60 @@ void CImage::save( std::ostream& stream, E_IMAGE_FILE type )
 		case EIF_BMP: m_saveBmp( stream ); break;
 	#endif
 	};
+}
+
+
+
+//-----------------------------------------------------------------------------
+//
+// Image format helper functions. The following functions can be used to:
+//  - determine whether a loader for a given file format has been compiled in
+//  - guess the image file format from the file extension
+//  - get a string describing a given image format
+//
+// When adding a new loader, these functions have to be altered.
+//
+//-----------------------------------------------------------------------------
+bool isSupported( E_IMAGE_FILE filetype )
+{
+	switch( filetype )
+	{
+	case EIF_AUTODETECT: return true;
+	
+	#ifdef IMAGE_COMPILE_TGA
+		case EIF_TGA: return true;
+	#endif
+
+	#ifdef IMAGE_COMPILE_BMP
+		case EIF_BMP: return true;
+	#endif
+	};
+
+	return false;
+}
+
+E_IMAGE_FILE guessType( const std::string& filename )
+{
+	// Get the last 3 characters
+	std::string extension = filename.substr( filename.size()-3 );
+
+	// Transform those 3 characters to uppercase
+	std::transform( extension.begin(), extension.end(), extension.begin(), toupper );
+
+	if( extension=="TGA" ) return EIF_TGA;
+	if( extension=="BMP" ) return EIF_BMP;
+
+	return EIF_AUTODETECT;
+}
+
+std::string getTypeName( E_IMAGE_FILE filetype )
+{
+	switch( filetype )
+	{
+	case EIF_TGA: return "Truevision TARGA image file(*.tga)";
+	case EIF_BMP: return "Microsoft Windows bitmap file(*.bmp)";
+	};
+
+	return "unknown image file format";
 }
 

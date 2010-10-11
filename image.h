@@ -19,7 +19,7 @@ enum E_IMAGE_TYPE
 {
 	EIT_NONE = 0,
 
-	EIT_GRAYSCALE8,		///< Grayscale image, one color channel hodling one byte
+	EIT_GRAYSCALE8,		///< Grayscale image, one color channel holding one byte
 	EIT_RGB8,			///< RGB image, three color channels holding one byte each
 	EIT_RGBA8,			///< RGBA image, three color channels and one alpha channel, holding one byte each
 	EIT_BGR8,			///< BGR image, three color channels holding one byte each
@@ -47,20 +47,12 @@ public:
 
 	enum E_LOAD_RESULT
 	{
-		/// The image data has been loaded sucessfully
-		ELR_SUCESS = 0,
-
-		/// Error: Failed determining the file format or the loader has not been compiled in
-		ELR_UNKNOWN_FILE_FORMAT,
-
-		/// Error: Failed opening the file
-		ELR_FILE_OPEN_FAILED,
-
-		/// Error: The image file uses a feature that the underlying loading routine has not implemented
-		ELR_NOT_SUPPORTED,
-
-		/// Error: The image file contains information that makes no sense
-		ELR_FILE_CORRUPTED
+		
+		ELR_SUCESS = 0,				///< The image data has been loaded sucessfully
+		ELR_UNKNOWN_FILE_FORMAT,	///< Error: Failed determining the file format or the loader has not been compiled in
+		ELR_FILE_OPEN_FAILED,		///< Error: Failed opening the file
+		ELR_NOT_SUPPORTED,			///< Error: The image file uses a feature that the underlying loading routine has not implemented
+		ELR_FILE_CORRUPTED			///< Error: The image file contains information that makes no sense
 	};
 
 	/**
@@ -70,6 +62,7 @@ public:
 	 * \param type     If EIF_AUTODETECT, the type will be determined using the last three characters
 	 *                 in the filename. If that is no possible, loading failes. You can alternatively
 	 *                 provide the file format if you know it.
+	 *
 	 * \return ELR_SUCESS(=0) on sucess, or a loading error otherwise.
 	 */
 	E_LOAD_RESULT load( const std::string& filename, E_IMAGE_FILE type=EIF_AUTODETECT );
@@ -116,36 +109,8 @@ public:
 	 */
 	void allocateBuffer( size_t width, size_t height, size_t depth, E_IMAGE_TYPE type );
 
-	/// Get the pointer to the internal image buffer. \sa allocateBuffer
-	void* getBuffer( ) const;
-
-
-	/**
-	 * \brief Returns true if the given image file format can be loaded
-	 *
-	 * Loaders for different image file formats can be optionally compiled in or not.
-	 * With this method, you can check whether a specific loader has been compiled in.
-	 *
-	 * \param filetype The image file format to check for
-	 *
-	 * \return True if the loader for the given file format is compiled in
-	 */
-	bool isSupported( E_IMAGE_FILE filetype );
-
-	/**
-	 * \brief Guess the image file format from the file ending of a given string
-	 *
-	 * This takes the last three characters from a filename and tries to determine the
-	 * image file format.
-	 *
-	 * \return An image file format enumerator, or EIF_AUTODETECT(=0) on failure
-	 */
-	E_IMAGE_FILE guessType( const std::string& filename );
-
-	/// Get a string describing the given image file format.
-	std::string getTypeName( E_IMAGE_FILE filetype );
-
-
+	
+	void* getBuffer( ) const;			///< Get the pointer to the internal image buffer. \sa allocateBuffer
 	size_t getWidth( ) const;			///< Get the width of the internal image buffer
 	size_t getHeight( ) const;			///< Get the height of the internal image buffer
 	size_t getDepth( ) const;			///< Get the depth of the internal image buffer
@@ -170,6 +135,34 @@ private:
 		void m_saveBmp( std::ostream& stream );
 	#endif
 };
+
+
+
+
+/**
+ * \brief Returns true if the given image file format can be loaded
+ *
+ * Loaders for different image file formats can be optionally compiled in or not.
+ * With this function, you can check whether a specific loader has been compiled in.
+ *
+ * \param filetype The image file format to check for
+ *
+ * \return True if the loader for the given file format is compiled in
+ */
+bool isSupported( E_IMAGE_FILE filetype );
+
+/**
+ * \brief Guess the image file format from the file ending of a given string
+ *
+ * This takes the last three characters from a filename and tries to determine the
+ * image file format.
+ *
+ * \return An image file format enumerator, or EIF_AUTODETECT(=0) on failure
+ */
+E_IMAGE_FILE guessType( const std::string& filename );
+
+/// Get a string describing the given image file format.
+std::string getTypeName( E_IMAGE_FILE filetype );
 
 
 

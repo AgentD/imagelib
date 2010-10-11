@@ -249,7 +249,7 @@ void CImage::m_saveTga( std::ostream& stream )
 {
 	char header[ 18 ];
 	bool switchRB = false;
-	size_t bytePerPixel;
+	size_t bytePerPixel = 0;
 
 	memset( header, 0, 18 );
 
@@ -258,12 +258,14 @@ void CImage::m_saveTga( std::ostream& stream )
 
 	switch( m_type )
 	{
-	case EIT_GRAYSCALE8: header[2] = GRAYSCALE; header[16] =  8; bytePerPixel = 1;                                  break;
-	case EIT_RGB8:       header[2] = RGB;       header[16] = 24; bytePerPixel = 3;                 switchRB = true; break;
-	case EIT_RGBA8:      header[2] = RGB;       header[16] = 32; bytePerPixel = 4; header[17] = 8; switchRB = true; break;
-	case EIT_BGR8:       header[2] = RGB;       header[16] = 24; bytePerPixel = 3;                                  break;
-	case EIT_BGRA8:      header[2] = RGB;       header[16] = 32; bytePerPixel = 4; header[17] = 8;                  break;
+	case EIT_GRAYSCALE8: header[2] = GRAYSCALE; bytePerPixel = 1;                                  break;
+	case EIT_RGB8:       header[2] = RGB;       bytePerPixel = 3;                 switchRB = true; break;
+	case EIT_RGBA8:      header[2] = RGB;       bytePerPixel = 4; header[17] = 8; switchRB = true; break;
+	case EIT_BGR8:       header[2] = RGB;       bytePerPixel = 3;                                  break;
+	case EIT_BGRA8:      header[2] = RGB;       bytePerPixel = 4; header[17] = 8;                  break;
 	};
+
+	header[16] = bytePerPixel*8;
 
 	stream.write( header, 18 );
 
