@@ -9,8 +9,8 @@ int main( int argc, char** argv)
 {
 	CImage image;
 
-	image.load( "lena512.bmp" );
-	image.save( "test.tga" );
+	image.load( "test.jpg" );
+	image.save( "test.bmp" );
 
 	return 0;
 }
