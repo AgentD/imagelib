@@ -17,6 +17,8 @@ set( CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin" )
 include_directories( ${CMAKE_SOURCE_DIR}/include/
                      ${CMAKE_SOURCE_DIR}/src/
                      ${CMAKE_SOURCE_DIR}/src/jpglib/
+                     ${CMAKE_SOURCE_DIR}/src/zlib/
+                     ${CMAKE_SOURCE_DIR}/src/libpng/
                    )
 
 #----------------------------------------------------------------------
@@ -25,12 +27,12 @@ include_directories( ${CMAKE_SOURCE_DIR}/include/
 option( IMAGE_LOAD_TGA "Compile Truvision TARGA(*.tga) Image File loader" ON )
 option( IMAGE_LOAD_BMP "Compile Microsoft Windows Bitmap(*.bmp) Image File loader" ON )
 option( IMAGE_LOAD_JPG "Compile JPEG Interchange Format(*.jpg) Image File loader" ON )
+option( IMAGE_LOAD_PNG "Compile Portable Network Graphics(*.png) Image File loader" ON )
 
 option( IMAGE_SAVE_TGA "Compile Truvision TARGA(*.tga) Image File writer" ON )
 option( IMAGE_SAVE_BMP "Compile Microsoft Windows Bitmap(*.bmp) Image File writer" ON )
 option( IMAGE_SAVE_JPG "Compile JPEG Interchange Format(*.jpg) Image File writer" ON )
-
-add_definitions( -g )
+option( IMAGE_SAVE_PNG "Compile Portable Network Graphics(*.png) Image File writer" ON )
 
 if( IMAGE_LOAD_TGA )
   add_definitions( -DIMAGE_LOAD_TGA )
@@ -44,6 +46,11 @@ if( IMAGE_LOAD_JPG )
   add_definitions( -DIMAGE_LOAD_JPG )
 endif( )
 
+if( IMAGE_LOAD_PNG )
+  add_definitions( -DIMAGE_LOAD_PNG )
+endif( )
+
+
 if( IMAGE_SAVE_TGA )
   add_definitions( -DIMAGE_SAVE_TGA )
 endif( )
@@ -56,9 +63,18 @@ if( IMAGE_SAVE_JPG )
   add_definitions( -DIMAGE_SAVE_JPG )
 endif( )
 
+if( IMAGE_SAVE_PNG )
+  add_definitions( -DIMAGE_SAVE_PNG )
+endif( )
+
 #----------------------------------------------------------------------
 # Add all libraries to compile
 #----------------------------------------------------------------------
+
+if( IMAGE_LOAD_PNG OR IMAGE_SAVE_PNG )
+  add_subdirectory( src/zlib )
+  add_subdirectory( src/libpng )
+endif( )
 
 if( IMAGE_LOAD_JPG OR IMAGE_SAVE_JPG )
   add_subdirectory( src/jpglib )

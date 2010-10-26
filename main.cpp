@@ -10,7 +10,7 @@ int main( int argc, char** argv)
 	CImage image;
 
 	image.load( "test.jpg" );
-	image.save( "test.bmp" );
+	image.save( "test.png" );
 
 	return 0;
 }

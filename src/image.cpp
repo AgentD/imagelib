@@ -96,6 +96,10 @@ CImage::E_LOAD_RESULT CImage::load( std::istream& stream, E_IMAGE_FILE type )
    #ifdef IMAGE_LOAD_JPG
       case EIF_JPG: r = m_loadJpg( stream ); break;
    #endif
+   
+   #ifdef IMAGE_LOAD_PNG
+      case EIF_PNG: r = m_loadPng( stream ); break;
+   #endif
    };
 
    // In case we failed reading, restore the initial stream state
@@ -123,6 +127,10 @@ void CImage::save( std::ostream& stream, E_IMAGE_FILE type )
    #ifdef IMAGE_SAVE_JPG
       case EIF_JPG: m_saveJpg( stream ); break;
    #endif
+
+   #ifdef IMAGE_SAVE_PNG
+      case EIF_PNG: m_savePng( stream ); break;
+   #endif
    };
 }
 
@@ -137,6 +145,7 @@ E_IMAGE_FILE guessType( const std::string& filename )
    if( extension=="TGA" ) return EIF_TGA;
    if( extension=="BMP" ) return EIF_BMP;
    if( extension=="JPG" || extension=="JPEG" ) return EIF_JPG;
+   if( extension=="PNG" ) return EIF_PNG;
 
    return EIF_AUTODETECT;
 }

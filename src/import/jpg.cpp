@@ -57,7 +57,7 @@ namespace
 
       (*cinfo->err->format_message)(cinfo, s);
 
-      std::cout<<"Fatal JPEG error: "<<s<<std::endl;
+      std::clog<<"Fatal JPEG error: "<<s<<std::endl;
    }
 
    void skip_input_data( j_decompress_ptr cinfo, long count )
