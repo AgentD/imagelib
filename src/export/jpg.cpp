@@ -83,8 +83,10 @@ namespace
 
 
 
-   void emptyConverter( unsigned char* src, unsigned char* dst, size_t width )
+   void RGBtoRGB( unsigned char* src, unsigned char* dst, size_t width )
    {
+      for( size_t x=0; x<width*3; ++x )
+         dst[ x ] = src[ x ];
    }
 
    void grayscaletoRGB( unsigned char* src, unsigned char* dst, size_t width )
@@ -142,14 +144,17 @@ namespace
 
 void CImage::m_saveJpg( std::ostream& file )
 {
-   void(*convert)(unsigned char*, unsigned char*, size_t) = emptyConverter;
+   void(*convert)(unsigned char*, unsigned char*, size_t) = NULL;
+
+   size_t ystep = m_width;
 
    switch( m_type )
    {
-   case EIT_GRAYSCALE8: convert = gray8ToRGB; break;
-   case EIT_RGBA8:      convert = rgba8ToRGB; break;
-   case EIT_BGR8:       convert = bgr8ToRGB;  break;
-   case EIT_BGRA8:      convert = bgra8ToRGB; break;
+   case EIT_GRAYSCALE8: convert = gray8ToRGB;           break;
+   case EIT_RGB8:       convert = RGBtoRGB;   ystep*=3; break;
+   case EIT_RGBA8:      convert = rgba8ToRGB; ystep*=4; break;
+   case EIT_BGR8:       convert = bgr8ToRGB;  ystep*=3; break;
+   case EIT_BGRA8:      convert = bgra8ToRGB; ystep*=4; break;
    };
 
 
@@ -172,14 +177,13 @@ void CImage::m_saveJpg( std::ostream& file )
    jpeg_set_quality( &cinfo, 75, TRUE );
    jpeg_start_compress( &cinfo, TRUE );
 
+
    unsigned char* dst = new unsigned char[ m_width*3 ];
 
    if( dst )
    {
       JSAMPROW rowPtr[1];
       rowPtr[0] = dst;
-
-      size_t ystep = m_width*3;
 
       unsigned char* src = (unsigned char*)m_imageBuffer + (m_height-1)*ystep;
 
@@ -189,12 +193,11 @@ void CImage::m_saveJpg( std::ostream& file )
          src -= ystep;
          jpeg_write_scanlines( &cinfo, rowPtr, 1 );
       }
-
-      delete [] dst;
-
-      jpeg_finish_compress(&cinfo);
    }
 
+   delete [] dst;
+
+   jpeg_finish_compress(&cinfo);
    jpeg_destroy_compress(&cinfo);
 }
 
