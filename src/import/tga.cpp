@@ -1,3 +1,7 @@
+#ifdef IMAGE_LOAD_TGA
+
+
+
 #include "image.h"
 #include "util.h"
 
@@ -7,7 +11,6 @@
 #include <iostream>
 
 
-#ifdef IMAGE_LOAD_TGA
 
 /*
    The TGA loading facilities.

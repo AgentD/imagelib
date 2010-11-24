@@ -16,7 +16,8 @@ enum E_IMAGE_TYPE
    EIT_RGB8,         ///< RGB image, three color channels holding one byte each
    EIT_RGBA8,        ///< RGBA image, three color channels and one alpha channel, holding one byte each
    EIT_BGR8,         ///< BGR image, three color channels holding one byte each
-   EIT_BGRA8         ///< BGRA image, three color channels and one alpha channel, holding one byte each
+   EIT_BGRA8,        ///< BGRA image, three color channels and one alpha channel, holding one byte each
+   EIT_RGBE8         ///< RGBE image. This is an HDR format. Three color channels and one shared exponent
 };
 
 

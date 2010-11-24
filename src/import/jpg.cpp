@@ -1,8 +1,8 @@
-#include "image.h"
-
-
-
 #ifdef IMAGE_LOAD_JPG
+
+
+
+#include "image.h"
 
 
 

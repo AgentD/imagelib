@@ -1,3 +1,7 @@
+#ifdef IMAGE_SAVE_TGA
+
+
+
 #include "image.h"
 #include "util.h"
 
@@ -6,8 +10,6 @@
 #include <algorithm>
 
 
-
-#ifdef IMAGE_SAVE_TGA
 
 /*
    The TGA exporting facilities.
@@ -33,17 +35,16 @@ void CImage::m_saveTga( std::ostream& stream )
 
    switch( m_type )
    {
-   case EIT_GRAYSCALE8: header[2] = 1;       bytePerPixel = 1;                                  break;
-   case EIT_RGB8:       header[2] = 2;       bytePerPixel = 3;                 switchRB = true; break;
-   case EIT_RGBA8:      header[2] = 2;       bytePerPixel = 4; header[17] = 8; switchRB = true; break;
-   case EIT_BGR8:       header[2] = 2;       bytePerPixel = 3;                                  break;
-   case EIT_BGRA8:      header[2] = 2;       bytePerPixel = 4; header[17] = 8;                  break;
+   case EIT_GRAYSCALE8: header[2] = 1; bytePerPixel = 1;                                  break;
+   case EIT_RGB8:       header[2] = 2; bytePerPixel = 3;                 switchRB = true; break;
+   case EIT_RGBA8:      header[2] = 2; bytePerPixel = 4; header[17] = 8; switchRB = true; break;
+   case EIT_BGR8:       header[2] = 2; bytePerPixel = 3;                                  break;
+   case EIT_BGRA8:      header[2] = 2; bytePerPixel = 4; header[17] = 8;                  break;
    };
 
    header[16] = bytePerPixel*8;
 
    stream.write( (char*)header, 18 );
-
 
    if( switchRB )
    {

@@ -1,8 +1,10 @@
+#ifdef IMAGE_SAVE_PNG
+
+
+
 #include "image.h"
 
 
-
-#ifdef IMAGE_SAVE_PNG
 
 /*
    The PNG exporting facilities.

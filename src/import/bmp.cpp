@@ -1,3 +1,7 @@
+#ifdef IMAGE_LOAD_BMP
+
+
+
 #include "image.h"
 #include "util.h"
 
@@ -5,8 +9,6 @@
 #include <cstdlib>
 
 
-
-#ifdef IMAGE_LOAD_BMP
 
 /*
    Bitmap loading facilities.

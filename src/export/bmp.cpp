@@ -1,11 +1,13 @@
+#ifdef IMAGE_SAVE_BMP
+
+
+
 #include "image.h"
 #include "util.h"
 
 #include <cstring>
 
 
-
-#ifdef IMAGE_SAVE_BMP
 
 /*
    Bitmap exporting facilities.

@@ -1,8 +1,9 @@
+#ifdef IMAGE_LOAD_PNG
+
+
+
 #include "image.h"
 
-
-
-#ifdef IMAGE_LOAD_PNG
 
 
 /*

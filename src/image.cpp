@@ -54,13 +54,14 @@ void CImage::allocateBuffer( size_t width, size_t height, size_t depth, E_IMAGE_
    if( m_imageBuffer )
       free( m_imageBuffer );
 
-   size_t byteperpixel;
+   size_t byteperpixel = 0;
 
    switch( type )
    {
    case EIT_GRAYSCALE8:                 byteperpixel = 1; break;
    case EIT_RGB8:       case EIT_BGR8:  byteperpixel = 3; break;
    case EIT_RGBA8:      case EIT_BGRA8: byteperpixel = 4; break;
+   case EIT_RGBE8:                      byteperpixel = 4; break;
    };
 
    m_imageBuffer = malloc( width*height*depth*byteperpixel );

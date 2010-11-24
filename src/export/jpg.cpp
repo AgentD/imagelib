@@ -1,8 +1,11 @@
-#include "image.h"
-
-
-
 #ifdef IMAGE_SAVE_JPG
+
+
+
+#include "image.h"
+#include "util.h"
+
+
 
 /*
    The JPEG exporting facilities.
@@ -87,16 +90,6 @@ namespace
    {
       for( size_t x=0; x<width*3; ++x )
          dst[ x ] = src[ x ];
-   }
-
-   void grayscaletoRGB( unsigned char* src, unsigned char* dst, size_t width )
-   {
-      for( size_t x=0; x<width; ++x )
-      {
-         dst[ x*3     ] = src[ x ];
-         dst[ x*3 + 1 ] = src[ x ];
-         dst[ x*3 + 2 ] = src[ x ];
-      }
    }
 
    void gray8ToRGB( unsigned char* src, unsigned char* dst, size_t width )
