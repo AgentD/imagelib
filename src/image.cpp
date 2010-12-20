@@ -71,12 +71,11 @@ void CImage::allocateBuffer( size_t width, size_t height, size_t depth, E_IMAGE_
    m_type        = type;
 }
 
-//-------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------
 //
-// If a new image file format is added, the following two methods and functions
-// have to be altered.
+// If a new image file format is added, the following methods have to be altered.
 //
-//-------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------
 CImage::E_LOAD_RESULT CImage::load( std::istream& stream, E_IMAGE_FILE type )
 {
    // Get the current stream position to restore it on failure
@@ -135,7 +134,7 @@ void CImage::save( std::ostream& stream, E_IMAGE_FILE type )
    };
 }
 
-E_IMAGE_FILE guessType( const std::string& filename )
+E_IMAGE_FILE CImage::guessType( const std::string& filename )
 {
    // Get the last 3 characters
    std::string extension = filename.substr( filename.size()-3 );

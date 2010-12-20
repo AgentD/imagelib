@@ -111,6 +111,23 @@ public:
    size_t getDepth( ) const;           ///< Get the depth of the internal image buffer
    E_IMAGE_TYPE getImageType( ) const; ///< Get the color format of the internal image buffer
 
+
+
+
+
+   /**
+    * \brief Guess the image file format from the file ending of a given string
+    *
+    * This takes the last three characters from a filename and tries to determine the
+    * image file format.
+    *
+    * \return An image file format enumerator, or EIF_AUTODETECT(=0) on failure
+    */
+   static E_IMAGE_FILE guessType( const std::string& filename );
+
+
+
+
 private:
 
    CImage( const CImage& );
@@ -158,18 +175,6 @@ private:
       void m_savePng( std::ostream& stream );
    #endif
 };
-
-
-
-/**
- * \brief Guess the image file format from the file ending of a given string
- *
- * This takes the last three characters from a filename and tries to determine the
- * image file format.
- *
- * \return An image file format enumerator, or EIF_AUTODETECT(=0) on failure
- */
-E_IMAGE_FILE guessType( const std::string& filename );
 
 
 
