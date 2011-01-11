@@ -5,6 +5,9 @@
 
 #include <string>
 #include <fstream>
+#include <map>
+
+#include "image_hints.h"
 
 
 
@@ -112,6 +115,44 @@ public:
    E_IMAGE_TYPE getImageType( ) const; ///< Get the color format of the internal image buffer
 
 
+   /**
+    * \copydoc image_hint
+    *
+    * This method is used to set the value of a hint.
+    */
+   template<typename T>
+   void setHint( image_hint hint, T value )
+   {
+      union
+      {
+         T      tv;
+         size_t sv;
+      } u;
+
+      u.tv = value;
+
+      m_hints[ hint ] = u.sv;
+   }
+
+   /**
+    * \copydoc image_hint
+    *
+    * This method is used to get the value of a hint.
+    */
+   template<typename T>
+   T getHint( image_hint hint ) const
+   {
+      union
+      {
+         T      tv;
+         size_t sv;
+      } u;
+
+      u.sv = m_hints.find( hint )->second;
+
+      return u.tv;
+   }
+
 
 
 
@@ -139,6 +180,7 @@ private:
 
    E_IMAGE_TYPE m_type;
 
+   std::map< image_hint, size_t > m_hints;
 
    #ifdef IMAGE_LOAD_TGA
       E_LOAD_RESULT m_loadTga( std::istream& file );

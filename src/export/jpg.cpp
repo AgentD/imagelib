@@ -152,6 +152,14 @@ void CImage::m_saveJpg( std::ostream& file )
 
 
 
+
+   size_t quality = getHint<size_t>( IH_JPEG_EXPORT_QUALITY );
+
+   if( quality<1 || quality>100 ) quality = 75;
+
+
+
+
    jpeg_compress_struct cinfo;
    jpeg_error_mgr jerr;
 
@@ -167,7 +175,7 @@ void CImage::m_saveJpg( std::ostream& file )
 
    jpeg_set_defaults( &cinfo );
 
-   jpeg_set_quality( &cinfo, 75, TRUE );
+   jpeg_set_quality( &cinfo, quality, TRUE );
    jpeg_start_compress( &cinfo, TRUE );
 
 
