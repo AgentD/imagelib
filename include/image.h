@@ -32,7 +32,8 @@ enum E_IMAGE_FILE
    EIF_TGA,             ///< Truevision TARGA image file(*.tga)
    EIF_BMP,             ///< Microsoft Windows bitmap image file(*.bmp)
    EIF_JPG,             ///< JPEG Interchange Format(*.jpg, *.jpeg)
-   EIF_PNG              ///< Portable Network Graphics("PNG's Not Gif") Format(*.png)
+   EIF_PNG,             ///< Portable Network Graphics("PNG's Not Gif") Format(*.png)
+   EIF_TXT              ///< Textfile containing ASCII art(*.txt)
 };
 
 
@@ -215,6 +216,11 @@ private:
 
    #ifdef IMAGE_SAVE_PNG
       void m_savePng( std::ostream& stream );
+   #endif
+
+
+   #ifdef IMAGE_LOAD_TXT
+      E_LOAD_RESULT m_loadTxt( std::istream& stream );
    #endif
 };
 

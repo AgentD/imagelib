@@ -13,7 +13,7 @@
    Bitmap exporting facilities.
 
    What should work('-' means implemented but not tested, 'x' means tested and DOES work, 'o' means not implemented yet)
-    x exporting EIT_GRAYSCALE8 images
+    - exporting EIT_GRAYSCALE8 images. Test failed: shifted by one!
     x exporting EIT_RGB8 images
     x exporting EIT_RGBA8 images
     x exporting EIT_BGR8 images

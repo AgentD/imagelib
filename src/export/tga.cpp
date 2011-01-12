@@ -35,7 +35,7 @@ void CImage::m_saveTga( std::ostream& stream )
 
    switch( m_type )
    {
-   case EIT_GRAYSCALE8: header[2] = 1; bytePerPixel = 1;                                  break;
+   case EIT_GRAYSCALE8: header[2] = 3; bytePerPixel = 1;                                  break;
    case EIT_RGB8:       header[2] = 2; bytePerPixel = 3;                 switchRB = true; break;
    case EIT_RGBA8:      header[2] = 2; bytePerPixel = 4; header[17] = 8; switchRB = true; break;
    case EIT_BGR8:       header[2] = 2; bytePerPixel = 3;                                  break;

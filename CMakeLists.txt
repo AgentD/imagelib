@@ -28,6 +28,7 @@ option( IMAGE_LOAD_TGA "Compile Truvision TARGA(*.tga) Image File loader" ON )
 option( IMAGE_LOAD_BMP "Compile Microsoft Windows Bitmap(*.bmp) Image File loader" ON )
 option( IMAGE_LOAD_JPG "Compile JPEG Interchange Format(*.jpg) Image File loader" ON )
 option( IMAGE_LOAD_PNG "Compile Portable Network Graphics(*.png) Image File loader" ON )
+option( IMAGE_LOAD_TXT "Compile ASCII ART(*.txt) Image File loader" ON )
 
 option( IMAGE_SAVE_TGA "Compile Truvision TARGA(*.tga) Image File writer" ON )
 option( IMAGE_SAVE_BMP "Compile Microsoft Windows Bitmap(*.bmp) Image File writer" ON )
@@ -48,6 +49,10 @@ endif( )
 
 if( IMAGE_LOAD_PNG )
   add_definitions( -DIMAGE_LOAD_PNG )
+endif( )
+
+if( IMAGE_LOAD_TXT )
+  add_definitions( -DIMAGE_LOAD_TXT )
 endif( )
 
 

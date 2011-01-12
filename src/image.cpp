@@ -100,6 +100,10 @@ CImage::E_LOAD_RESULT CImage::load( std::istream& stream, E_IMAGE_FILE type )
    #ifdef IMAGE_LOAD_PNG
       case EIF_PNG: r = m_loadPng( stream ); break;
    #endif
+
+   #ifdef IMAGE_LOAD_TXT
+      case EIF_TXT: r = m_loadTxt( stream ); break;
+   #endif
    };
 
    // In case we failed reading, restore the initial stream state
@@ -146,6 +150,7 @@ E_IMAGE_FILE CImage::guessType( const std::string& filename )
    if( extension=="BMP" ) return EIF_BMP;
    if( extension=="JPG" || extension=="JPEG" ) return EIF_JPG;
    if( extension=="PNG" ) return EIF_PNG;
+   if( extension=="TXT" ) return EIF_TXT;
 
    return EIF_AUTODETECT;
 }
