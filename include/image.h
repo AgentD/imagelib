@@ -141,7 +141,7 @@ public:
     * This method is used to get the value of a hint.
     */
    template<typename T>
-   T getHint( image_hint hint ) const
+   T getHint( image_hint hint )
    {
       union
       {
@@ -149,7 +149,7 @@ public:
          size_t sv;
       } u;
 
-      u.sv = m_hints.find( hint )->second;
+      u.sv = m_hints[ hint ];
 
       return u.tv;
    }
@@ -221,6 +221,10 @@ private:
 
    #ifdef IMAGE_LOAD_TXT
       E_LOAD_RESULT m_loadTxt( std::istream& stream );
+   #endif
+
+   #ifdef IMAGE_SAVE_TXT
+      void m_saveTxt( std::ostream& stream );
    #endif
 };
 

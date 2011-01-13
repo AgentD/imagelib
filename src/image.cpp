@@ -135,6 +135,10 @@ void CImage::save( std::ostream& stream, E_IMAGE_FILE type )
    #ifdef IMAGE_SAVE_PNG
       case EIF_PNG: m_savePng( stream ); break;
    #endif
+
+   #ifdef IMAGE_SAVE_TXT
+      case EIF_TXT: m_saveTxt( stream ); break;
+   #endif
    };
 }
 

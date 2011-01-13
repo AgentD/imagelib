@@ -1,5 +1,5 @@
 set( IMAGE_IMPORT import/bmp.cpp import/tga.cpp import/jpg.cpp import/png.cpp import/ascii.cpp )
-set( IMAGE_EXPORT export/bmp.cpp export/tga.cpp export/jpg.cpp export/png.cpp )
+set( IMAGE_EXPORT export/bmp.cpp export/tga.cpp export/jpg.cpp export/png.cpp export/ascii.cpp )
 set( IMAGE_LIB image.cpp bitmap_font.cpp )
 
 

@@ -34,6 +34,7 @@ option( IMAGE_SAVE_TGA "Compile Truvision TARGA(*.tga) Image File writer" ON )
 option( IMAGE_SAVE_BMP "Compile Microsoft Windows Bitmap(*.bmp) Image File writer" ON )
 option( IMAGE_SAVE_JPG "Compile JPEG Interchange Format(*.jpg) Image File writer" ON )
 option( IMAGE_SAVE_PNG "Compile Portable Network Graphics(*.png) Image File writer" ON )
+option( IMAGE_SAVE_TXT "Compile ASCII art(*.txt) Image File writer" ON )
 
 if( IMAGE_LOAD_TGA )
   add_definitions( -DIMAGE_LOAD_TGA )
@@ -70,6 +71,10 @@ endif( )
 
 if( IMAGE_SAVE_PNG )
   add_definitions( -DIMAGE_SAVE_PNG )
+endif( )
+
+if( IMAGE_SAVE_TXT )
+  add_definitions( -DIMAGE_SAVE_TXT )
 endif( )
 
 #----------------------------------------------------------------------

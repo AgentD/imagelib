@@ -17,8 +17,14 @@
  */
 enum image_hint
 {
-   /// The JPEG exporter quality. An integer percentage value. Default is 75.
-   IH_JPEG_EXPORT_QUALITY = 0xA000
+   /// The JPEG exporter quality. A size_t percentage value. Default is 75.
+   IH_JPEG_EXPORT_QUALITY = 0xA000,
+
+   /// The number of columns for the ascii art exporter(size_t). Default is 80.
+   IH_ASCII_EXPORT_COLUMNS = 0xA010,
+
+   /// If true(bool value). The ascii art exporter generates vt100 color codes. Default is false.
+   IH_ASCII_EXPORT_VT100_COLORS = 0xA011
 };
 
 
