@@ -59,7 +59,7 @@ void getCharacter( char c, unsigned char* dst, unsigned int x, unsigned int y, u
       // Copy the scanline to the destination buffer
       for( unsigned int j=0; j<charWidth && (x+j)<dstW; ++j )
       {
-         tempDst[ j ] |= src[ j ]*255;
+         tempDst[ j ] = src[ j ]*255;
       }
    }
 }

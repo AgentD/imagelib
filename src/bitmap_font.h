@@ -10,7 +10,7 @@ unsigned int getCharWidth( );
 unsigned int getCharHeight( );
 
 /**
- * \brief Render a given ASCII character into an buffer
+ * \brief Render a given ASCII character into a buffer
  *
  * \param c    The character to render
  * \param dst  The destination buffer to render to
