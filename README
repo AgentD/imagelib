@@ -78,3 +78,7 @@ are not in the public domain and you will have to respect their terms and
 conditions of usage and redistribution if you use them. Their usage is
 optional and can be configured out over the build system.
 
+The zlib license can be found in the file "zlib-LICENSE"
+The libpng license can be found in the file "libpng-LICENSE"
+The libjpeg license can be found in the file "libjpeg-LICENSE"
+
