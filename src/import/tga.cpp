@@ -48,8 +48,8 @@ namespace
 
       unsigned char* ptr;            // A pointer to the first pixel in the image buffer
       unsigned char* end;            // A pointer to the last pixel in the image buffer
-      ssize_t xstep;               // How much to add to the pixel poiter to get to the next pixel
-      ssize_t ystep;               // How much to add to the pixel pointer to get to the next pixel row
+      int xstep;               // How much to add to the pixel poiter to get to the next pixel
+      int ystep;               // How much to add to the pixel pointer to get to the next pixel row
    };
 
    void loadTgaColorMapped( std::istream& file, tgaInfo& i, unsigned char* colorMap )
