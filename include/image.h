@@ -169,6 +169,34 @@ public:
 
 
 
+   /**
+    * \brief Place a pixel onto the image
+    *
+    * \param x The x coordinate of the pixel to place(0=left, width-1=right)
+    * \param y The y coordinate of the pixel to place(0=bottom, height-1=top)
+    * \param z The depth layer(z coordinate, 0=front, depth-1=back)
+    * \param R The red component of the pixel olor
+    * \param G The green component of the pixel color
+    * \param B The blue component of the pixel color
+    */
+   void setPixel( size_t x, size_t y, size_t z, unsigned char R, unsigned char G, unsigned char B );
+
+   /**
+    * \brief Print a text string into the image
+    *
+    * Print a formated text onto the image using a built in bitmap font.
+    *
+    * \param x            The x coordinate of the upper-left corner where the text starts
+    * \param y            The y coordinate of the upper-left corner where the text starts
+    * \param z            The depth layer(z coordinate, 0=front, depth-1=back)
+    * \param R            The red component of the pixel olor
+    * \param G            The green component of the pixel color
+    * \param B            The blue component of the pixel color
+    * \param formatstring A printf format string
+    */
+   void printf( size_t x, size_t y, size_t z, unsigned char R, unsigned char G, unsigned char B, const char* formatstring, ... );
+
+
 
 private:
 

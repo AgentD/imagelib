@@ -56,6 +56,9 @@ int main( int argc, char** argv)
       }
    }
 
+    image.setPixel( 100, 100, 0, 255, 0, 0 );
+    image.printf( 100, 100, 0, 255, 255, 255, "Test %d, '%s'\nLine wrap test\nAnother line", 1337, "a string" );
+
 	/*image.load( "test.jpg" );*/
 	image.save( "test.png" );
 
