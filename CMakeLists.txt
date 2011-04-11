@@ -36,6 +36,8 @@ option( IMAGE_SAVE_JPG "Compile JPEG Interchange Format(*.jpg) Image File writer
 option( IMAGE_SAVE_PNG "Compile Portable Network Graphics(*.png) Image File writer" ON )
 option( IMAGE_SAVE_TXT "Compile ASCII art(*.txt) Image File writer" ON )
 
+option( IMAGE_BITMAP_FONT "Compile built in bitmap font(required if ASCII art loader is enabled)" ON )
+
 if( IMAGE_LOAD_TGA )
   add_definitions( -DIMAGE_LOAD_TGA )
 endif( )
@@ -75,6 +77,15 @@ endif( )
 
 if( IMAGE_SAVE_TXT )
   add_definitions( -DIMAGE_SAVE_TXT )
+endif( )
+
+
+if( IMAGE_SAVE_TXT AND NOT IMAGE_BITMAP_FONT )
+  set( IMAGE_BITMAP_FONT 1 )
+endif( )
+
+if( IMAGE_BITMAP_FONT )
+  add_definitions( -DIMAGE_BITMAP_FONT )
 endif( )
 
 #----------------------------------------------------------------------

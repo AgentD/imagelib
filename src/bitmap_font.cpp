@@ -2,6 +2,8 @@
 
 
 
+#ifdef IMAGE_BITMAP_FONT
+
 const unsigned int bitmap_font_width = 2304;
 const unsigned int bitmap_font_height = 16;
 
@@ -63,3 +65,5 @@ void getCharacter( char c, unsigned char* dst, unsigned int x, unsigned int y, u
       }
    }
 }
+
+#endif

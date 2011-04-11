@@ -163,61 +163,63 @@ void CImage::setPixel( size_t x, size_t y, size_t z, unsigned char R, unsigned c
 //-----------------------------------------------------------------------------
 void CImage::printf( size_t x, size_t y, size_t z, unsigned char R, unsigned char G, unsigned char B, const char* formatstring, ... )
 {
-   // sprintf the format string and arguments into a buffer
-   char* buffer = (char*)malloc( 128 );
+   #ifdef IMAGE_BITMAP_FONT
+      // sprintf the format string and arguments into a buffer
+      char* buffer = (char*)malloc( 128 );
 
-   va_list arg;
-   va_start( arg, formatstring );
+      va_list arg;
+      va_start( arg, formatstring );
 
-   size_t n = vsnprintf( buffer, 128, formatstring, arg );
+      size_t n = vsnprintf( buffer, 128, formatstring, arg );
 
-   if( n>=128 )
-   {
-      free( buffer );
-      buffer = (char*)malloc( n+1 );
-      vsnprintf( buffer, n+1, formatstring, arg );
-   }
-
-   va_end( arg );
-
-   // Render the characters
-   const size_t cw = getCharWidth( );
-   const size_t ch = getCharHeight( );
-
-   unsigned char* char_buffer = (unsigned char*)malloc( cw*ch );
-
-   size_t X = x, Y = y-ch;
-
-   for( size_t i=0; buffer[i]!='\0'; ++i )
-   {
-      if( buffer[i]=='\n' )
+      if( n>=128 )
       {
-         X = x;
-         Y -= ch;
-         continue;
+         free( buffer );
+         buffer = (char*)malloc( n+1 );
+         vsnprintf( buffer, n+1, formatstring, arg );
       }
 
-      memset( char_buffer, 0, cw*ch );
+      va_end( arg );
 
-      getCharacter( buffer[i], char_buffer, 0, ch-1, cw, ch );
+      // Render the characters
+      const size_t cw = getCharWidth( );
+      const size_t ch = getCharHeight( );
 
-      for( size_t j=0; j<ch; ++j )
+      unsigned char* char_buffer = (unsigned char*)malloc( cw*ch );
+
+      size_t X = x, Y = y-ch;
+
+      for( size_t i=0; buffer[i]!='\0'; ++i )
       {
-         unsigned char* src = char_buffer + j*cw;
-
-         for( size_t k=0; k<cw; ++k )
+         if( buffer[i]=='\n' )
          {
-            if( src[ k ] )
-               setPixel( X + k, Y + j, z, R, G, B );
+            X = x;
+            Y -= ch;
+            continue;
          }
+
+         memset( char_buffer, 0, cw*ch );
+
+         getCharacter( buffer[i], char_buffer, 0, ch-1, cw, ch );
+
+         for( size_t j=0; j<ch; ++j )
+         {
+            unsigned char* src = char_buffer + j*cw;
+
+            for( size_t k=0; k<cw; ++k )
+            {
+               if( src[ k ] )
+                  setPixel( X + k, Y + j, z, R, G, B );
+            }
+         }
+
+         X+=cw;
       }
 
-      X+=cw;
-   }
-
-   // Cleanup
-   free( char_buffer );
-   free( buffer );
+      // Cleanup
+      free( char_buffer );
+      free( buffer );
+   #endif
 }
 
 //---------------------------------------------------------------------------------

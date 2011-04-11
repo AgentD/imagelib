@@ -3,6 +3,8 @@
 
 
 
+#ifdef IMAGE_BITMAP_FONT
+
 /// Get the width of a single character in pixels
 unsigned int getCharWidth( );
 
@@ -22,6 +24,8 @@ unsigned int getCharHeight( );
  * \param dstH The height of the target buffer in pixels
  */
 void getCharacter( char c, unsigned char* dst, unsigned int x, unsigned int y, unsigned int dstW, unsigned int dstH );
+
+#endif
 
 
 
