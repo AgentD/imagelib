@@ -74,7 +74,7 @@ void CImage::m_saveBmp( std::ostream& stream )
    }
 
    ////////////////////// Write the image data to the file //////////////////////
-   size_t dy = m_width*realBPP, padding = (m_width*bytePerPixel)%2;
+   size_t dy = m_width*realBPP, padding = (m_width*bytePerPixel)%4;
    unsigned char* ptr = (unsigned char*)m_imageBuffer;
    unsigned char* end = (unsigned char*)m_imageBuffer + m_height*dy;
 
