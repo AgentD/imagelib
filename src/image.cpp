@@ -295,10 +295,9 @@ void CImage::save( std::ostream& stream, E_IMAGE_FILE type )
 
 E_IMAGE_FILE CImage::guessType( const std::string& filename )
 {
-   // Get the last 3 characters
-   std::string extension = filename.substr( filename.size()-3 );
+   // Get the last filename extension in uppercase
+   std::string extension = filename.substr( filename.rfind( '.' )+1 );
 
-   // Transform those 3 characters to uppercase
    std::transform( extension.begin(), extension.end(), extension.begin(), toupper );
 
    if( extension=="TGA" ) return EIF_TGA;
