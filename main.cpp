@@ -37,7 +37,7 @@ int main( int argc, char** argv)
    image.allocateBuffer( 800, 600, 1, EIT_RGB8 );
    unsigned char* b = (unsigned char*)image.getBuffer( );
 
-   for( size_t y=600; y!=0; --y )
+   for( size_t y=0; y<600; ++y )
    {
       for( size_t x=0; x<800; ++x )
       {
@@ -56,10 +56,9 @@ int main( int argc, char** argv)
       }
    }
 
-    image.setPixel( 100, 100, 0, 255, 0, 0 );
-    image.printf( 100, 100, 0, 255, 255, 255, "Test %d, '%s'\nLine wrap test\nAnother line", 1337, "a string" );
+    image.setPixel( 100, 500, 0, 255, 0, 0 );
+    image.printf( 100, 500, 0, 255, 255, 255, "Test %d, '%s'\nLine wrap test\nAnother line", 1337, "a string" );
 
-	/*image.load( "test.jpg" );*/
 	image.save( "test.png" );
 
 	return 0;

@@ -93,8 +93,16 @@ endif( )
 #----------------------------------------------------------------------
 
 if( IMAGE_LOAD_PNG OR IMAGE_SAVE_PNG )
-  add_subdirectory( src/zlib )
-  add_subdirectory( src/libpng )
+  add_definitions( -DLODEPNG_COMPILE_ZLIB )
+  add_definitions( -DLODEPNG_COMPILE_PNG  )
+endif( )
+
+if( IMAGE_LOAD_PNG )
+  add_definitions( -DLODEPNG_COMPILE_DECODER )
+endif( )
+
+if( IMAGE_SAVE_PNG )
+  add_definitions( -DLODEPNG_COMPILE_ENCODER )
 endif( )
 
 if( IMAGE_LOAD_JPG OR IMAGE_SAVE_JPG )

@@ -2,10 +2,10 @@
   Description & history
  -----------------------
 
-This archive contains a Public Domain library for loading images of various
-formats into a C-Style Array and exporting them into other formats. The file
-'main.cpp' contains a usage example that generates PNG image, holding a
-Mandelbrot set.
+This archive contains a public domain C++ library for loading images of
+various formats into a C-Style Array and exporting them into other formats.
+The file 'main.cpp' contains a usage example that generates PNG image,
+displaying the Mandelbrot set.
 
 I originally started it as a simple *.tga loader for loading textures in
 small OpenGL experiments and exporting graphs plotted by functions, but I
@@ -17,55 +17,52 @@ After some time, however, progress stalled and I brought myself to do this
 first small release, although I have not implemented everything I wanted to
 for the first release.
 
-Because this project(tough small) is one of my bigger out-of-boredome
+Because this project (tough small) is one of my bigger out-of-boredome
 projects, I would apreciate any comments, bugfixes and contributions under
-the condition that any contribution goes into the Public Domain too.
+the condition that any contribution goes into the public domain too.
 Long things short: Feel free to drop me a line: david.oberhollenzer@tele2.at.
 
 
   Features
  ----------
 
-- 100% platform independand(at least MY code)
+- should be 100% platform independend (at least MY code)
 - CMake buildsystem with lots of configuration options
 - Straight forward interface
-- Compiles out-of-the-box and can be easyly integrated into any bigger project
+- Should compile out-of-the-box and can be easyly integrated into any bigger
+  project
 - Images can not only be [read from|written to] files but also arbitrary
   derivates of std::istream and std::ostream
 - Support for the following image file formats:
     Importing: - Targa Image File (*.tga):
-                   8 bpp gray scale,
-                   24/32(RGB/RGBA) bpp color mapped,
-                   24/32(RGB/RGBA) bpp truecolor,
-                   8 bpp gray scale with RLE,
-                   24/32(RGB/RGBA) bpp color mapped with RLE,
-                   24/32(RGB/RGBA) bpp truecolor with RLE
+                   8 bpp gray scale with or without RLE,
+                   24/32 (RGB/RGBA) bpp color mapped with or without RLE,
+                   24/32 (RGB/RGBA) bpp truecolor with or without RLE
                - Windows Bitmap (*.bmp):
-                   All formats suported
+                   Can load everything, except 1/2/4 bpp color formats
                - PNG's Not Gif (*.png):
-                   All formats supported
-                   Requires libpng and zlib
+                   Using LodePNG
                - JPEG interchange format (*.jpg):
                    All formats supported
                    Requires jpeglib
-               - ASCII Art(Text to image using a bitmap font)
+               - ASCII Art (Text to image using a bitmap font)
 
     Exporting: - Targa Image File (*.tga)
                - Windows Bitmap (*.bmp)
-               - PNG's Not Gif (*.png): requires libpng and zlib
+               - PNG's Not Gif (*.png)
                - JPEG interchange format (*.jpg): requires libjpeg
-               - ASCII Art: image to text using brightness and
-                            optionally ANSI(VT100) color codes.
+               - ASCII Art: image to text using avarage brightness of a block
+                            and optionally VT100 color codes.
 
 
   Licensing
  -----------
 
-All code written by me(David Oberhollenzer) is released into the Public
-Domain, so feel free to use it for anything you would like to.
+All code written by me (David Oberhollenzer) is released into the public
+domain, so feel free to use it for anything you would like to.
 
-But please note that my source code is provided "AS IS", without waranty of
-any kind, express or implied, including but not limited to the waranties of
+But note that my source code is provided "AS IS", without waranty of any kind,
+express or implied, including but not limited to the waranties of
 merchentabillity, fintess for a particular purpose and noninfrindgement. In
 no event shall I, the author, be liable for any claim, damages or other
 liabillity, whether in an action of contract, tort or otherwise, arising from,
@@ -73,12 +70,11 @@ out of or in connection with the source code or the use or other dealings in
 the source code.
 
 Also note, that this archive does contain source code of third parties, namely
-the libpng library, the zlib library and the jpeglib library. Those libraries
-are not in the public domain and you will have to respect their terms and
-conditions of usage and redistribution if you use them. Their usage is
-optional and can be configured out over the build system.
+LodePNG and the jpeglib library. Those libraries are not in the public domain
+and you will have to respect their terms and conditions of usage and
+redistribution if you use them. Their usage is optional and can be configured
+out the build system.
 
-The zlib license can be found in the file "zlib-LICENSE"
-The libpng license can be found in the file "libpng-LICENSE"
+The LodePNG license can be found in the file "lodepng-LICENSE"
 The libjpeg license can be found in the file "libjpeg-LICENSE"
 
