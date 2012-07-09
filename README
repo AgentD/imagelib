@@ -1,80 +1,85 @@
 
   Description & history
- -----------------------
+  *********************
 
-This archive contains a public domain C++ library for loading images of
-various formats into a C-Style Array and exporting them into other formats.
-The file 'main.cpp' contains a usage example that generates PNG image,
-displaying the Mandelbrot set.
+ This archive contains a public domain C library for loading images of
+ various formats into a C-Style Array and exporting them into other formats.
 
-I originally started it as a simple *.tga loader for loading textures in
-small OpenGL experiments and exporting graphs plotted by functions, but I
-ended up making it somewhat modular and adding more and more importers and
-exporters for other formats whenever I had time to. That's also why adding
-new modules is currently so hard. It wasn't meant to do this in the first
-place.
-After some time, however, progress stalled and I brought myself to do this
-first small release, although I have not implemented everything I wanted to
-for the first release.
+ I originally started it as a simple *.tga loader for loading textures in
+ small OpenGL experiments and exporting graphs from sensors attached to a
+ microcontroller, but I ended up making it somewhat modular and adding more
+ and more importers and exporters for other formats whenever I had time to.
 
-Because this project (tough small) is one of my bigger out-of-boredome
-projects, I would apreciate any comments, bugfixes and contributions under
-the condition that any contribution goes into the public domain too.
-Long things short: Feel free to drop me a line: david.oberhollenzer@tele2.at.
+ After some time, however, progress stalled and I brought myself to do a first
+ small release, although I have not implemented everything I wanted to for the
+ first release.
+
+ More than a year later, after using the code for my thesis, but not working
+ of it (as I ran out of boredomeness^^) I came to the conclusion that I should
+ clean the code (the internals are filthy), add test suits and documentation,
+ convert the hole thing from C++ to C and maybe continue working on more
+ loaders/exporters.
+
+
+ Because this project (tough small) is one of my bigger out-of-boredome
+ projects, I would apreciate any comments, bugfixes and contributions under
+ the condition that any contribution goes into the public domain too.
+ Long things short: Feel free to drop me a line: david.oberhollenzer@tele2.at.
 
 
   Features
- ----------
+  ********
 
-- should be 100% platform independend (at least MY code)
-- CMake buildsystem with lots of configuration options
-- Straight forward interface
-- Should compile out-of-the-box and can be easyly integrated into any bigger
-  project
-- Images can not only be [read from|written to] files but also arbitrary
-  derivates of std::istream and std::ostream
-- Support for the following image file formats:
-    Importing: - Targa Image File (*.tga):
-                   8 bpp gray scale with or without RLE,
-                   24/32 (RGB/RGBA) bpp color mapped with or without RLE,
-                   24/32 (RGB/RGBA) bpp truecolor with or without RLE
-               - Windows Bitmap (*.bmp):
-                   Can load everything, except 1/2/4 bpp color formats
-               - PNG's Not Gif (*.png):
-                   Using LodePNG
-               - JPEG interchange format (*.jpg):
-                   All formats supported
-                   Requires jpeglib
-               - ASCII Art (Text to image using a bitmap font)
+ - public domain licensed. You can do whatever you want with my source code.
+ - pure C89. It could theoretically interface with a lot of other programming
+   languages.
+ - should be 100% platform independend (at least MY code)
+ - CMake buildsystem with lots of configuration options
+ - Straight forward interface with doxygen documentation
+ - Should compile out-of-the-box and can be easyly integrated into any bigger
+   project
+ - Support for the following image file formats:
+     Loading: - Targa Image File (*.tga):
+                  8 bpp gray scale with or without RLE,
+                  24/32 (RGB/RGBA) bpp color mapped with or without RLE,
+                  24/32 (RGB/RGBA) bpp truecolor with or without RLE
+              - Windows Bitmap (*.bmp):
+                  Can load everything, except 1/2/4 bpp color formats
+              - PNG's Not Gif (*.png):
+                  Using LodePNG
+              - JPEG interchange format (*.jpg):
+                  All formats supported
+                  Requires jpeglib
+              - ASCII Art (using a built in bitmap font)
 
-    Exporting: - Targa Image File (*.tga)
-               - Windows Bitmap (*.bmp)
-               - PNG's Not Gif (*.png)
-               - JPEG interchange format (*.jpg): requires libjpeg
-               - ASCII Art: image to text using avarage brightness of a block
-                            and optionally VT100 color codes.
+     Exporting: - Targa Image File (*.tga)
+                - Windows Bitmap (*.bmp)
+                - PNG's Not Gif (*.png)
+                - JPEG interchange format (*.jpg): requires libjpeg
+                - ASCII Art: image to text using avarage brightness of a block
+                             and optionally VT100 color codes.
 
 
   Licensing
- -----------
+  *********
 
-All code written by me (David Oberhollenzer) is released into the public
-domain, so feel free to use it for anything you would like to.
+ All code written by me (David Oberhollenzer) is released into the public
+ domain, so feel free to use it for anything you would like to.
 
-But note that my source code is provided "AS IS", without waranty of any kind,
-express or implied, including but not limited to the waranties of
-merchentabillity, fintess for a particular purpose and noninfrindgement. In
-no event shall I, the author, be liable for any claim, damages or other
-liabillity, whether in an action of contract, tort or otherwise, arising from,
-out of or in connection with the source code or the use or other dealings in
-the source code.
+ Note that my source code is provided "AS IS", without waranty of any kind,
+ express or implied, including but not limited to the waranties of
+ merchentabillity, fintess for a particular purpose and noninfrindgement. In
+ no event shall I, the author, be liable for any claim, damages or other
+ liabillity, whether in an action of contract, tort or otherwise, arising
+ from, out of or in connection with the source code or the use or other
+ dealings in the source code.
 
-Also note, that this archive does contain source code of third parties, namely
-LodePNG and the jpeglib library. Those libraries are not in the public domain
-and you will have to respect their terms and conditions of usage and
-redistribution if you use them. Their usage is optional and can be configured
-out the build system.
+ Also note, that this archive does contain source code of third parties,
+ namely LodePNG and the jpeglib library. Those libraries are not in the public
+ domain and you will have to respect their terms and conditions of usage and
+ redistribution if you use them. Their usage is optional and can be configured
+ out the build system.
 
-The LodePNG license can be found in the file "lodepng-LICENSE"
-The libjpeg license can be found in the file "libjpeg-LICENSE"
+ The LodePNG license can be found in the file "lodepng-LICENSE"
+ The libjpeg license can be found in the file "libjpeg-LICENSE"
 
