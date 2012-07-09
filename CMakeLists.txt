@@ -110,10 +110,5 @@ if( IMAGE_LOAD_JPG OR IMAGE_SAVE_JPG )
 endif( )
 
 add_subdirectory( src )
-
-#----------------------------------------------------------------------
-# Add our test application
-#----------------------------------------------------------------------
-add_executable( imgTest main.c )
-target_link_libraries( imgTest img )
+add_subdirectory( test )
 

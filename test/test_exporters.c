@@ -1,5 +1,25 @@
 #include "image.h"
 
+#ifdef _WIN32
+    #include <dir.h>
+#else
+    #include <sys/stat.h>
+    #include <sys/types.h>
+#endif
+
+
+/****************************************************************************
+ *                                                                          *
+ * The following code tests the exporter modules by generating images in    *
+ * all supported color modes and exporting them.                            *
+ *                                                                          *
+ * For RGB, a blueish mandelbrot set is generated, for RGBA, the same but   *
+ * with an alpha ramp overlayed. For grayscale, a grayscale ramp along the  *
+ * x axis is generated, where the color is then multiplyed with a ramp      *
+ * along the y axis.                                                        *
+ *                                                                          *
+ ****************************************************************************/
+
 
 
 int isMandelbrot( float X, float Y, float* iter )
@@ -26,12 +46,21 @@ int isMandelbrot( float X, float Y, float* iter )
 
 
 
-
 int main( int argc, char** argv)
 {
     SImage image;
     unsigned char* b;
     size_t x, y;
+
+#ifdef _WIN32
+    mkdir( "rgb8"  );
+    mkdir( "rgba8" );
+    mkdir( "gray8" );
+#else
+    mkdir( "rgb8",  0777 );
+    mkdir( "rgba8", 0777 );
+    mkdir( "gray8", 0777 );
+#endif
 
     image_init( &image );
 
@@ -60,9 +89,7 @@ int main( int argc, char** argv)
         }
     }
 
-    image_set_pixel( &image, 100, 500, 255, 0, 0 );
-    image_print_string( &image, 100, 500, 255, 255, 255,
-                        "Test\nLine wrap test\nAnother line" );
+    image_print_string( &image, 100, 500, 255, 255, 255, "RGB test" );
 
     image_save( &image, "rgb8/test.txt", EIF_AUTODETECT );
     image_save( &image, "rgb8/test.tga", EIF_AUTODETECT );
@@ -96,9 +123,7 @@ int main( int argc, char** argv)
         }
     }
 
-    image_set_pixel( &image, 100, 500, 255, 0, 0 );
-    image_print_string( &image, 100, 500, 255, 255, 255,
-                        "Test\nLine wrap test\nAnother line" );
+    image_print_string( &image, 100, 500, 255, 255, 255, "RGBA test" );
 
     image_save( &image, "rgba8/test.txt", EIF_AUTODETECT );
     image_save( &image, "rgba8/test.tga", EIF_AUTODETECT );
@@ -115,7 +140,6 @@ int main( int argc, char** argv)
         for( x=0; x<800; ++x )
             *(b++) = 255.0f*(((float)x) / 800.0f) * (((float)y) / 600.0f);
 
-    image_set_pixel( &image, 100, 500, 255, 0, 0 );
     image_print_string( &image, 100, 500, 255, 255, 255, "Grayscale Test" );
 
     image_save( &image, "gray8/test.txt", EIF_AUTODETECT );
