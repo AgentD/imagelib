@@ -1,6 +1,4 @@
 #include "image.h"
-#include "util.h"
-#include "bitmap_font.h"
 
 #include <stdlib.h>
 #include <ctype.h>
@@ -101,78 +99,6 @@ void image_allocate_buffer( SImage* img, size_t width, size_t height,
     img->width  = width;
     img->height = height;
     img->type   = type;
-}
-
-void image_set_pixel( SImage* img, size_t x, size_t y,
-                      unsigned char R, unsigned char G, unsigned char B )
-{
-    unsigned char* dst = img->image_buffer;
-
-    if( x>=img->width || y>=img->height || !dst )
-        return;
-
-    switch( img->type )
-    {
-    case ECT_GRAYSCALE8:
-        dst += y*img->width + x;
-
-        *dst = LUMINANCE( R, G, B );
-        return;
-    case ECT_RGB8:
-        dst += 3*(y*img->width + x);
-
-        *(dst++) = R;
-        *(dst++) = G;
-        *dst     = B;
-        return;
-    case ECT_RGBA8:
-        dst += 4*(y*img->width + x);
-
-        *(dst++) = R;
-        *(dst++) = G;
-        *dst     = B;
-        return;
-    };
-}
-
-void image_print_string( SImage* img, size_t x, size_t y,
-                         unsigned char R, unsigned char G, unsigned char B,
-                         const char* string )
-{
-#ifdef IMAGE_BITMAP_FONT
-    unsigned char char_buffer[ CHAR_WIDTH*CHAR_HEIGHT ];
-    unsigned char* src;
-
-    size_t X = x, Y = y, i, j, k;
-
-    memset( char_buffer, 0, CHAR_WIDTH*CHAR_HEIGHT );
-
-    for( i=0; string[i]!='\0'; ++i )
-    {
-        if( string[i]=='\n' )
-        {
-            X  = x;
-            Y += CHAR_HEIGHT;
-            continue;
-        }
-
-        render_character( string[i], char_buffer, 0, 0,
-                          CHAR_WIDTH, CHAR_HEIGHT );
-
-        for( j=0; j<CHAR_HEIGHT; ++j )
-        {
-            src = char_buffer + j*CHAR_WIDTH;
-
-            for( k=0; k<CHAR_WIDTH; ++k )
-            {
-                if( src[ k ] )
-                    image_set_pixel( img, X + k, Y + j, R, G, B );
-            }
-        }
-
-        X += CHAR_WIDTH;
-    }
-#endif
 }
 
 E_LOAD_RESULT image_load( SImage* img, const char* filename,

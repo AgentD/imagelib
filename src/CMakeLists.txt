@@ -10,7 +10,7 @@ set( IMAGE_EXPORT export/bmp.c
                   export/png.c
                   export/ascii.c )
 
-set( IMAGE_LIB image.c bitmap_font.c )
+set( IMAGE_LIB image.c bitmap_font.c image_edit.c )
 
 
 if( IMAGE_LOAD_JPG OR IMAGE_SAVE_JPG )
