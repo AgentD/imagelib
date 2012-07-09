@@ -89,8 +89,12 @@ if( IMAGE_BITMAP_FONT )
 endif( )
 
 #----------------------------------------------------------------------
-# Add all libraries to compile
+# Get everything to compile
 #----------------------------------------------------------------------
+
+if( CMAKE_COMPILER_IS_GNUC )
+  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ansi -Wall -Wextra -Werror -ggdb" )
+endif( )
 
 if( IMAGE_LOAD_PNG OR IMAGE_SAVE_PNG )
   add_definitions( -DLODEPNG_COMPILE_ZLIB )

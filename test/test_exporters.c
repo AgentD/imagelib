@@ -1,7 +1,8 @@
 #include "image.h"
 
 #ifdef _WIN32
-    #include <dir.h>
+    #include <direct.h>
+    #define mkdir _mkdir
 #else
     #include <sys/stat.h>
     #include <sys/types.h>

@@ -70,12 +70,14 @@ static void jpeg_term_destination( j_compress_ptr cinfo )
 
 static void jpeg_file_dest( j_compress_ptr cinfo, FILE* file )
 {
+    m_mem_destination_mgr* dst;
+
     if( !cinfo->dest )
         cinfo->dest = (struct jpeg_destination_mgr*)(*cinfo->mem->alloc_small)
                       ( (j_common_ptr) cinfo, JPOOL_PERMANENT,
                         sizeof(m_mem_destination_mgr) );
 
-    m_mem_destination_mgr* dst = (m_mem_destination_mgr*)cinfo->dest;
+    dst = (m_mem_destination_mgr*)cinfo->dest;
 
     dst->jdmgr.init_destination    = jpeg_init_destination;
     dst->jdmgr.empty_output_buffer = jpeg_empty_output_buffer;
