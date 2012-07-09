@@ -19,7 +19,7 @@ void image_clear( SImage* img, float R, float G, float B, float A )
     r = R * 255.0f;
     g = G * 255.0f;
     b = B * 255.0f;
-    a = R * 255.0f;
+    a = A * 255.0f;
 
     switch( img->type )
     {
@@ -57,7 +57,7 @@ void image_clear( SImage* img, float R, float G, float B, float A )
 }
 
 void image_set_pixel( SImage* img, size_t x, size_t y,
-                      float R, float G, float B )
+                      float R, float G, float B, float A )
 {
     unsigned char* dst = img->image_buffer;
 
@@ -83,13 +83,14 @@ void image_set_pixel( SImage* img, size_t x, size_t y,
 
         *(dst++) = R * 255.0f;
         *(dst++) = G * 255.0f;
-        *dst     = B * 255.0f;
+        *(dst++) = B * 255.0f;
+        *dst     = A * 255.0f;
         return;
     };
 }
 
 void image_print_string( SImage* img, size_t x, size_t y,
-                         float R, float G, float B,
+                         float R, float G, float B, float A,
                          const char* string )
 {
 #ifdef IMAGE_BITMAP_FONT
@@ -119,7 +120,7 @@ void image_print_string( SImage* img, size_t x, size_t y,
             for( k=0; k<CHAR_WIDTH; ++k )
             {
                 if( src[ k ] )
-                    image_set_pixel( img, X + k, Y + j, R, G, B );
+                    image_set_pixel( img, X + k, Y + j, R, G, B, A );
             }
         }
 

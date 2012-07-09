@@ -34,9 +34,10 @@ void image_clear( SImage* img, float R, float G, float B, float A );
  * \param R   The red component of the pixel olor
  * \param G   The green component of the pixel color
  * \param B   The blue component of the pixel color
+ * \param A   The alpha component of the pixel color
  */
 void image_set_pixel( SImage* img, size_t x, size_t y,
-                      float R, float G, float B );
+                      float R, float G, float B, float A );
 
 /**
  * \brief Print a text string into the image
@@ -51,10 +52,11 @@ void image_set_pixel( SImage* img, size_t x, size_t y,
  * \param R            The red component of the pixel color
  * \param G            The green component of the pixel color
  * \param B            The blue component of the pixel color
+ * \param A            The alpha component of the pixel color
  * \param formatstring A printf format string
  */
 void image_print_string( SImage* img, size_t x, size_t y, float R, float G,
-                         float B, const char* string );    
+                         float B, float A, const char* string );    
 
 
 
