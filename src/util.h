@@ -17,6 +17,8 @@
     array[ index   ] =  value     & 0xFF; \
     array[ index+1 ] = (value>>8) & 0xFF
 
+#define LUMINANCE( R, G, B ) (0.2126*(R) + 0.7152*(G) + 0.0722*(B))
+
 namespace util
 {
     template<typename T, size_t maxColorValue>
@@ -40,17 +42,12 @@ namespace util
             if( curDist<dist )
             {
                 best = i;
+               
                 dist = curDist;
             }
         }
 
         return best;
-    }
-
-    template<typename T>
-    T luminance( T R, T G, T B )
-    {
-        return 0.2126*R + 0.7152*G + 0.0722*B;
     }
 }
 

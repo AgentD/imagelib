@@ -7,7 +7,7 @@
 #include <vector>
 #include <string>
 
-CImage::E_LOAD_RESULT CImage::m_loadTxt( std::istream& stream )
+E_LOAD_RESULT CImage::m_loadTxt( FILE* file )
 {
     /////////////////////////// Read in the Text ///////////////////////////
     std::vector< std::string > text; // holds the text lines
@@ -15,13 +15,17 @@ CImage::E_LOAD_RESULT CImage::m_loadTxt( std::istream& stream )
     text.push_back( "" ); // add the first line
 
     // Read all lines
-    while( !stream.eof( ) )
+    while( !feof( file ) )
     {
-        char c = (char)stream.get( );         // get one character
+        char c;                         // get one character
+
+        fread( &c, 1, 1, file );
 
         if( c=='\r' )                         // Windows newline
         {
-            char c2 = (char)stream.get( );         // get another character
+            char c2;                               // get another character
+
+            fread( &c2, 1, 1, file );
 
             text.push_back( "" );
 
@@ -55,7 +59,7 @@ CImage::E_LOAD_RESULT CImage::m_loadTxt( std::istream& stream )
     width  *= charWidth;
     height *= charHeight;
 
-    allocateBuffer( width, height, 1, EIT_GRAYSCALE8 );
+    allocateBuffer( width, height, EIT_GRAYSCALE8 );
 
     ////////////////////////// Generate the image //////////////////////////
 

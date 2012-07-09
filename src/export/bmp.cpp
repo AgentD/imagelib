@@ -12,16 +12,15 @@
 /*
     Bitmap exporting facilities.
 
-    What should work('-' means implemented but not tested,
-                     'x' means tested and DOES work)
-      x exporting EIT_GRAYSCALE8 images
-      x exporting EIT_RGB8 images
-      x exporting EIT_RGBA8 images
+    What should work
+      - exporting EIT_GRAYSCALE8 images
+      - exporting EIT_RGB8 images
+      - exporting EIT_RGBA8 images
 */
 
 
 
-void CImage::m_saveBmp( std::ostream& stream )
+void CImage::m_saveBmp( FILE* file )
 {
     const char zero[4] = { 0, 0, 0, 0 };
     size_t bpp, realBPP;
@@ -56,7 +55,7 @@ void CImage::m_saveBmp( std::ostream& stream )
         WRITE_LITTLE_ENDIAN_32( 256,  header, 46 );
     }
 
-    stream.write( (char*)header, 54 );
+    fwrite( header, 1, 54, file );
 
     /********* Write a dummy color map for grayscale images ********/
     if( m_type==EIT_GRAYSCALE8 )
@@ -65,7 +64,7 @@ void CImage::m_saveBmp( std::ostream& stream )
         {
             unsigned char v[4] = { i, i, i, 0 };
 
-            stream.write( (char*)v, 4 );
+            fwrite( v, 1, 4, file );
         }
     }
 
@@ -78,8 +77,8 @@ void CImage::m_saveBmp( std::ostream& stream )
     {
         for( ; ptr!=end; ptr+=dy )
         {
-            stream.write( (char*)ptr, dy*bpp );
-            stream.write( zero, padding );
+            fwrite( ptr,  1, dy*bpp,  file );
+            fwrite( zero, 1, padding, file );
         }
     }
     else
@@ -95,7 +94,7 @@ void CImage::m_saveBmp( std::ostream& stream )
                 ptr[x  ] = ptr[x+2];
                 ptr[x+2] = temp;
 
-                stream.write( (char*)&ptr[ x ], bpp );
+                fwrite( &ptr[ x ], 1, bpp, file );
 
                 /* swap red and blue */
                 temp     = ptr[x];
@@ -103,7 +102,7 @@ void CImage::m_saveBmp( std::ostream& stream )
                 ptr[x+2] = temp;
             }
 
-            stream.write( zero, padding );
+            fwrite( zero, 1, padding, file );
         }
     }
 }

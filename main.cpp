@@ -34,7 +34,7 @@ int main( int argc, char** argv)
 {
 	CImage image;
 
-   image.allocateBuffer( 800, 600, 1, EIT_RGB8 );
+   image.allocateBuffer( 800, 600, EIT_RGB8 );
    unsigned char* b = (unsigned char*)image.getBuffer( );
 
    for( size_t y=0; y<600; ++y )
@@ -56,8 +56,8 @@ int main( int argc, char** argv)
       }
    }
 
-    image.setPixel( 100, 500, 0, 255, 0, 0 );
-    image.printf( 100, 500, 0, 255, 255, 255, "Test %d, '%s'\nLine wrap test\nAnother line", 1337, "a string" );
+    image.setPixel( 100, 500, 255, 0, 0 );
+    image.print_string( 100, 500, 255, 255, 255, "Test\nLine wrap test\nAnother line" );
 
 	image.save( "test.png" );
 

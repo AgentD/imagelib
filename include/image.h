@@ -1,13 +1,10 @@
-#ifndef __IMAGE_H__
-#define __IMAGE_H__
+#ifndef IMAGE_H
+#define IMAGE_H
 
 
 
 #include <string>
 #include <fstream>
-#include <map>
-
-#include "image_hints.h"
 
 
 
@@ -20,8 +17,6 @@ enum E_IMAGE_TYPE
     EIT_RGBA8         ///< RGBA image, three color channels and one alpha channel, holding one byte each
 };
 
-
-
 enum E_IMAGE_FILE
 {
     EIF_AUTODETECT = 0,  ///< Automatically detect the image file format
@@ -33,6 +28,15 @@ enum E_IMAGE_FILE
     EIF_TXT              ///< Textfile containing ASCII art(*.txt)
 };
 
+enum E_LOAD_RESULT
+{
+    ELR_SUCESS = 0,            ///< The image data has been loaded sucessfully
+    ELR_UNKNOWN_FILE_FORMAT,   ///< Error: Failed determining the file format or the loader has not been compiled in
+    ELR_FILE_OPEN_FAILED,      ///< Error: Failed opening the file
+    ELR_NOT_SUPPORTED,         ///< Error: The image file uses a feature that the underlying loading routine has not implemented
+    ELR_FILE_CORRUPTED         ///< Error: The image file contains information that makes no sense
+};
+
 
 
 class CImage
@@ -41,15 +45,6 @@ public:
 
     CImage( );
     ~CImage( );
-
-    enum E_LOAD_RESULT
-    {
-        ELR_SUCESS = 0,            ///< The image data has been loaded sucessfully
-        ELR_UNKNOWN_FILE_FORMAT,   ///< Error: Failed determining the file format or the loader has not been compiled in
-        ELR_FILE_OPEN_FAILED,      ///< Error: Failed opening the file
-        ELR_NOT_SUPPORTED,         ///< Error: The image file uses a feature that the underlying loading routine has not implemented
-        ELR_FILE_CORRUPTED         ///< Error: The image file contains information that makes no sense
-    };
 
     /**
      * \brief Load an image from a file
@@ -64,18 +59,6 @@ public:
     E_LOAD_RESULT load( const std::string& filename, E_IMAGE_FILE type=EIF_AUTODETECT );
 
     /**
-     * \brief Load an image from a stream
-     *
-     * \param stream A stream containing the image data encoded using an image file format.
-     * \param type   The image file format used for storing the image.
-     *
-     * If this method fails, the stream will be unaltered.
-     *
-     * \return ELR_SUCESS(=0) on sucess, or a loading error otherwise.
-     */
-    E_LOAD_RESULT load( std::istream& stream, E_IMAGE_FILE type );
-
-    /**
      * \brief Store the contents of the image buffer to the given file
      *
      * \param filename The path to file that the image data should be stored to
@@ -86,77 +69,28 @@ public:
     void save( const std::string& filename, E_IMAGE_FILE type=EIF_AUTODETECT );
 
     /**
-     * \brief Write the contents of the image buffer to the given stream
-     *
-     * \param stream The stream to write the image data to.
-     * \param type   The image file format to use for writing the image data.
-     */
-    void save( std::ostream& stream, E_IMAGE_FILE type );
-
-    /**
      * \brief Allocate an internal buffer for holding an image
      *
      * \param width  The width of the image to hold
      * \param height The height of the image to hold
-     * \param depth  The depth of the image to hold. Note: This is not the number of bits
-     *               per pixel or something similar. This is the number of layers for e.g.
-     *               multilayer images or 3D images.
      * \param type   The pixel format. This is used to determine the number of bits per pixel.
      */
-    void allocateBuffer( size_t width, size_t height, size_t depth, E_IMAGE_TYPE type );
+    void allocateBuffer( size_t width, size_t height, E_IMAGE_TYPE type );
 
 
     void* getBuffer( ) const;           ///< Get the pointer to the internal image buffer. \sa allocateBuffer
     size_t getWidth( ) const;           ///< Get the width of the internal image buffer
     size_t getHeight( ) const;          ///< Get the height of the internal image buffer
-    size_t getDepth( ) const;           ///< Get the depth of the internal image buffer
     E_IMAGE_TYPE getImageType( ) const; ///< Get the color format of the internal image buffer
 
 
-    /**
-     * \copydoc image_hint
-     *
-     * This method is used to set the value of a hint.
-     */
-    template<typename T>
-    void setHint( image_hint hint, T value )
-    {
-        union
-        {
-            T      tv;
-            size_t sv;
-        } u;
-
-        u.tv = value;
-
-        m_hints[ hint ] = u.sv;
-    }
 
     /**
-     * \copydoc image_hint
+     * \brief Guess the image file format from the file ending of a given
+     *        string
      *
-     * This method is used to get the value of a hint.
-     */
-    template<typename T>
-    T getHint( image_hint hint )
-    {
-       union
-        {
-            T      tv;
-            size_t sv;
-        } u;
-
-        u.sv = m_hints[ hint ];
-
-        return u.tv;
-    }
-
-
-    /**
-     * \brief Guess the image file format from the file ending of a given string
-     *
-     * This takes the last three characters from a filename and tries to determine the
-     * image file format.
+     * This takes the last three characters from a filename and tries to
+     * determine the image file format.
      *
      * \return An image file format enumerator, or EIF_AUTODETECT(=0) on failure
      */
@@ -169,27 +103,25 @@ public:
      *
      * \param x The x coordinate of the pixel to place(0=left, width-1=right)
      * \param y The y coordinate of the pixel to place(0=bottom, height-1=top)
-     * \param z The depth layer(z coordinate, 0=front, depth-1=back)
      * \param R The red component of the pixel olor
      * \param G The green component of the pixel color
      * \param B The blue component of the pixel color
      */
-    void setPixel( size_t x, size_t y, size_t z, unsigned char R, unsigned char G, unsigned char B );
+    void setPixel( size_t x, size_t y, unsigned char R, unsigned char G, unsigned char B );
 
     /**
      * \brief Print a text string into the image
      *
-     * Print a formated text onto the image using a built in bitmap font.
+     * Print a text onto the image using a built in bitmap font.
      *
      * \param x            The x coordinate of the upper-left corner where the text starts
      * \param y            The y coordinate of the upper-left corner where the text starts
-     * \param z            The depth layer(z coordinate, 0=front, depth-1=back)
      * \param R            The red component of the pixel olor
      * \param G            The green component of the pixel color
      * \param B            The blue component of the pixel color
      * \param formatstring A printf format string
      */
-    void printf( size_t x, size_t y, size_t z, unsigned char R, unsigned char G, unsigned char B, const char* formatstring, ... );
+    void print_string( size_t x, size_t y, unsigned char R, unsigned char G, unsigned char B, const char* string );
 
 
 
@@ -200,54 +132,52 @@ private:
 
     void* m_imageBuffer;
 
-    size_t m_width, m_height, m_depth;
+    size_t m_width, m_height;
 
     E_IMAGE_TYPE m_type;
 
-    std::map< image_hint, size_t > m_hints;
-
 #ifdef IMAGE_LOAD_TGA
-    E_LOAD_RESULT m_loadTga( std::istream& file );
+    E_LOAD_RESULT m_loadTga( FILE* file );
 #endif
 
 #ifdef IMAGE_SAVE_TGA
-    void m_saveTga( std::ostream& stream );
+    void m_saveTga( FILE* file );
 #endif
 
 
 #ifdef IMAGE_LOAD_JPG
-    E_LOAD_RESULT m_loadJpg( std::istream& file );
+    E_LOAD_RESULT m_loadJpg( FILE* file );
 #endif
 
 #ifdef IMAGE_SAVE_JPG
-    void m_saveJpg( std::ostream& file );
+    void m_saveJpg( FILE* file );
 #endif
 
 
 #ifdef IMAGE_LOAD_BMP
-    E_LOAD_RESULT m_loadBmp( std::istream& file );
+    E_LOAD_RESULT m_loadBmp( FILE* file );
 #endif
 
 #ifdef IMAGE_SAVE_BMP
-    void m_saveBmp( std::ostream& stream );
+    void m_saveBmp( FILE* file );
 #endif
 
 
 #ifdef IMAGE_LOAD_PNG
-    E_LOAD_RESULT m_loadPng( std::istream& stream );
+    E_LOAD_RESULT m_loadPng( FILE* file );
 #endif
 
 #ifdef IMAGE_SAVE_PNG
-    void m_savePng( std::ostream& stream );
+    void m_savePng( FILE* file );
 #endif
 
 
 #ifdef IMAGE_LOAD_TXT
-    E_LOAD_RESULT m_loadTxt( std::istream& stream );
+    E_LOAD_RESULT m_loadTxt( FILE* file );
 #endif
 
 #ifdef IMAGE_SAVE_TXT
-    void m_saveTxt( std::ostream& stream );
+    void m_saveTxt( FILE* file );
 #endif
 };
 

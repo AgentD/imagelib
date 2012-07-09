@@ -10,11 +10,10 @@
 /*
     The JPEG exporting facilities.
 
-    What should work('-' means implemented but not tested,
-                     'x' means tested and DOES work):
-      x exporting EIT_GRAYSCALE8 images
-      x exporting EIT_RGB8 images
-      x exporting EIT_RGBA8 images
+    What should work:
+      - exporting EIT_GRAYSCALE8 images
+      - exporting EIT_RGB8 images
+      - exporting EIT_RGBA8 images
 */
 
 
@@ -36,7 +35,7 @@ namespace
     {
         jpeg_destination_mgr jdmgr;    // original jpeg_destination_mgr
 
-        std::ostream* file;            // pointer to target file
+        FILE* file;                    // pointer to target file
         JOCTET buffer[ BUF_SIZE ];     // temporary writing buffer
     };
 
@@ -53,7 +52,7 @@ namespace
     {
         m_mem_destination_mgr* dst = (m_mem_destination_mgr*)cinfo->dest;
 
-        dst->file->write((char*)dst->buffer, BUF_SIZE);
+        fwrite( dst->buffer, 1, BUF_SIZE, dst->file );
 
         dst->jdmgr.next_output_byte = dst->buffer;
         dst->jdmgr.free_in_buffer   = BUF_SIZE;
@@ -67,10 +66,10 @@ namespace
 
         const size_t datacount = (size_t)(BUF_SIZE - dst->jdmgr.free_in_buffer);
 
-        dst->file->write((char*)dst->buffer, datacount);
+        fwrite( dst->buffer, 1, datacount, dst->file );
     }
 
-    void jpeg_file_dest( j_compress_ptr cinfo, std::ostream* file )
+    void jpeg_file_dest( j_compress_ptr cinfo, FILE* file )
     {
         if( !cinfo->dest )
             cinfo->dest = (jpeg_destination_mgr*)(*cinfo->mem->alloc_small)( (j_common_ptr) cinfo, JPOOL_PERMANENT, sizeof(m_mem_destination_mgr) );
@@ -113,7 +112,7 @@ namespace
 
 
 
-void CImage::m_saveJpg( std::ostream& file )
+void CImage::m_saveJpg( FILE* file )
 {
     void(*convert)(unsigned char*, unsigned char*, size_t) = NULL;
 
@@ -127,7 +126,8 @@ void CImage::m_saveJpg( std::ostream& file )
     };
 
 
-    size_t quality = getHint<size_t>( IH_JPEG_EXPORT_QUALITY );
+    /*size_t quality = getHint<size_t>( IH_JPEG_EXPORT_QUALITY );*/
+    size_t quality = 0;
 
     if( quality<1 || quality>100 )
         quality = 75;
@@ -138,7 +138,7 @@ void CImage::m_saveJpg( std::ostream& file )
     cinfo.err = jpeg_std_error( &jerr );
 
     jpeg_create_compress( &cinfo );
-    jpeg_file_dest( &cinfo, &file );
+    jpeg_file_dest( &cinfo, file );
 
     cinfo.image_width      = m_width;
     cinfo.image_height     = m_height;

@@ -9,16 +9,13 @@
 /*
     The JPEG loading facilities.
 
-    What should work('-' means implemented,
-                     'x' means tested successfully once):
+    What should work:
 
-      x Importing JPEG images using libjpeg and storing them as RGB8 images
+      - Importing JPEG images using libjpeg and storing them as RGB8 images
 */
 
 
 
-
-#include <iostream>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,77 +28,65 @@ extern "C"
 
 
 
-namespace
+// struct for handling jpeg errors
+struct m_jpeg_error_mgr
 {
-    // struct for handling jpeg errors
-    struct m_jpeg_error_mgr
+    struct jpeg_error_mgr emgr;   // jpeg error information
+
+    jmp_buf setjmp_buffer;        // for longjmp, to return to caller on a fatal error
+};
+
+
+// Override to get rid of exit behaviour
+static void error_exit( j_common_ptr cinfo )
+{
+    m_jpeg_error_mgr* m = (m_jpeg_error_mgr*)cinfo->err;  // Retrieve custom jpeg error structure
+
+    longjmp( m->setjmp_buffer, 1 );                       // libjpeg expects us to exit. Jump out to continue normal program flow
+}
+
+static void output_message( j_common_ptr cinfo )
+{
+}
+
+static void skip_input_data( j_decompress_ptr cinfo, long count )
+{
+    jpeg_source_mgr* src = cinfo->src;
+
+    if( count > 0 )
     {
-        struct jpeg_error_mgr emgr;   // jpeg error information
-
-        jmp_buf setjmp_buffer;        // for longjmp, to return to caller on a fatal error
-    };
-
-
-    // Override to get rid of exit behaviour
-    void error_exit( j_common_ptr cinfo )
-    {
-        (*cinfo->err->output_message)(cinfo);                 // Display the error message
-
-        m_jpeg_error_mgr* m = (m_jpeg_error_mgr*)cinfo->err;  // Retrieve custom jpeg error structure
-
-        longjmp( m->setjmp_buffer, 1 );                       // libjpeg expects us to exit. Jump out to continue normal program flow
+        src->bytes_in_buffer -= count;
+        src->next_input_byte += count;
     }
+}
 
-    void output_message( j_common_ptr cinfo )
-    {
-        char s[ JMSG_LENGTH_MAX ];
+static void init_source( j_decompress_ptr cinfo )
+{
+}
 
-        (*cinfo->err->format_message)(cinfo, s);
+static void term_source( j_decompress_ptr cinfo )
+{
+}
 
-        std::clog<<"Fatal JPEG error: "<<s<<std::endl;
-    }
-
-    void skip_input_data( j_decompress_ptr cinfo, long count )
-    {
-        jpeg_source_mgr* src = cinfo->src;
-
-        if( count > 0 )
-        {
-            src->bytes_in_buffer -= count;
-            src->next_input_byte += count;
-        }
-    }
-
-    void init_source( j_decompress_ptr cinfo )
-    {
-    }
-
-    void term_source( j_decompress_ptr cinfo )
-    {
-    }
-
-    boolean fill_input_buffer( j_decompress_ptr cinfo )
-    {
-        return 1;
-    }
+static boolean fill_input_buffer( j_decompress_ptr cinfo )
+{
+    return 1;
 }
 
 
 
-CImage::E_LOAD_RESULT CImage::m_loadJpg( std::istream& file )
+E_LOAD_RESULT CImage::m_loadJpg( FILE* file )
 {
     // Work out how many bytes we have left to read
-    size_t cur = file.tellg( );
-    file.seekg( 0, std::ios_base::end );
-
-    size_t length = ((size_t)file.tellg( )) - cur;
-    file.seekg( cur, std::ios_base::beg );
+    fseek( file, 0, SEEK_END );
+    size_t length = ftell( file );
+    fseek( file, 0, SEEK_SET );
 
     // Declare our row pointer buffer and an input buffer where we read all remaining bytes of the file into
     unsigned char** rowPtr = NULL;
     unsigned char*  input  = new unsigned char [length];
 
-    file.read( (char*)input, length );
+    fread( input, 1, length, file );
 
     // Set up our jpeg info and jpeg error struct with our error routines
     jpeg_decompress_struct cinfo;
@@ -147,7 +132,7 @@ CImage::E_LOAD_RESULT CImage::m_loadJpg( std::istream& file )
     jpeg_start_decompress( &cinfo );
 
     // Read the image
-    allocateBuffer( cinfo.image_width, cinfo.image_height, 1, EIT_RGB8 );
+    allocateBuffer( cinfo.image_width, cinfo.image_height, EIT_RGB8 );
 
     // The libjpeg wants an array of row pointers, generate one.
     rowPtr = new unsigned char* [ m_height ];
