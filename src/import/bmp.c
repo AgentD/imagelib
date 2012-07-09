@@ -253,7 +253,7 @@ E_LOAD_RESULT load_bmp( SImage* img, FILE* file )
     }
 
     /* Create the image buffer */
-    image_allocate_buffer( img, biWidth, biHeight, EIT_RGB8 );
+    image_allocate_buffer( img, biWidth, biHeight, ECT_RGB8 );
 
     /* Read the image data */
     fseek( file, bfOffBits, SEEK_SET );

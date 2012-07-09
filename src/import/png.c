@@ -59,7 +59,7 @@ E_LOAD_RESULT load_png( SImage* img, FILE* file )
     /* store the image properties */
     img->width  = width;
     img->height = height;
-    img->type   = EIT_RGBA8;
+    img->type   = ECT_RGBA8;
 
     return ELR_SUCESS;
 }

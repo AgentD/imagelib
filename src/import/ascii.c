@@ -51,7 +51,7 @@ E_LOAD_RESULT load_txt( SImage* img, FILE* file )
     width  *= CHAR_WIDTH;
     height *= CHAR_HEIGHT;
 
-    image_allocate_buffer( img, width, height, EIT_GRAYSCALE8 );
+    image_allocate_buffer( img, width, height, ECT_GRAYSCALE8 );
 
     ////////////////////////// Generate the image //////////////////////////
     memset( img->image_buffer, 0, width*height );

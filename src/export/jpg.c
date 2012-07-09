@@ -10,9 +10,9 @@
     The JPEG exporting facilities.
 
     What should work:
-      - exporting EIT_GRAYSCALE8 images
-      - exporting EIT_RGB8 images
-      - exporting EIT_RGBA8 images
+      - exporting ECT_GRAYSCALE8 images
+      - exporting ECT_RGB8 images
+      - exporting ECT_RGBA8 images
 */
 
 
@@ -128,9 +128,9 @@ void save_jpg( SImage* img, FILE* file )
 
     switch( img->type )
     {
-    case EIT_GRAYSCALE8: convert = gray8ToRGB;           break;
-    case EIT_RGB8:       convert = RGBtoRGB;   ystep*=3; break;
-    case EIT_RGBA8:      convert = rgba8ToRGB; ystep*=4; break;
+    case ECT_GRAYSCALE8: convert = gray8ToRGB;           break;
+    case ECT_RGB8:       convert = RGBtoRGB;   ystep*=3; break;
+    case ECT_RGBA8:      convert = rgba8ToRGB; ystep*=4; break;
     };
 
     /*size_t quality = getHint<size_t>( IH_JPEG_EXPORT_QUALITY );*/

@@ -187,7 +187,7 @@ E_LOAD_RESULT load_tga( SImage* img, FILE* file )
     size_t colorMapSize;
     int colorMapPresent;
     unsigned char* colorMap = NULL;
-    E_IMAGE_TYPE type = EIT_GRAYSCALE8;
+    E_COLOR_TYPE type = ECT_GRAYSCALE8;
     tgaInfo i;
 
 
@@ -231,11 +231,11 @@ E_LOAD_RESULT load_tga( SImage* img, FILE* file )
     colorMapSize = (colorMapLength-colorMapOffset)*i.colorMapBytePerPixel;
 
     if( pictureType==RGB || pictureType==RGB_RLE )
-        type = (i.bytePerPixel==4) ? EIT_RGBA8 : EIT_RGB8;
+        type = (i.bytePerPixel==4) ? ECT_RGBA8 : ECT_RGB8;
 
     if( colorMapPresent )
     {
-        type     = i.colorMapBytePerPixel==4 ? EIT_RGBA8 : EIT_RGB8;
+        type     = i.colorMapBytePerPixel==4 ? ECT_RGBA8 : ECT_RGB8;
         colorMap = malloc( colorMapSize );
 
         fseek( file, colorMapOffset, SEEK_CUR );

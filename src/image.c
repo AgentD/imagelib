@@ -60,7 +60,7 @@ void image_init( SImage* img )
     img->image_buffer = NULL;
     img->width        = 0;
     img->height       = 0;
-    img->type         = EIT_NONE;
+    img->type         = ECT_NONE;
 }
 
 void image_deinit( SImage* img )
@@ -69,24 +69,38 @@ void image_deinit( SImage* img )
 }
 
 void image_allocate_buffer( SImage* img, size_t width, size_t height,
-                            E_IMAGE_TYPE type )
+                            E_COLOR_TYPE type )
 {
     size_t byteperpixel = 0;
 
     if( img->image_buffer )
        free( img->image_buffer );
 
+    img->image_buffer = NULL;
+    img->width        = 0;
+    img->height       = 0;
+    img->type         = ECT_NONE;
+
+    if( !width || !height )
+        return;
+
     switch( type )
     {
-    case EIT_GRAYSCALE8: byteperpixel = 1; break;
-    case EIT_RGB8:       byteperpixel = 3; break;
-    case EIT_RGBA8:      byteperpixel = 4; break;
+    case ECT_GRAYSCALE8: byteperpixel = 1; break;
+    case ECT_RGB8:       byteperpixel = 3; break;
+    case ECT_RGBA8:      byteperpixel = 4; break;
+    default:
+        return;
     };
 
     img->image_buffer = malloc( width*height*byteperpixel );
-    img->width        = width;
-    img->height       = height;
-    img->type         = type;
+
+    if( !img->image_buffer )
+        return;
+
+    img->width  = width;
+    img->height = height;
+    img->type   = type;
 }
 
 void image_set_pixel( SImage* img, size_t x, size_t y,
@@ -94,30 +108,30 @@ void image_set_pixel( SImage* img, size_t x, size_t y,
 {
     unsigned char* dst = img->image_buffer;
 
-    if( x>=img->width || y>=img->height || !dst || img->type==EIT_NONE )
+    if( x>=img->width || y>=img->height || !dst )
         return;
 
     switch( img->type )
     {
-    case EIT_GRAYSCALE8:
+    case ECT_GRAYSCALE8:
         dst += y*img->width + x;
 
         *dst = LUMINANCE( R, G, B );
-        break;
-    case EIT_RGB8:
+        return;
+    case ECT_RGB8:
         dst += 3*(y*img->width + x);
 
         *(dst++) = R;
         *(dst++) = G;
         *dst     = B;
-        break;
-    case EIT_RGBA8:
+        return;
+    case ECT_RGBA8:
         dst += 4*(y*img->width + x);
 
         *(dst++) = R;
         *(dst++) = G;
         *dst     = B;
-        break;
+        return;
     };
 }
 

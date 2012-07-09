@@ -10,9 +10,9 @@
    The PNG exporting facilities.
 
    What should work:
-    - exporting EIT_GRAYSCALE8 images
-    - exporting EIT_RGB8 images
-    - exporting EIT_RGBA8 images
+    - exporting ECT_GRAYSCALE8 images
+    - exporting ECT_RGB8 images
+    - exporting ECT_RGBA8 images
 */
 
 
@@ -30,9 +30,9 @@ void save_png( SImage* img, FILE* file )
 
     switch( img->type )
     {
-    case EIT_GRAYSCALE8: colortype = LCT_GREY; break;
-    case EIT_RGB8:       colortype = LCT_RGB;  break;
-    case EIT_RGBA8:      colortype = LCT_RGBA; break;
+    case ECT_GRAYSCALE8: colortype = LCT_GREY; break;
+    case ECT_RGB8:       colortype = LCT_RGB;  break;
+    case ECT_RGBA8:      colortype = LCT_RGBA; break;
     };
 
     lodepng_encode_memory( &buffer, &length, img->image_buffer,

@@ -14,9 +14,9 @@
     The TGA exporting facilities.
 
     What should work:
-      - exporting EIT_GRAYSCALE8 images
-      - exporting EIT_RGB8 images
-      - exporting EIT_RGBA8 images
+      - exporting ECT_GRAYSCALE8 images
+      - exporting ECT_RGB8 images
+      - exporting ECT_RGBA8 images
 */
 
 void save_tga( SImage* img, FILE* file )
@@ -34,9 +34,9 @@ void save_tga( SImage* img, FILE* file )
 
     switch( img->type )
     {
-    case EIT_GRAYSCALE8: header[2] = 3; bpp = 1;                 break;
-    case EIT_RGB8:       header[2] = 2; bpp = 3;                 break;
-    case EIT_RGBA8:      header[2] = 2; bpp = 4; header[17] = 8; break;
+    case ECT_GRAYSCALE8: header[2] = 3; bpp = 1;                 break;
+    case ECT_RGB8:       header[2] = 2; bpp = 3;                 break;
+    case ECT_RGBA8:      header[2] = 2; bpp = 4; header[17] = 8; break;
     };
 
     header[16]  = bpp*8;
@@ -48,7 +48,7 @@ void save_tga( SImage* img, FILE* file )
     ptr = img->image_buffer;
     end = ptr + img->width*img->height*bpp;
 
-    if( img->type == EIT_GRAYSCALE8 )
+    if( img->type == ECT_GRAYSCALE8 )
     {
         fwrite( img->image_buffer, 1, img->width*img->height, file );
     }

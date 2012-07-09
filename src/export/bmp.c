@@ -13,9 +13,9 @@
     Bitmap exporting facilities.
 
     What should work
-      - exporting EIT_GRAYSCALE8 images
-      - exporting EIT_RGB8 images
-      - exporting EIT_RGBA8 images
+      - exporting ECT_GRAYSCALE8 images
+      - exporting ECT_RGB8 images
+      - exporting ECT_RGBA8 images
 */
 
 
@@ -33,9 +33,9 @@ void save_bmp( SImage* img, FILE* file )
 
     switch( img->type )
     {
-    case EIT_GRAYSCALE8: header[28] =  8; bpp = 1; realBPP = 1; break;
-    case EIT_RGB8:       header[28] = 24; bpp = 3; realBPP = 3; break;
-    case EIT_RGBA8:      header[28] = 24; bpp = 3; realBPP = 4; break;
+    case ECT_GRAYSCALE8: header[28] =  8; bpp = 1; realBPP = 1; break;
+    case ECT_RGB8:       header[28] = 24; bpp = 3; realBPP = 3; break;
+    case ECT_RGBA8:      header[28] = 24; bpp = 3; realBPP = 4; break;
     };
 
     size = img->width * img->height*bpp;
@@ -50,7 +50,7 @@ void save_bmp( SImage* img, FILE* file )
     WRITE_LITTLE_ENDIAN_32(  img->width,  header, 18 );
     WRITE_LITTLE_ENDIAN_32( -img->height, header, 22 );
 
-    if( img->type==EIT_GRAYSCALE8 )
+    if( img->type==ECT_GRAYSCALE8 )
     {
         WRITE_LITTLE_ENDIAN_32( 1078, header, 10 );
         WRITE_LITTLE_ENDIAN_32( 256,  header, 46 );
@@ -59,7 +59,7 @@ void save_bmp( SImage* img, FILE* file )
     fwrite( header, 1, 54, file );
 
     /********* Write a dummy color map for grayscale images ********/
-    if( img->type==EIT_GRAYSCALE8 )
+    if( img->type==ECT_GRAYSCALE8 )
     {
         for( i=0; i<256; ++i )
         {
@@ -75,7 +75,7 @@ void save_bmp( SImage* img, FILE* file )
     ptr = img->image_buffer;
     end = ptr + img->height*dy;
 
-    if( img->type==EIT_GRAYSCALE8 )
+    if( img->type==ECT_GRAYSCALE8 )
     {
         for( ; ptr!=end; ptr+=dy )
         {

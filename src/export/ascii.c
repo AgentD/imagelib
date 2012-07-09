@@ -11,9 +11,9 @@
    ASCII exporting facilities.
 
    What should work:
-    - exporting EIT_GRAYSCALE8 images
-    - exporting EIT_RGB8 images
-    - exporting EIT_RGBA8 images
+    - exporting ECT_GRAYSCALE8 images
+    - exporting ECT_RGB8 images
+    - exporting ECT_RGBA8 images
 */
 
 
@@ -155,9 +155,9 @@ void save_txt( SImage* img, FILE* file )
     /* get the required converter settings */
     switch( img->type )
     {
-    case EIT_GRAYSCALE8: channels = 1; R = 0; G = 0; B = 0; break;
-    case EIT_RGB8:       channels = 3; R = 0; G = 1; B = 2; break;
-    case EIT_RGBA8:      channels = 4; R = 0; G = 1; B = 2; break;
+    case ECT_GRAYSCALE8: channels = 1; R = 0; G = 0; B = 0; break;
+    case ECT_RGB8:       channels = 3; R = 0; G = 1; B = 2; break;
+    case ECT_RGBA8:      channels = 4; R = 0; G = 1; B = 2; break;
     default:
         return;
     };

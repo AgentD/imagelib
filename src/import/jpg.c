@@ -131,7 +131,8 @@ E_LOAD_RESULT load_jpg( SImage* img, FILE* file )
     jpeg_start_decompress( &cinfo );
 
     // Read the image
-    image_allocate_buffer( img, cinfo.image_width, cinfo.image_height, EIT_RGB8 );
+    image_allocate_buffer( img, cinfo.image_width, cinfo.image_height,
+                           ECT_RGB8 );
 
     // The libjpeg wants an array of row pointers, generate one.
     rowPtr = malloc( sizeof(unsigned char*) * img->height );

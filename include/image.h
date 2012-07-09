@@ -16,33 +16,50 @@ extern "C"
 
 typedef enum
 {
-    EIT_NONE = 0,
+    ECT_NONE = 0,
 
-    EIT_GRAYSCALE8,   ///< Grayscale image, one color channel holding one byte
-    EIT_RGB8,         ///< RGB image, three color channels holding one byte each
-    EIT_RGBA8         ///< RGBA image, three color channels and one alpha channel, holding one byte each
+    ECT_GRAYSCALE8,  /**< Grayscale image, one color channel holding 1 byte */
+    ECT_RGB8,        /**< RGB image, 3 color channels holding 1 byte each */
+
+    /**
+     * \brief RGBA image, three color channels and one alpha channel,
+     *        holding one byte each
+     */
+    ECT_RGBA8
 }
-E_IMAGE_TYPE;
+E_COLOR_TYPE;
 
 typedef enum
 {
-    EIF_AUTODETECT = 0,  ///< Automatically detect the image file format
+    EIF_AUTODETECT = 0,  /**< Automatically detect the image file format */
 
-    EIF_TGA,             ///< Truevision TARGA image file(*.tga)
-    EIF_BMP,             ///< Microsoft Windows bitmap image file(*.bmp)
-    EIF_JPG,             ///< JPEG Interchange Format(*.jpg, *.jpeg)
-    EIF_PNG,             ///< Portable Network Graphics("PNG's Not Gif") Format(*.png)
-    EIF_TXT              ///< Textfile containing ASCII art(*.txt)
+    EIF_TGA,             /**< Truevision TARGA image file(*.tga) */
+    EIF_BMP,             /**< Microsoft Windows bitmap image file(*.bmp) */
+    EIF_JPG,             /**< JPEG Interchange Format(*.jpg, *.jpeg) */
+    EIF_PNG,             /**< Portable Network Graphics Format(*.png) */
+    EIF_TXT              /**< Textfile containing ASCII art(*.txt) */
 }
 E_IMAGE_FILE;
 
 typedef enum
 {
-    ELR_SUCESS = 0,            ///< The image data has been loaded sucessfully
-    ELR_UNKNOWN_FILE_FORMAT,   ///< Error: Failed determining the file format or the loader has not been compiled in
-    ELR_FILE_OPEN_FAILED,      ///< Error: Failed opening the file
-    ELR_NOT_SUPPORTED,         ///< Error: The image file uses a feature that the underlying loading routine has not implemented
-    ELR_FILE_CORRUPTED         ///< Error: The image file contains information that makes no sense
+    /** \brief The image data has been loaded sucessfully */
+    ELR_SUCESS = 0,
+
+    /**
+     * \brief Failed determining the file format or the
+     *        loader has not been compiled in
+     */
+    ELR_UNKNOWN_FILE_FORMAT,
+
+    /** \brief Failed to open the file */
+    ELR_FILE_OPEN_FAILED,
+
+    /** \brief The image file uses a feature that is not implemented */
+    ELR_NOT_SUPPORTED,
+
+    /** \brief The image file contains garbage */
+    ELR_FILE_CORRUPTED
 }
 E_LOAD_RESULT;
 
@@ -55,7 +72,7 @@ typedef struct
     size_t width;
     size_t height;
 
-    E_IMAGE_TYPE type;
+    E_COLOR_TYPE type;
 }
 SImage;
 
@@ -110,7 +127,7 @@ void image_save( SImage* img, const char* filename, E_IMAGE_FILE type );
  *               of bits per pixel.
  */
 void image_allocate_buffer( SImage* img, size_t width, size_t height,
-                            E_IMAGE_TYPE type );
+                            E_COLOR_TYPE type );
 
 
 /**
