@@ -10,7 +10,6 @@
     The JPEG loading facilities.
 
     What should work:
-
       - Importing JPEG images using libjpeg and storing them as RGB8 images
 */
 
@@ -21,20 +20,18 @@
 #include <stdlib.h>
 #include <setjmp.h>
 
-extern "C"
-{
-    #include "jpeglib.h"
-}
+#include "jpeglib.h"
 
 
 
 // struct for handling jpeg errors
-struct m_jpeg_error_mgr
+typedef struct
 {
     struct jpeg_error_mgr emgr;   // jpeg error information
 
     jmp_buf setjmp_buffer;        // for longjmp, to return to caller on a fatal error
-};
+}
+m_jpeg_error_mgr;
 
 
 // Override to get rid of exit behaviour
@@ -51,7 +48,7 @@ static void output_message( j_common_ptr cinfo )
 
 static void skip_input_data( j_decompress_ptr cinfo, long count )
 {
-    jpeg_source_mgr* src = cinfo->src;
+    struct jpeg_source_mgr* src = cinfo->src;
 
     if( count > 0 )
     {
@@ -75,23 +72,27 @@ static boolean fill_input_buffer( j_decompress_ptr cinfo )
 
 
 
-E_LOAD_RESULT CImage::m_loadJpg( FILE* file )
+E_LOAD_RESULT load_jpg( SImage* img, FILE* file )
 {
+    size_t length;
+    unsigned char** rowPtr = NULL;
+    unsigned char* input;
+    struct jpeg_decompress_struct cinfo;
+    struct jpeg_source_mgr jsrc;
+    m_jpeg_error_mgr jerr;
+    size_t ystep, i, rows = 0;
+
     // Work out how many bytes we have left to read
     fseek( file, 0, SEEK_END );
-    size_t length = ftell( file );
+    length = ftell( file );
     fseek( file, 0, SEEK_SET );
 
     // Declare our row pointer buffer and an input buffer where we read all remaining bytes of the file into
-    unsigned char** rowPtr = NULL;
-    unsigned char*  input  = new unsigned char [length];
+    input = malloc( length );
 
     fread( input, 1, length, file );
 
     // Set up our jpeg info and jpeg error struct with our error routines
-    jpeg_decompress_struct cinfo;
-    m_jpeg_error_mgr jerr;
-
     cinfo.err = jpeg_std_error(&jerr.emgr);
     cinfo.err->error_exit     = error_exit;
     cinfo.err->output_message = output_message;
@@ -102,15 +103,13 @@ E_LOAD_RESULT CImage::m_loadJpg( FILE* file )
     {
         jpeg_destroy_decompress( &cinfo );
 
-        delete [] input;
-        delete [] rowPtr;
+        free( input  );
+        free( rowPtr );
 
         return ELR_FILE_CORRUPTED;
     }
 
     // Initialise decompression
-    jpeg_source_mgr jsrc;
-
     jsrc.bytes_in_buffer   = length;                 // Give the library our file buffer
     jsrc.next_input_byte   = (JOCTET*)input;
     jsrc.init_source       = init_source;            // Register our callback functions
@@ -132,25 +131,23 @@ E_LOAD_RESULT CImage::m_loadJpg( FILE* file )
     jpeg_start_decompress( &cinfo );
 
     // Read the image
-    allocateBuffer( cinfo.image_width, cinfo.image_height, EIT_RGB8 );
+    image_allocate_buffer( img, cinfo.image_width, cinfo.image_height, EIT_RGB8 );
 
     // The libjpeg wants an array of row pointers, generate one.
-    rowPtr = new unsigned char* [ m_height ];
+    rowPtr = malloc( sizeof(unsigned char*) * img->height );
 
-    size_t ystep = m_width*3;
+    ystep = img->width*3;
 
-    for( size_t i=0; i<m_height; ++i )
-        rowPtr[ i ] = (unsigned char*)m_imageBuffer + i*ystep;
+    for( i=0; i<img->height; ++i )
+        rowPtr[ i ] = (unsigned char*)img->image_buffer + i*ystep;
 
     // Read all scanlines from the file
-    size_t rows = 0;
-
     while( cinfo.output_scanline < cinfo.output_height )
         rows += jpeg_read_scanlines( &cinfo, &rowPtr[ rows ], cinfo.output_height - rows );
 
     // Cleanup
-    delete [] rowPtr;
-    delete [] input;
+    free( rowPtr );
+    free( input  );
 
     jpeg_finish_decompress ( &cinfo );
     jpeg_destroy_decompress( &cinfo );

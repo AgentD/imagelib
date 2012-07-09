@@ -16,49 +16,50 @@
 
 #include "lodepng.h"
 
-#include <cstdlib>
+#include <stdlib.h>
 
 
 
-E_LOAD_RESULT CImage::m_loadPng( FILE* file )
+E_LOAD_RESULT load_png( SImage* img, FILE* file )
 {
     int bitDepth, colorType;
     unsigned int width, height, result;
     unsigned char* input;
     size_t length;
 
-    if( m_imageBuffer )
-        free( m_imageBuffer );
+    if( img->image_buffer )
+        free( img->image_buffer );
 
     /* read the file into a buffer */
     fseek( file, 0, SEEK_END );
     length = ftell( file );
     fseek( file, 0, SEEK_SET );
 
-    input = (unsigned char*)malloc( length );
+    input = malloc( length );
 
     fread( input, 1, length, file );
 
     /* decode the image */
-    result = lodepng_decode32( (unsigned char**)(&m_imageBuffer),
+    result = lodepng_decode32( (unsigned char**)&img->image_buffer,
                                &width, &height, input, length );
 
     free( input );
 
     if( result != 0 )
     {
-        free( m_imageBuffer );
+        free( img->image_buffer );
 
-        m_imageBuffer = NULL;
-        m_width = m_height = 0;
+        img->image_buffer = NULL;
+        img->width        = 0;
+        img->height       = 0;
 
         return ELR_FILE_CORRUPTED;
     }
 
     /* store the image properties */
-    m_width  = width;
-    m_height = height;
-    m_type   = EIT_RGBA8;
+    img->width  = width;
+    img->height = height;
+    img->type   = EIT_RGBA8;
 
     return ELR_SUCESS;
 }

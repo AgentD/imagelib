@@ -8,11 +8,9 @@ extern "C"
 {
 #endif
 
-    /** Get the width of a single character in pixels */
-    unsigned int getCharWidth( );
 
-    /** Get the height of a single character in pixels */
-    unsigned int getCharHeight( );
+    #define CHAR_WIDTH   9
+    #define CHAR_HEIGHT 16
 
     /**
      * \brief Render a given ASCII character into a buffer
@@ -26,9 +24,9 @@ extern "C"
      * \param dstW The width of the target buffer in pixels
      * \param dstH The height of the target buffer in pixels
      */
-    void getCharacter( char c, unsigned char* dst,
-                       unsigned int x, unsigned int y,
-                       unsigned int dstW, unsigned int dstH );
+    void render_character( char c, unsigned char* dst,
+                           unsigned int x, unsigned int y,
+                           unsigned int dstW, unsigned int dstH );
 
 #ifdef __cplusplus
 }

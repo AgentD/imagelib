@@ -1,9 +1,5 @@
-#ifndef __IMAGE_LIB_UTIL_H__
-#define __IMAGE_LIB_UTIL_H__
-
-
-
-#include <cmath>
+#ifndef IMAGE_LIB_UTIL_H
+#define IMAGE_LIB_UTIL_H
 
 
 
@@ -19,39 +15,7 @@
 
 #define LUMINANCE( R, G, B ) (0.2126*(R) + 0.7152*(G) + 0.0722*(B))
 
-namespace util
-{
-    template<typename T, size_t maxColorValue>
-    size_t getNearestPaletteIndex( const T* palette, size_t size,
-                                   T r, T g, T b )
-    {
-        if( !palette )
-            return 0;
-
-        float  dist = maxColorValue*maxColorValue*3;
-        size_t best = 0;
-
-        for( size_t i=0; i<size; ++i, palette+=3 )
-        {
-            float dR = palette[0] - r;
-            float dG = palette[1] - g;
-            float dB = palette[2] - b;
-
-            float curDist = (dR*dR) + (dG*dG) + (dB*dB);
-
-            if( curDist<dist )
-            {
-                best = i;
-               
-                dist = curDist;
-            }
-        }
-
-        return best;
-    }
-}
 
 
-
-#endif /* __IMAGE_LIB_UTIL_H__ */
+#endif /* IMAGE_LIB_UTIL_H */
 

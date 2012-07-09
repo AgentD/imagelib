@@ -1,16 +1,16 @@
-set( IMAGE_IMPORT import/bmp.cpp
-                  import/tga.cpp
-                  import/jpg.cpp
-                  import/png.cpp
-                  import/ascii.cpp )
+set( IMAGE_IMPORT import/bmp.c
+                  import/tga.c
+                  import/jpg.c
+                  import/png.c
+                  import/ascii.c )
 
-set( IMAGE_EXPORT export/bmp.cpp
-                  export/tga.cpp
-                  export/jpg.cpp
-                  export/png.cpp
-                  export/ascii.cpp )
+set( IMAGE_EXPORT export/bmp.c
+                  export/tga.c
+                  export/jpg.c
+                  export/png.c
+                  export/ascii.c )
 
-set( IMAGE_LIB image.cpp bitmap_font.c )
+set( IMAGE_LIB image.c bitmap_font.c )
 
 
 if( IMAGE_LOAD_JPG OR IMAGE_SAVE_JPG )

@@ -18,25 +18,25 @@
 
 #include "lodepng.h"
 
-#include <cstdlib>
+#include <stdlib.h>
 
 
 
-void CImage::m_savePng( FILE* file )
+void save_png( SImage* img, FILE* file )
 {
     unsigned char* buffer;
     size_t length;
     LodePNGColorType colortype;
 
-    switch( m_type )
+    switch( img->type )
     {
     case EIT_GRAYSCALE8: colortype = LCT_GREY; break;
     case EIT_RGB8:       colortype = LCT_RGB;  break;
     case EIT_RGBA8:      colortype = LCT_RGBA; break;
     };
 
-    lodepng_encode_memory( &buffer, &length, (unsigned char*)m_imageBuffer,
-                           m_width, m_height, colortype, 8 );
+    lodepng_encode_memory( &buffer, &length, img->image_buffer,
+                           img->width, img->height, colortype, 8 );
 
     fwrite( buffer, 1, length, file );
 

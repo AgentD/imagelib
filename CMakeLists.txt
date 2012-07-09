@@ -1,4 +1,4 @@
-project( image )
+project( image C )
 
 cmake_minimum_required( VERSION 2.6 )
 
@@ -114,6 +114,6 @@ add_subdirectory( src )
 #----------------------------------------------------------------------
 # Add our test application
 #----------------------------------------------------------------------
-add_executable( imgTest main.cpp )
+add_executable( imgTest main.c )
 target_link_libraries( imgTest img )
 

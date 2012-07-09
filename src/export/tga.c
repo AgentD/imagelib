@@ -5,9 +5,8 @@
 #include "image.h"
 #include "util.h"
 
-#include <cstring>
-#include <cstdlib>
-#include <algorithm>
+#include <string.h>
+#include <stdlib.h>
 
 
 
@@ -20,20 +19,20 @@
       - exporting EIT_RGBA8 images
 */
 
-void CImage::m_saveTga( FILE* file )
+void save_tga( SImage* img, FILE* file )
 {
     unsigned char header[ 18 ];
     size_t bpp = 0;
     unsigned char* ptr;
     unsigned char* end;
 
-    /* generate TGA header */
+    /* generate a TGA header */
     memset( header, 0, 18 );
 
-    WRITE_LITTLE_ENDIAN_16( m_width,  header, 12 );
-    WRITE_LITTLE_ENDIAN_16( m_height, header, 14 );
+    WRITE_LITTLE_ENDIAN_16( img->width,  header, 12 );
+    WRITE_LITTLE_ENDIAN_16( img->height, header, 14 );
 
-    switch( m_type )
+    switch( img->type )
     {
     case EIT_GRAYSCALE8: header[2] = 3; bpp = 1;                 break;
     case EIT_RGB8:       header[2] = 2; bpp = 3;                 break;
@@ -46,12 +45,12 @@ void CImage::m_saveTga( FILE* file )
     fwrite( header, 1, 18, file );
 
     /* write image data */
-    ptr = (unsigned char*)m_imageBuffer;
-    end = ptr + m_width*m_height*bpp;
+    ptr = img->image_buffer;
+    end = ptr + img->width*img->height*bpp;
 
-    if( m_type == EIT_GRAYSCALE8 )
+    if( img->type == EIT_GRAYSCALE8 )
     {
-        fwrite( m_imageBuffer, 1, m_width*m_height, file );
+        fwrite( img->image_buffer, 1, img->width*img->height, file );
     }
     else
     {
