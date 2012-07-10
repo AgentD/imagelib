@@ -288,10 +288,10 @@ E_LOAD_RESULT load_bmp( SImage* img, FILE* file )
                              colorMap, flipImage );
         else if( biBitCount==16 )
             loadBMPbitfields( file, biWidth, biHeight, img->image_buffer,
-                              biBitCount, 0x7C00, 0x3E0, 0x1F, flipImage );
+                              biBitCount, 0x1F, 0x3E0, 0x7C00, flipImage );
         else
             loadBMPbitfields( file, biWidth, biHeight, img->image_buffer,
-                              biBitCount, 0xFF0000, 0xFF00, 0xFF, flipImage );
+                              biBitCount, 0xFF, 0xFF00, 0xFF0000, flipImage );
         break;
     case BI_RLE8:
         loadBMPrle( file, biWidth, biHeight, img->image_buffer, colorMap );

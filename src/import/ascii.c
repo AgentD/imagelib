@@ -32,7 +32,7 @@ E_LOAD_RESULT load_txt( SImage* img, FILE* file )
     /********************** Allocate the image buffer **********************/
 
     /* determine the length of the longest line and number of lines */
-    for( width = 0, height = 1, len=0, i=0; i<length; ++i )
+    for( width = 0, height = 0, len=0, i=0; i<length; ++i )
     {
         /* if we find CRLF, skip CR. LF is handled below */
         if( (i+1)<length && buffer[i]=='\r' && buffer[i+1]=='\n' )
@@ -52,6 +52,9 @@ E_LOAD_RESULT load_txt( SImage* img, FILE* file )
 
         ++len;                  /* increase line lenght counter */
     }
+
+    if( !height )           /* if there is only one line, set manually */
+        height = 1;
 
     width  *= CHAR_WIDTH;   /* determine actual image size in pixels */
     height *= CHAR_HEIGHT;
