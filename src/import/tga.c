@@ -47,15 +47,15 @@ enum
 
 typedef struct
 {
-    size_t width;               // The width of the image in pixels
-    size_t height;               // The height of the image in pixels
-    size_t bytePerPixel;         // The total number of bytes per pixel over all color channels
-    size_t colorMapBytePerPixel;   // The total number of bytes per pixel in the color map over all color channels
+    size_t width;
+    size_t height;
+    size_t bytePerPixel;
+    size_t colorMapBytePerPixel;
 
-    unsigned char* ptr;            // A pointer to the first pixel in the image buffer
-    unsigned char* end;            // A pointer to the last pixel in the image buffer
-    int xstep;               // How much to add to the pixel poiter to get to the next pixel
-    int ystep;               // How much to add to the pixel pointer to get to the next pixel row
+    unsigned char* ptr;      /* pointer to the first scanline in the buffer */
+    unsigned char* end;      /* pointer to the last scanline in the buffer */
+    int xstep;
+    int ystep;
 }
 tgaInfo;
 
@@ -73,7 +73,8 @@ static void loadTgaColorMapped( FILE* file, tgaInfo* i,
             unsigned char c0[ 4 ] = { 0, 0, 0, 0 };
 
             fread( c0, 1, i->bytePerPixel, file );
-            c = ((size_t)c0[0]) | ((size_t)c0[1])<<8 | ((size_t)c0[2])<<16 | ((size_t)c0[3])<<24;
+            c = ((size_t)c0[0]) | ((size_t)c0[1])<<8 |
+                ((size_t)c0[2])<<16 | ((size_t)c0[3])<<24;
 
             mapPtr = colorMap + c*i->colorMapBytePerPixel;
 
@@ -102,7 +103,8 @@ static void loadTgaColorMappedRLE( FILE* file, tgaInfo* i,
             else if( raw )
             {
                 fread( data, 1, i->bytePerPixel, file );
-                c = ((size_t)data[0]) | ((size_t)data[1])<<8 | ((size_t)data[2])<<16 | ((size_t)data[3])<<24;
+                c = ((size_t)data[0]) | ((size_t)data[1])<<8 |
+                    ((size_t)data[2])<<16 | ((size_t)data[3])<<24;
                 t = &colorMap[ c*i->colorMapBytePerPixel ];
                 --raw;
             }
@@ -110,7 +112,8 @@ static void loadTgaColorMappedRLE( FILE* file, tgaInfo* i,
             {
                 fread( &packet, 1, 1, file );
                 fread( data, 1, i->bytePerPixel, file );
-                c = ((size_t)data[0]) | ((size_t)data[1])<<8 | ((size_t)data[2])<<16 | ((size_t)data[3])<<24;
+                c = ((size_t)data[0]) | ((size_t)data[1])<<8 |
+                    ((size_t)data[2])<<16 | ((size_t)data[3])<<24;
                 t = &colorMap[ c*i->colorMapBytePerPixel ];
 
                 if( packet & 0x80 )
@@ -192,7 +195,7 @@ E_LOAD_RESULT load_tga( SImage* img, FILE* file )
 
 
     fread( header, 1, 18, file );
-    fseek( file, header[0], SEEK_CUR );   // Skip the image ID field
+    fseek( file, header[0], SEEK_CUR );   /* Skip the image ID field */
 
     pictureType     = header[ 2 ];
     i.width         = ((size_t)header[ 12 ]) | (((size_t)header[ 13 ])<<8);
@@ -244,8 +247,9 @@ E_LOAD_RESULT load_tga( SImage* img, FILE* file )
 
     image_allocate_buffer( img, i.width, i.height, type );
 
-    i.xstep                = (pictureType==1||pictureType==9 ? i.colorMapBytePerPixel : i.bytePerPixel);
-    i.ystep                = i.xstep*i.width;
+    i.xstep = (pictureType==1||pictureType==9 ? i.colorMapBytePerPixel :
+                                                i.bytePerPixel);
+    i.ystep = i.xstep*i.width;
 
     if( attributeByte & 1<<5 )
     {

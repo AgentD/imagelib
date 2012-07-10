@@ -71,17 +71,20 @@ void image_allocate_buffer( SImage* img, size_t width, size_t height,
 {
     size_t byteperpixel = 0;
 
+    /* free any existing buffer and reset attributes concerning the buffer */
     if( img->image_buffer )
-       free( img->image_buffer );
+        free( img->image_buffer );
 
     img->image_buffer = NULL;
     img->width        = 0;
     img->height       = 0;
     img->type         = ECT_NONE;
 
+    /* sanity check */
     if( !width || !height )
         return;
 
+    /* determine number of bytes per pixel */
     switch( type )
     {
     case ECT_GRAYSCALE8: byteperpixel = 1; break;
@@ -91,11 +94,13 @@ void image_allocate_buffer( SImage* img, size_t width, size_t height,
         return;
     };
 
+    /* allocate the buffer */
     img->image_buffer = malloc( width*height*byteperpixel );
 
     if( !img->image_buffer )
         return;
 
+    /* on success, set the attributers concerning the buffer */
     img->width  = width;
     img->height = height;
     img->type   = type;
@@ -106,14 +111,17 @@ E_LOAD_RESULT image_load( SImage* img, const char* filename,
 {
     E_LOAD_RESULT r = ELR_UNKNOWN_FILE_FORMAT;
 
+    /* try to open the file */
     FILE* f = fopen( filename, "rb" );
 
     if( !f )
        return ELR_FILE_OPEN_FAILED;
 
+    /* try to determine the format from the extension if required */
     if( type==EIF_AUTODETECT )
        type = image_guess_type( filename );
 
+    /* call the coresponding loader routine */
     switch( type )
     {
 #ifdef IMAGE_LOAD_TGA
@@ -137,21 +145,35 @@ E_LOAD_RESULT image_load( SImage* img, const char* filename,
 #endif
     };
 
+    /* cleanup and return */
     fclose( f );
+
+    if( r!=ELR_SUCESS )
+    {
+        free( img->image_buffer );
+
+        img->image_buffer = NULL;
+        img->width        = 0;
+        img->height       = 0;
+        img->type         = ECT_NONE;
+    }
 
     return r;
 }
 
 void image_save( SImage* img, const char* filename, E_IMAGE_FILE type )
 {
+    /* try to open the file */
     FILE* f = fopen( filename, "wb" );
 
     if( !f )
         return;
 
+    /* try to determine the format from the extension if required */
     if( type==EIF_AUTODETECT )
         type = image_guess_type( filename );
 
+    /* call the coresponding exporter routine */
     switch( type )
     {
 #ifdef IMAGE_SAVE_TGA
@@ -175,6 +197,7 @@ void image_save( SImage* img, const char* filename, E_IMAGE_FILE type )
 #endif
     };
 
+    /* cleanup and return */
     fclose( f );
 }
 
@@ -182,7 +205,7 @@ E_IMAGE_FILE image_guess_type( const char* filename )
 {
     char c[5];
 
-    // Get the last filename extension in uppercase
+    /* Get the filename extension in uppercase */
     const char* extension = strrchr( filename, '.' );
 
     if( !extension )
@@ -196,6 +219,7 @@ E_IMAGE_FILE image_guess_type( const char* filename )
     c[2] = toupper( c[2] );
     c[3] = toupper( c[3] );
 
+    /* determine the type from the extension */
     if( !strcmp( c, "TGA" ) )
         return EIF_TGA;
 

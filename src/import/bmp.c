@@ -36,11 +36,11 @@ enum
 
 static void loadBMPbitfields( FILE* src, size_t w, size_t h,
                               void* ptr, size_t bpp,
-                              size_t R, size_t G, size_t B, int flip )
+                              size_t B, size_t G, size_t R, int flip )
 {
-    int    ystep = flip ? -3*w : 3*w;      // Add this to the image pointer to skip to the next row
+    int    ystep = flip ? -3*w : 3*w;
     size_t bytePerPixel = bpp/8;
-    size_t padding = (w*bytePerPixel) % 2;   // The rows are always word aligned
+    size_t padding = (w*bytePerPixel) % 2;
     size_t rshift=0, gshift=0, bshift=0;
     size_t scaleR, scaleG, scaleB, x, v;
 
@@ -53,8 +53,12 @@ static void loadBMPbitfields( FILE* src, size_t w, size_t h,
         cur += (h-1)*3*w;
     }
 
-    // We will read multibyte integers from the file and AND them with the color masks, to get the color values.
-    // The ANDed values have to be shifted to the right to get the final color values. Here we work out how many bits we have to shift.
+    /*
+        We will read multibyte integers from the file and AND them with the
+        color masks, to get the color values. The ANDed values have to be
+        shifted to the right to get the final color values. Here we work
+        out how many bits we have to shift.
+     */
     for( ; !((R>>rshift) & 1); ++rshift );
     for( ; !((G>>gshift) & 1); ++gshift );
     for( ; !((B>>bshift) & 1); ++bshift );
@@ -63,24 +67,30 @@ static void loadBMPbitfields( FILE* src, size_t w, size_t h,
     scaleG = 0xFF / (G>>gshift);
     scaleB = 0xFF / (B>>bshift);
 
-    for( ; cur!=end; cur+=ystep )   // Iterate over all pixel rows
+    /* for each scanline */
+    for( ; cur!=end; cur+=ystep )
     {
         unsigned char* row = cur;
 
-        for( x=0; x<w; ++x, row+=3 )   // Iterate over all pixels in the row
+        /* for each pixel in a scanline */
+        for( x=0; x<w; ++x, row+=3 )
         {
             unsigned char v0[4] = {0,0,0,0};
 
-            fread( v0, 1, bytePerPixel, src );   // Read the color value from the file
+            /* Read the color value from the file */
+            fread( v0, 1, bytePerPixel, src );
 
-            v = ((size_t)v0[0]) | ((size_t)v0[1])<<8 | ((size_t)v0[2])<<16 | ((size_t)v0[3])<<24;
+            v = ((size_t)v0[0])     | ((size_t)v0[1])<<8 |
+                ((size_t)v0[2])<<16 | ((size_t)v0[3])<<24;
 
-            row[2] = (unsigned char)( (v & R)>>rshift )*scaleR;   // And it with the R mask and shift it right to get the red value
-            row[1] = (unsigned char)( (v & G)>>gshift )*scaleG;   // And it with the G mask and shift it right to get the green value
-            row[0] = (unsigned char)( (v & B)>>bshift )*scaleB;   // And it with the B mask and shift it right to get the blue value
+            /* determine and store actual color values */
+            row[2] = (unsigned char)( (v & B)>>bshift )*scaleB;
+            row[1] = (unsigned char)( (v & G)>>gshift )*scaleG;
+            row[0] = (unsigned char)( (v & R)>>rshift )*scaleR;
         }
 
-        fseek( src, padding, SEEK_CUR );   // Skip the zeroes added for padding
+        /* Skip the zeroes added for padding */
+        fseek( src, padding, SEEK_CUR );
     }
 }
 
@@ -89,8 +99,8 @@ static void loadBMPcolormap( FILE* src, size_t w, size_t h, void* ptr,
 {
     unsigned char* cur = (unsigned char*)ptr;
     unsigned char* end = cur + h*3*w;
-    size_t padding = w % 2;         // The rows are always byte aligned
-    int ystep = flip ? -3*w : 3*w;      // Add this to the image pointer to skip to the next row
+    size_t padding = w % 2;
+    int ystep = flip ? -3*w : 3*w;
     size_t x;
 
     if( flip )
@@ -99,22 +109,25 @@ static void loadBMPcolormap( FILE* src, size_t w, size_t h, void* ptr,
         cur += (h-1)*3*w;
     }
 
-    for( ; cur!=end; cur+=ystep )   // Iterate over all pixel rows
+    /* for each scanline */
+    for( ; cur!=end; cur+=ystep )
     {
         unsigned char* row = cur;
 
-        for( x=0; x<w; ++x, row+=3 )   // Iterate over all pixels in the row
+        /* for each pixel in a scanline */
+        for( x=0; x<w; ++x, row+=3 )
         {
             char i;
 
-            fread( &i, 1, 1, src );
+            fread( &i, 1, 1, src );         /* read color map index */
 
-            row[0] = colorMap[ i*4     ];
+            row[0] = colorMap[ i*4     ];   /* store color from color map */
             row[1] = colorMap[ i*4 + 1 ];
             row[2] = colorMap[ i*4 + 2 ];
         }
 
-        fseek( src, padding, SEEK_CUR );   // Skip the zeroes added for padding
+        /* Skip the zeroes added for padding */
+        fseek( src, padding, SEEK_CUR );
     }
 }
 
@@ -228,9 +241,14 @@ E_LOAD_RESULT load_bmp( SImage* img, FILE* file )
         maskG = ((size_t)colorMask[4]) | ((size_t)colorMask[5])<<8 | ((size_t)colorMask[ 6])<<16 | ((size_t)colorMask[ 7])<<24;
         maskB = ((size_t)colorMask[8]) | ((size_t)colorMask[9])<<8 | ((size_t)colorMask[10])<<16 | ((size_t)colorMask[11])<<24;
 
-        x = (maskR|maskG|maskB);      // ORing the color masks must result in a continous block of set bits
+        /*
+            ORing the color masks must result in a continous block of
+            set bits. None of the masks must be zero and they must not
+            overlap.
+         */
+        x = maskR | maskG | maskB;
 
-        if( !x || !maskR || !maskG || !maskB )
+        if( !x || (maskR & maskG & maskB) )
             return ELR_FILE_CORRUPTED;
 
         /*
@@ -241,7 +259,7 @@ E_LOAD_RESULT load_bmp( SImage* img, FILE* file )
         while( !(x & 1) )
             x>>=1;
 
-        if( (x & (x+1)) || (maskR & maskG & maskB) )
+        if( x & (x+1) )
             return ELR_FILE_CORRUPTED;
     }
 

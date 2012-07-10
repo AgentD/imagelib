@@ -31,10 +31,10 @@
 
 typedef struct
 {
-    struct jpeg_destination_mgr jdmgr;    // original jpeg_destination_mgr
+    struct jpeg_destination_mgr jdmgr;    /* original jpeg_destination_mgr */
 
-    FILE* file;                    // pointer to target file
-    JOCTET buffer[ BUF_SIZE ];     // temporary writing buffer
+    FILE* file;                    /* pointer to target file   */
+    JOCTET buffer[ BUF_SIZE ];     /* temporary writing buffer */
 }
 m_mem_destination_mgr;
 
