@@ -15,22 +15,21 @@
 
     What should work:
       - Importing 8 bit per pixel gray scale images
-      - Importing 24&32 bit per pixel RGB/RGBA images
-      - Importing 24&32 bit per pixel RGB/RGBA images with RLE compression
+      - Importing 8 bit per pixel gray scale images with RLE compression
+      - Importing 24 & 32 bit per pixel RGB/RGBA images
+      - Importing 24 & 32 bit per pixel RGB/RGBA images with RLE compression
       - Flip the image vertically during loading if needed to move the origin
         to the upper left corner
+      - Convert BGR to RGB and BGRA to RGBA on loading
 
     What is implemented but has never ever been tested:
-
       - Importing color mapped 24/32 bit per pixel RGB/RGBA images
-      - Importing 8 bit per pixel gray scale images with RLE compression
       - Importing color mapped 24/32 bit per pixel RGB/RGBA images with RLE
         compression
       - Flip the image horizontally during loading if needed to move the
         origin to the upper left corner
 
     TODO:
-      - Convert BGR to RGB and BGRA to RGBA on loading
       - Clean this code up, it is filthy!
 */
 
@@ -64,14 +63,13 @@ static void loadTgaColorMapped( FILE* file, tgaInfo* i,
 {
     unsigned char* row;
     unsigned char* mapPtr;
+    unsigned char c0[ 4 ] = { 0, 0, 0, 0 }, temp;
     size_t j, c, k;
 
     for( ; i->ptr!=i->end; i->ptr+=i->ystep )
     {
         for( row=i->ptr, j=0; j<i->width; ++j, row+=i->xstep )
         {
-            unsigned char c0[ 4 ] = { 0, 0, 0, 0 };
-
             fread( c0, 1, i->bytePerPixel, file );
             c = ((size_t)c0[0]) | ((size_t)c0[1])<<8 |
                 ((size_t)c0[2])<<16 | ((size_t)c0[3])<<24;
@@ -80,6 +78,11 @@ static void loadTgaColorMapped( FILE* file, tgaInfo* i,
 
             for( k=0; k<i->colorMapBytePerPixel; ++k )
                 row[k] = mapPtr[k];
+
+            /* swap red and blue */
+            temp     = row[ 0 ];
+            row[ 0 ] = row[ 2 ];
+            row[ 2 ] = temp;
         }
     }
 }
@@ -89,7 +92,7 @@ static void loadTgaColorMappedRLE( FILE* file, tgaInfo* i,
 {
     unsigned char* t;
     unsigned char* row;
-    unsigned char run=0, raw=0, packet=0, data[4] = {0,0,0,0};
+    unsigned char run=0, raw=0, packet=0, data[4] = {0,0,0,0}, temp;
     size_t c, j, k;
 
     for( ; i->ptr!=i->end; i->ptr+=i->ystep )
@@ -124,6 +127,36 @@ static void loadTgaColorMappedRLE( FILE* file, tgaInfo* i,
 
             for( k=0; k<i->colorMapBytePerPixel; ++k )
                 row[k] = t[k];
+
+            /* swap red and blue */
+            temp     = row[ 0 ];
+            row[ 0 ] = row[ 2 ];
+            row[ 2 ] = temp;
+        }
+    }
+}
+
+static void loadTgaGray( FILE* file, tgaInfo* i )
+{
+    unsigned char* row;
+    unsigned char temp;
+    size_t j;
+
+    for( ; i->ptr!=i->end; i->ptr+=i->ystep )
+    {
+        row = i->ptr;
+
+        fread( row, 1, i->width, file );
+
+        /* reverse the scanline if required */
+        if( i->xstep < 0 )
+        {
+            for( j=0; j<i->width/2; ++j )
+            {
+                temp = row[ i->width-1-j ];
+                row[ i->width-1-j ] = row[ j ];
+                row[ j ] = temp;
+            }
         }
     }
 }
@@ -131,6 +164,7 @@ static void loadTgaColorMappedRLE( FILE* file, tgaInfo* i,
 static void loadTgaRGB( FILE* file, tgaInfo* i )
 {
     unsigned char* row;
+    unsigned char temp;
     size_t j;
 
     for( ; i->ptr!=i->end; i->ptr+=i->ystep )
@@ -138,13 +172,18 @@ static void loadTgaRGB( FILE* file, tgaInfo* i )
         for( row=i->ptr, j=0; j<i->width; ++j, row+=i->xstep )
         {
             fread( row, 1, i->bytePerPixel, file );
+
+            /* swap red and blue */
+            temp     = row[ 0 ];
+            row[ 0 ] = row[ 2 ];
+            row[ 2 ] = temp;
         }
     }
 }
 
 static void loadTgaRGBRLE( FILE* file, tgaInfo* i )
 {
-    unsigned char run=0, raw=0, packet=0, data[ 4 ] = {0,0,0,0};
+    unsigned char run=0, raw=0, packet=0, data[ 4 ] = {0,0,0,0}, temp;
     unsigned char* row;
     size_t j, k;
 
@@ -174,9 +213,50 @@ static void loadTgaRGBRLE( FILE* file, tgaInfo* i )
 
             for( k=0; k<i->bytePerPixel; ++k )
                 row[k] = data[k];
+
+            /* swap red and blue */
+            temp     = row[ 0 ];
+            row[ 0 ] = row[ 2 ];
+            row[ 2 ] = temp;
         }
     }
 }
+
+static void loadTgaGrayRLE( FILE* file, tgaInfo* i )
+{
+    unsigned char run=0, raw=0, packet=0, c;
+    unsigned char* row;
+    size_t j, k;
+
+    for( ; i->ptr!=i->end; i->ptr+=i->ystep )
+    {
+        for( row=i->ptr, j=0; j<i->width; ++j, ++row )
+        {
+            if( run )
+            {
+                --run;
+            }
+            else if( raw )
+            {
+                fread( &c, 1, 1, file );
+                --raw;
+            }
+            else
+            {
+                fread( &packet, 1, 1, file );
+                fread( &c,      1, 1, file );
+
+                if( packet & 0x80 )
+                    run = packet & 0x7F;
+                else
+                    raw = packet;
+            }
+
+            *row = c;
+        }
+    }
+}
+
 
 
 
@@ -259,7 +339,7 @@ E_LOAD_RESULT load_tga( SImage* img, FILE* file )
     else
     {
         i.ptr = (unsigned char*)img->image_buffer + (i.height-1)*i.ystep;
-        i.end = i.ptr - i.ystep;
+        i.end = (unsigned char*)img->image_buffer - i.ystep;
         i.ystep*=-1;
     }
 
@@ -275,12 +355,16 @@ E_LOAD_RESULT load_tga( SImage* img, FILE* file )
         loadTgaColorMappedRLE( file, &i, colorMap );
         break;
     case RGB:
-    case GRAYSCALE:
         loadTgaRGB( file, &i );
         break;
+    case GRAYSCALE:
+        loadTgaGray( file, &i );
+        break;
     case RGB_RLE:
-    case GRAYSCALE_RLE:
         loadTgaRGBRLE( file, &i );
+        break;
+    case GRAYSCALE_RLE:
+        loadTgaGrayRLE( file, &i );
         break;
     };
 

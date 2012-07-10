@@ -14,14 +14,16 @@
     Bitmap loading facilities.
 
     What should work:
-      - Importing 8 bit per pixel color mapped images with RLE compression.
-      - Importing 8 bit per pixel color mapped images.
-      - Importing 16 bit per pixel images
       - Importing 24 bit per pixel images
       - Importing 32 bit per pixel images
-      - Importing generic bitfield encoded images
       - Flipping images upside-down while loading if needed to move the origin
         to the upper left corner
+
+    What is implemented but has never been tested:
+      - Importing 16 bit per pixel images
+      - Importing 8 bit per pixel color mapped images with RLE compression
+      - Importing 8 bit per pixel color mapped images
+      - Importing generic bitfield encoded images
 */
 
 

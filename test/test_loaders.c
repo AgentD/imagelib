@@ -23,6 +23,15 @@ int main( )
     image_load( &img, "samples/lenna24.bmp", EIF_AUTODETECT );
     image_save( &img, "lenna24.bmp.png", EIF_AUTODETECT );
 
+    image_load( &img, "samples/lennaRGB.tga", EIF_AUTODETECT );
+    image_save( &img, "lennaRGB.tga.png", EIF_AUTODETECT );
+
+    image_load( &img, "samples/lennaRGBRLE.tga", EIF_AUTODETECT );
+    image_save( &img, "lennaRGBRLE.tga.png", EIF_AUTODETECT );
+
+    image_load( &img, "samples/grayscaleRLE.tga", EIF_AUTODETECT );
+    image_save( &img, "grayscaleRLE.tga.png", EIF_AUTODETECT );
+
     image_deinit( &img );
 
     return 0;
