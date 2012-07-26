@@ -33,7 +33,8 @@ typedef struct
 {
     struct jpeg_destination_mgr jdmgr;    /* original jpeg_destination_mgr */
 
-    FILE* file;                    /* pointer to target file   */
+    void* file;                    /* pointer to target file   */
+    const SFileIOInterface* io;    /* file io interface */
     JOCTET buffer[ BUF_SIZE ];     /* temporary writing buffer */
 }
 m_mem_destination_mgr;
@@ -51,7 +52,7 @@ static boolean jpeg_empty_output_buffer( j_compress_ptr cinfo )
 {
     m_mem_destination_mgr* dst = (m_mem_destination_mgr*)cinfo->dest;
 
-    fwrite( dst->buffer, 1, BUF_SIZE, dst->file );
+    dst->io->write( dst->buffer, 1, BUF_SIZE, dst->file );
 
     dst->jdmgr.next_output_byte = dst->buffer;
     dst->jdmgr.free_in_buffer   = BUF_SIZE;
@@ -65,10 +66,11 @@ static void jpeg_term_destination( j_compress_ptr cinfo )
 
     const size_t datacount = (size_t)(BUF_SIZE - dst->jdmgr.free_in_buffer);
 
-    fwrite( dst->buffer, 1, datacount, dst->file );
+    dst->io->write( dst->buffer, 1, datacount, dst->file );
 }
 
-static void jpeg_file_dest( j_compress_ptr cinfo, FILE* file )
+static void jpeg_file_dest( j_compress_ptr cinfo, void* file,
+                            const SFileIOInterface* io )
 {
     m_mem_destination_mgr* dst;
 
@@ -83,6 +85,7 @@ static void jpeg_file_dest( j_compress_ptr cinfo, FILE* file )
     dst->jdmgr.empty_output_buffer = jpeg_empty_output_buffer;
     dst->jdmgr.term_destination    = jpeg_term_destination;
     dst->file                      = file;
+    dst->io                        = io;
 }
 
 
@@ -117,7 +120,7 @@ static void rgba8ToRGB( unsigned char* src, unsigned char* dst, size_t width )
 
 
 
-void save_jpg( SImage* img, FILE* file )
+void save_jpg( SImage* img, void* file, const SFileIOInterface* io )
 {
     void (* convert ) (unsigned char*, unsigned char*, size_t) = NULL;
 
@@ -143,7 +146,7 @@ void save_jpg( SImage* img, FILE* file )
     cinfo.err = jpeg_std_error( &jerr );
 
     jpeg_create_compress( &cinfo );
-    jpeg_file_dest( &cinfo, file );
+    jpeg_file_dest( &cinfo, file, io );
 
     cinfo.image_width      = img->width;
     cinfo.image_height     = img->height;

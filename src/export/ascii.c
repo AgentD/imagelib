@@ -132,7 +132,7 @@ float average_block( unsigned char* buffer, size_t x, size_t y,
 
 
 
-void save_txt( SImage* img, FILE* file )
+void save_txt( SImage* img, void* file, const SFileIOInterface* io )
 {
     size_t cols = 0, rows, charWidth, charHeight, Y, X, index;
     int color = 0, channels, R, G, B;
@@ -164,7 +164,7 @@ void save_txt( SImage* img, FILE* file )
 
     /* generate the image */
     if( color )
-        fwrite( "\033[0m", 1, 4, file );  /* reset attributes to default */
+        io->write( "\033[0m", 1, 4, file );  /* reset attributes to default */
 
     for( Y=0; Y<rows; ++Y )
     {
@@ -183,19 +183,19 @@ void save_txt( SImage* img, FILE* file )
                 index = getNearestPaletteIndex( vt100paletteRGB, 16, r*255.0f,
                                                 g*255.0f, b*255.0f );
 
-                fwrite( vt100palette[ index ], 1, 8, file );
+                io->write( vt100palette[ index ], 1, 8, file );
             }
 
-            fwrite( &c, 1, 1, file );
+            io->write( &c, 1, 1, file );
         }
 
         c = '\n';
 
-        fwrite( &c, 1, 1, file );
+        io->write( &c, 1, 1, file );
     }
 
     if( color )
-        fwrite( "\033[0m", 1, 4, file );  /* reset attributes to default */
+        io->write( "\033[0m", 1, 4, file );  /* reset attributes to default */
 }
 
 #endif

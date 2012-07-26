@@ -75,7 +75,7 @@ static boolean fill_input_buffer( j_decompress_ptr cinfo )
 
 
 
-E_LOAD_RESULT load_jpg( SImage* img, FILE* file )
+E_LOAD_RESULT load_jpg( SImage* img, void* file, const SFileIOInterface* io )
 {
     size_t length;
     unsigned char** rowPtr = NULL;
@@ -86,13 +86,13 @@ E_LOAD_RESULT load_jpg( SImage* img, FILE* file )
     size_t ystep, i, rows = 0;
 
     /* Read the file into a buffer */
-    fseek( file, 0, SEEK_END );
-    length = ftell( file );
-    fseek( file, 0, SEEK_SET );
+    io->seek( file, 0, SEEK_END );
+    length = io->tell( file );
+    io->seek( file, 0, SEEK_SET );
 
     input = malloc( length );
 
-    fread( input, 1, length, file );
+    io->read( input, 1, length, file );
 
     /* Set up our jpeg info and jpeg error struct with our error routines */
     cinfo.err                 = jpeg_std_error( &jerr.emgr );

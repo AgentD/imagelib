@@ -19,7 +19,7 @@
       - exporting ECT_RGBA8 images
 */
 
-void save_tga( SImage* img, FILE* file )
+void save_tga( SImage* img, void* file, const SFileIOInterface* io )
 {
     unsigned char header[ 18 ];
     size_t bpp = 0;
@@ -42,7 +42,7 @@ void save_tga( SImage* img, FILE* file )
     header[16]  = bpp*8;
     header[17] |= 1<<5;     /* origin at the top */
 
-    fwrite( header, 1, 18, file );
+    io->write( header, 1, 18, file );
 
     /* write image data */
     ptr = img->image_buffer;
@@ -50,7 +50,7 @@ void save_tga( SImage* img, FILE* file )
 
     if( img->type == ECT_GRAYSCALE8 )
     {
-        fwrite( img->image_buffer, 1, img->width*img->height, file );
+        io->write( img->image_buffer, 1, img->width*img->height, file );
     }
     else
     {
@@ -63,7 +63,7 @@ void save_tga( SImage* img, FILE* file )
             ptr[0] = ptr[2];
             ptr[2] = temp;
 
-            fwrite( ptr, 1, bpp, file );
+            io->write( ptr, 1, bpp, file );
 
             /* swap red and blue back */
             temp   = ptr[0];

@@ -58,8 +58,8 @@ typedef struct
 }
 tgaInfo;
 
-static void loadTgaColorMapped( FILE* file, tgaInfo* i,
-                                unsigned char* colorMap )
+static void loadTgaColorMapped( void* file, const SFileIOInterface* io,
+                                tgaInfo* i, unsigned char* colorMap )
 {
     unsigned char* row;
     unsigned char* mapPtr;
@@ -70,7 +70,7 @@ static void loadTgaColorMapped( FILE* file, tgaInfo* i,
     {
         for( row=i->ptr, j=0; j<i->width; ++j, row+=i->xstep )
         {
-            fread( c0, 1, i->bytePerPixel, file );
+            io->read( c0, 1, i->bytePerPixel, file );
             c = ((size_t)c0[0]) | ((size_t)c0[1])<<8 |
                 ((size_t)c0[2])<<16 | ((size_t)c0[3])<<24;
 
@@ -87,8 +87,8 @@ static void loadTgaColorMapped( FILE* file, tgaInfo* i,
     }
 }
 
-static void loadTgaColorMappedRLE( FILE* file, tgaInfo* i,
-                                   unsigned char* colorMap )
+static void loadTgaColorMappedRLE( void* file, const SFileIOInterface* io,
+                                   tgaInfo* i, unsigned char* colorMap )
 {
     unsigned char* t;
     unsigned char* row;
@@ -105,7 +105,7 @@ static void loadTgaColorMappedRLE( FILE* file, tgaInfo* i,
             }
             else if( raw )
             {
-                fread( data, 1, i->bytePerPixel, file );
+                io->read( data, 1, i->bytePerPixel, file );
                 c = ((size_t)data[0]) | ((size_t)data[1])<<8 |
                     ((size_t)data[2])<<16 | ((size_t)data[3])<<24;
                 t = &colorMap[ c*i->colorMapBytePerPixel ];
@@ -113,8 +113,8 @@ static void loadTgaColorMappedRLE( FILE* file, tgaInfo* i,
             }
             else
             {
-                fread( &packet, 1, 1, file );
-                fread( data, 1, i->bytePerPixel, file );
+                io->read( &packet, 1, 1, file );
+                io->read( data, 1, i->bytePerPixel, file );
                 c = ((size_t)data[0]) | ((size_t)data[1])<<8 |
                     ((size_t)data[2])<<16 | ((size_t)data[3])<<24;
                 t = &colorMap[ c*i->colorMapBytePerPixel ];
@@ -136,7 +136,7 @@ static void loadTgaColorMappedRLE( FILE* file, tgaInfo* i,
     }
 }
 
-static void loadTgaGray( FILE* file, tgaInfo* i )
+static void loadTgaGray( void* file, const SFileIOInterface* io, tgaInfo* i )
 {
     unsigned char* row;
     unsigned char temp;
@@ -146,7 +146,7 @@ static void loadTgaGray( FILE* file, tgaInfo* i )
     {
         row = i->ptr;
 
-        fread( row, 1, i->width, file );
+        io->read( row, 1, i->width, file );
 
         /* reverse the scanline if required */
         if( i->xstep < 0 )
@@ -161,7 +161,7 @@ static void loadTgaGray( FILE* file, tgaInfo* i )
     }
 }
 
-static void loadTgaRGB( FILE* file, tgaInfo* i )
+static void loadTgaRGB( void* file, const SFileIOInterface* io, tgaInfo* i )
 {
     unsigned char* row;
     unsigned char temp;
@@ -171,7 +171,7 @@ static void loadTgaRGB( FILE* file, tgaInfo* i )
     {
         for( row=i->ptr, j=0; j<i->width; ++j, row+=i->xstep )
         {
-            fread( row, 1, i->bytePerPixel, file );
+            io->read( row, 1, i->bytePerPixel, file );
 
             /* swap red and blue */
             temp     = row[ 0 ];
@@ -181,7 +181,8 @@ static void loadTgaRGB( FILE* file, tgaInfo* i )
     }
 }
 
-static void loadTgaRGBRLE( FILE* file, tgaInfo* i )
+static void loadTgaRGBRLE( void* file, const SFileIOInterface* io,
+                           tgaInfo* i )
 {
     unsigned char run=0, raw=0, packet=0, data[ 4 ] = {0,0,0,0}, temp;
     unsigned char* row;
@@ -197,13 +198,13 @@ static void loadTgaRGBRLE( FILE* file, tgaInfo* i )
             }
             else if( raw )
             {
-                fread( data, 1, i->bytePerPixel, file );
+                io->read( data, 1, i->bytePerPixel, file );
                 --raw;
             }
             else
             {
-                fread( &packet, 1, 1, file );
-                fread( data, 1, i->bytePerPixel, file );
+                io->read( &packet, 1, 1, file );
+                io->read( data, 1, i->bytePerPixel, file );
 
                 if( packet & 0x80 )
                     run = packet & 0x7F;
@@ -222,7 +223,8 @@ static void loadTgaRGBRLE( FILE* file, tgaInfo* i )
     }
 }
 
-static void loadTgaGrayRLE( FILE* file, tgaInfo* i )
+static void loadTgaGrayRLE( void* file, const SFileIOInterface* io,
+                            tgaInfo* i )
 {
     unsigned char run=0, raw=0, packet=0, c;
     unsigned char* row;
@@ -238,13 +240,13 @@ static void loadTgaGrayRLE( FILE* file, tgaInfo* i )
             }
             else if( raw )
             {
-                fread( &c, 1, 1, file );
+                io->read( &c, 1, 1, file );
                 --raw;
             }
             else
             {
-                fread( &packet, 1, 1, file );
-                fread( &c,      1, 1, file );
+                io->read( &packet, 1, 1, file );
+                io->read( &c,      1, 1, file );
 
                 if( packet & 0x80 )
                     run = packet & 0x7F;
@@ -260,7 +262,7 @@ static void loadTgaGrayRLE( FILE* file, tgaInfo* i )
 
 
 
-E_LOAD_RESULT load_tga( SImage* img, FILE* file )
+E_LOAD_RESULT load_tga( SImage* img, void* file, const SFileIOInterface* io )
 {
     /* read the TGA header */
     unsigned char header[ 18 ];
@@ -273,9 +275,8 @@ E_LOAD_RESULT load_tga( SImage* img, FILE* file )
     E_COLOR_TYPE type = ECT_GRAYSCALE8;
     tgaInfo i;
 
-
-    fread( header, 1, 18, file );
-    fseek( file, header[0], SEEK_CUR );   /* Skip the image ID field */
+    io->read( header, 1, 18, file );
+    io->seek( file, header[0], SEEK_CUR );   /* Skip the image ID field */
 
     pictureType     = header[ 2 ];
     i.width         = ((size_t)header[ 12 ]) | (((size_t)header[ 13 ])<<8);
@@ -321,8 +322,8 @@ E_LOAD_RESULT load_tga( SImage* img, FILE* file )
         type     = i.colorMapBytePerPixel==4 ? ECT_RGBA8 : ECT_RGB8;
         colorMap = malloc( colorMapSize );
 
-        fseek( file, colorMapOffset, SEEK_CUR );
-        fread( colorMap, 1, colorMapSize, file );
+        io->seek( file, colorMapOffset, SEEK_CUR );
+        io->read( colorMap, 1, colorMapSize, file );
     }
 
     image_allocate_buffer( img, i.width, i.height, type );
@@ -349,22 +350,22 @@ E_LOAD_RESULT load_tga( SImage* img, FILE* file )
     switch( pictureType )
     {
     case COLOR_MAPPED:
-        loadTgaColorMapped( file, &i, colorMap );
+        loadTgaColorMapped( file, io, &i, colorMap );
         break;
     case COLOR_MAPPED_RLE:
-        loadTgaColorMappedRLE( file, &i, colorMap );
+        loadTgaColorMappedRLE( file, io, &i, colorMap );
         break;
     case RGB:
-        loadTgaRGB( file, &i );
+        loadTgaRGB( file, io, &i );
         break;
     case GRAYSCALE:
-        loadTgaGray( file, &i );
+        loadTgaGray( file, io, &i );
         break;
     case RGB_RLE:
-        loadTgaRGBRLE( file, &i );
+        loadTgaRGBRLE( file, io, &i );
         break;
     case GRAYSCALE_RLE:
-        loadTgaGrayRLE( file, &i );
+        loadTgaGrayRLE( file, io, &i );
         break;
     };
 

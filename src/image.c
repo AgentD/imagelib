@@ -8,47 +8,52 @@
 
 
 #ifdef IMAGE_LOAD_TGA
-    extern E_LOAD_RESULT load_tga( SImage* img, FILE* file );
+extern E_LOAD_RESULT load_tga( SImage* img, void* file,
+                               const SFileIOInterface* io );
 #endif
 
 #ifdef IMAGE_SAVE_TGA
-    extern void save_tga( SImage* img, FILE* file );
+extern void save_tga( SImage* img, void* file, const SFileIOInterface* io );
 #endif
 
 
 #ifdef IMAGE_LOAD_JPG
-    extern E_LOAD_RESULT load_jpg( SImage* img, FILE* file );
+extern E_LOAD_RESULT load_jpg( SImage* img, void* file,
+                               const SFileIOInterface* io );
 #endif
 
 #ifdef IMAGE_SAVE_JPG
-    extern void save_jpg( SImage* img, FILE* file );
+extern void save_jpg( SImage* img, void* file, const SFileIOInterface* io );
 #endif
 
 
 #ifdef IMAGE_LOAD_BMP
-    extern E_LOAD_RESULT load_bmp( SImage* img, FILE* file );
+extern E_LOAD_RESULT load_bmp( SImage* img, void* file,
+                               const SFileIOInterface* io );
 #endif
 
 #ifdef IMAGE_SAVE_BMP
-    extern void save_bmp( SImage* img, FILE* file );
+extern void save_bmp( SImage* img, void* file, const SFileIOInterface* io );
 #endif
 
 
 #ifdef IMAGE_LOAD_PNG
-    extern E_LOAD_RESULT load_png( SImage* img, FILE* file );
+extern E_LOAD_RESULT load_png( SImage* img, void* file,
+                               const SFileIOInterface* io );
 #endif
 
 #ifdef IMAGE_SAVE_PNG
-    extern void save_png( SImage* img, FILE* file );
+extern void save_png( SImage* img, void* file, const SFileIOInterface* io );
 #endif
 
 
 #ifdef IMAGE_LOAD_TXT
-    extern E_LOAD_RESULT load_txt( SImage* img, FILE* file );
+extern E_LOAD_RESULT load_txt( SImage* img, void* file,
+                               const SFileIOInterface* io );
 #endif
 
 #ifdef IMAGE_SAVE_TXT
-    extern void save_txt( SImage* img, FILE* file );
+extern void save_txt( SImage* img, void* file, const SFileIOInterface* io );
 #endif
 
 
@@ -109,44 +114,59 @@ void image_allocate_buffer( SImage* img, size_t width, size_t height,
 E_LOAD_RESULT image_load( SImage* img, const char* filename,
                           E_IMAGE_FILE type )
 {
-    E_LOAD_RESULT r = ELR_UNKNOWN_FILE_FORMAT;
+    SFileIOInterface stdio;
+    E_LOAD_RESULT r;
+    FILE* f;
+
+    image_io_init_stdio( &stdio );
 
     /* try to open the file */
-    FILE* f = fopen( filename, "rb" );
+    f = fopen( filename, "rb" );
 
     if( !f )
        return ELR_FILE_OPEN_FAILED;
 
     /* try to determine the format from the extension if required */
-    if( type==EIF_AUTODETECT )
+    if( type == EIF_AUTODETECT )
        type = image_guess_type( filename );
+
+    r = image_load_custom( img, f, &stdio, type );
+
+    /* cleanup and return */
+    fclose( f );
+
+    return r;
+}
+
+E_LOAD_RESULT image_load_custom( SImage* img, void* file,
+                                 const SFileIOInterface* io,
+                                 E_IMAGE_FILE type )
+{
+    E_LOAD_RESULT r = ELR_UNKNOWN_FILE_FORMAT;
 
     /* call the coresponding loader routine */
     switch( type )
     {
 #ifdef IMAGE_LOAD_TGA
-    case EIF_TGA: r = load_tga( img, f ); break;
+    case EIF_TGA: r = load_tga( img, file, io ); break;
 #endif
 
 #ifdef IMAGE_LOAD_BMP
-    case EIF_BMP: r = load_bmp( img, f ); break;
+    case EIF_BMP: r = load_bmp( img, file, io ); break;
 #endif
 
 #ifdef IMAGE_LOAD_JPG
-    case EIF_JPG: r = load_jpg( img, f ); break;
+    case EIF_JPG: r = load_jpg( img, file, io ); break;
 #endif
    
 #ifdef IMAGE_LOAD_PNG
-    case EIF_PNG: r = load_png( img, f ); break;
+    case EIF_PNG: r = load_png( img, file, io ); break;
 #endif
 
 #ifdef IMAGE_LOAD_TXT
-    case EIF_TXT: r = load_txt( img, f ); break;
+    case EIF_TXT: r = load_txt( img, file, io ); break;
 #endif
     };
-
-    /* cleanup and return */
-    fclose( f );
 
     if( r!=ELR_SUCESS )
     {
@@ -161,10 +181,16 @@ E_LOAD_RESULT image_load( SImage* img, const char* filename,
     return r;
 }
 
+
 void image_save( SImage* img, const char* filename, E_IMAGE_FILE type )
 {
+    SFileIOInterface stdio;
+    FILE* f;
+
+    image_io_init_stdio( &stdio );
+
     /* try to open the file */
-    FILE* f = fopen( filename, "wb" );
+    f = fopen( filename, "wb" );
 
     if( !f )
         return;
@@ -173,33 +199,40 @@ void image_save( SImage* img, const char* filename, E_IMAGE_FILE type )
     if( type==EIF_AUTODETECT )
         type = image_guess_type( filename );
 
-    /* call the coresponding exporter routine */
-    switch( type )
-    {
-#ifdef IMAGE_SAVE_TGA
-    case EIF_TGA: save_tga( img, f ); break;
-#endif
-
-#ifdef IMAGE_SAVE_BMP
-    case EIF_BMP: save_bmp( img, f ); break;
-#endif
-
-#ifdef IMAGE_SAVE_JPG
-    case EIF_JPG: save_jpg( img, f ); break;
-#endif
-
-#ifdef IMAGE_SAVE_PNG
-    case EIF_PNG: save_png( img, f ); break;
-#endif
-
-#ifdef IMAGE_SAVE_TXT
-    case EIF_TXT: save_txt( img, f ); break;
-#endif
-    };
+    /* exporter the image */
+    image_save_custom( img, f, &stdio, type );
 
     /* cleanup and return */
     fclose( f );
 }
+
+void image_save_custom( SImage* img, void* file, const SFileIOInterface* io,
+                        E_IMAGE_FILE type )
+{
+    switch( type )
+    {
+#ifdef IMAGE_SAVE_TGA
+    case EIF_TGA: save_tga( img, file, io ); break;
+#endif
+
+#ifdef IMAGE_SAVE_BMP
+    case EIF_BMP: save_bmp( img, file, io ); break;
+#endif
+
+#ifdef IMAGE_SAVE_JPG
+    case EIF_JPG: save_jpg( img, file, io ); break;
+#endif
+
+#ifdef IMAGE_SAVE_PNG
+    case EIF_PNG: save_png( img, file, io ); break;
+#endif
+
+#ifdef IMAGE_SAVE_TXT
+    case EIF_TXT: save_txt( img, file, io ); break;
+#endif
+    };
+}
+
 
 E_IMAGE_FILE image_guess_type( const char* filename )
 {

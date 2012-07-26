@@ -14,20 +14,20 @@
 
 
 
-E_LOAD_RESULT load_txt( SImage* img, FILE* file )
+E_LOAD_RESULT load_txt( SImage* img, void* file, const SFileIOInterface* io )
 {
     char* buffer;
     unsigned char* dst;
     size_t length, i, j, k, x, y, len, width, height;
 
     /* read the file into a buffer */
-    fseek( file, 0, SEEK_END );
-    length = ftell( file );
-    fseek( file, 0, SEEK_SET );
+    io->seek( file, 0, SEEK_END );
+    length = io->tell( file );
+    io->seek( file, 0, SEEK_SET );
 
     buffer = malloc( length );
 
-    fread( buffer, 1, length, file );
+    io->read( buffer, 1, length, file );
 
     /********************** Allocate the image buffer **********************/
 

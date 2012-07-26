@@ -5,6 +5,8 @@
 
 #include <stdio.h>
 
+#include "image_io.h"
+
 
 
 #ifdef __cplusplus
@@ -43,7 +45,7 @@ E_IMAGE_FILE;
 
 typedef enum
 {
-    /** \brief The image data has been loaded sucessfully */
+    /** \brief The image data has been loaded successfully */
     ELR_SUCESS = 0,
 
     /**
@@ -98,14 +100,29 @@ void image_deinit( SImage* img );
  * \param img      The image to load into
  * \param filename The path to the image that has to be loaded
  * \param type     If EIF_AUTODETECT, the type will be determined using the
- *                 last three characters in the filename. If that is no
- *                 possible, loading failes. You can alternatively
+ *                 last three characters in the filename. If that is not
+ *                 possible, loading fails. You can alternatively
  *                 provide the file format if you know it.
  *
  * \return ELR_SUCESS(=0) on sucess, or a loading error otherwise.
  */
 E_LOAD_RESULT image_load( SImage* img, const char* filename,
                           E_IMAGE_FILE type );
+
+
+/**
+ * \brief Load an image from a file using custom I/O callbacks
+ *
+ * \param img  The image to load into
+ * \param file An opaque file handle to read from
+ * \param io   The custom I/O callbacks
+ * \param type The type of the image
+ *
+ * \return ELR_SUCESS(=0) on sucess, or a loading error otherwise.
+ */
+E_LOAD_RESULT image_load_custom( SImage* img, void* file,
+                                 const SFileIOInterface* io,
+                                 E_IMAGE_FILE type );
 
 /**
  * \brief Store the contents of the image buffer to the given file
@@ -117,6 +134,17 @@ E_LOAD_RESULT image_load( SImage* img, const char* filename,
  *                 last three characters in the filename.
  */
 void image_save( SImage* img, const char* filename, E_IMAGE_FILE type );
+
+/**
+ * \brief Store the contents of the image buffer to the given file
+ *
+ * \param img  The image to save
+ * \param file An opaque file handle
+ * \param io   The custom I/O callbacks
+ * \param type What image file format to use for storing the image file
+ */
+void image_save_custom( SImage* img, void* file, const SFileIOInterface* io,
+                        E_IMAGE_FILE type );
 
 /**
  * \brief Allocate an internal buffer for holding an image

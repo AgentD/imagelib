@@ -20,7 +20,7 @@
 
 
 
-void save_bmp( SImage* img, FILE* file )
+void save_bmp( SImage* img, void* file, const SFileIOInterface* io )
 {
     const char zero[4] = { 0, 0, 0, 0 };
     size_t bpp, realBPP, size, i, dy, padding, x;
@@ -56,7 +56,7 @@ void save_bmp( SImage* img, FILE* file )
         WRITE_LITTLE_ENDIAN_32( 256,  header, 46 );
     }
 
-    fwrite( header, 1, 54, file );
+    io->write( header, 1, 54, file );
 
     /********* Write a dummy color map for grayscale images ********/
     if( img->type==ECT_GRAYSCALE8 )
@@ -65,7 +65,7 @@ void save_bmp( SImage* img, FILE* file )
         {
             unsigned char v[4] = { i, i, i, 0 };
 
-            fwrite( v, 1, 4, file );
+            io->write( v, 1, 4, file );
         }
     }
 
@@ -79,8 +79,8 @@ void save_bmp( SImage* img, FILE* file )
     {
         for( ; ptr!=end; ptr+=dy )
         {
-            fwrite( ptr,  1, dy*bpp,  file );
-            fwrite( zero, 1, padding, file );
+            io->write( ptr,  1, dy*bpp,  file );
+            io->write( zero, 1, padding, file );
         }
     }
     else
@@ -96,7 +96,7 @@ void save_bmp( SImage* img, FILE* file )
                 ptr[x  ] = ptr[x+2];
                 ptr[x+2] = temp;
 
-                fwrite( &ptr[ x ], 1, bpp, file );
+                io->write( &ptr[ x ], 1, bpp, file );
 
                 /* swap red and blue */
                 temp     = ptr[x];
@@ -104,7 +104,7 @@ void save_bmp( SImage* img, FILE* file )
                 ptr[x+2] = temp;
             }
 
-            fwrite( zero, 1, padding, file );
+            io->write( zero, 1, padding, file );
         }
     }
 }

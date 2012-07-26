@@ -20,7 +20,7 @@
 
 
 
-E_LOAD_RESULT load_png( SImage* img, FILE* file )
+E_LOAD_RESULT load_png( SImage* img, void* file, const SFileIOInterface* io )
 {
     int bitDepth, colorType;
     unsigned int width, height, result;
@@ -31,13 +31,13 @@ E_LOAD_RESULT load_png( SImage* img, FILE* file )
         free( img->image_buffer );
 
     /* read the file into a buffer */
-    fseek( file, 0, SEEK_END );
-    length = ftell( file );
-    fseek( file, 0, SEEK_SET );
+    io->seek( file, 0, SEEK_END );
+    length = io->tell( file );
+    io->seek( file, 0, SEEK_SET );
 
     input = malloc( length );
 
-    fread( input, 1, length, file );
+    io->read( input, 1, length, file );
 
     /* decode the image */
     result = lodepng_decode32( (unsigned char**)&img->image_buffer,

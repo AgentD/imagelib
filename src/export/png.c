@@ -22,7 +22,7 @@
 
 
 
-void save_png( SImage* img, FILE* file )
+void save_png( SImage* img, void* file, const SFileIOInterface* io )
 {
     unsigned char* buffer;
     size_t length;
@@ -38,7 +38,7 @@ void save_png( SImage* img, FILE* file )
     lodepng_encode_memory( &buffer, &length, img->image_buffer,
                            img->width, img->height, colortype, 8 );
 
-    fwrite( buffer, 1, length, file );
+    io->write( buffer, 1, length, file );
 
     free( buffer );
 }
