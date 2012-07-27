@@ -139,9 +139,10 @@ void save_txt( SImage* img, void* file, const SFileIOInterface* io )
     char c;
 
     /* get the number of columns and rows */
-    /*cols = getHint<size_t>( IH_ASCII_EXPORT_COLUMNS );*/
+    cols = image_get_hint( img, EIH_ASCII_EXPORT_COLUMNS );
+
     if( !cols )
-        cols = 80;
+        cols = 79;
 
     rows = cols * 0.5f * ( (float)img->height/(float)img->width );
 
@@ -150,7 +151,7 @@ void save_txt( SImage* img, void* file, const SFileIOInterface* io )
     charHeight = img->height/rows;
 
     /* determine whether to generate a colored output */
-    /*color = getHint<bool>( IH_ASCII_EXPORT_VT100_COLORS );*/
+    color = image_get_hint( img, EIH_ASCII_EXPORT_VT100_COLORS );
 
     /* get the required converter settings */
     switch( img->type )

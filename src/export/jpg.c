@@ -138,7 +138,7 @@ void save_jpg( SImage* img, void* file, const SFileIOInterface* io )
     case ECT_RGBA8:      convert = rgba8ToRGB; ystep*=4; break;
     };
 
-    /*size_t quality = getHint<size_t>( IH_JPEG_EXPORT_QUALITY );*/
+    quality = image_get_hint( img, EIH_JPEG_EXPORT_QUALITY );
 
     if( quality<1 || quality>100 )
         quality = 75;

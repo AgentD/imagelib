@@ -31,6 +31,7 @@
 
     TODO:
       - Clean this code up, it is filthy!
+      - Optimize loading, we read one pixel a time from the file!!
 */
 
 enum
@@ -279,14 +280,14 @@ E_LOAD_RESULT load_tga( SImage* img, void* file, const SFileIOInterface* io )
     io->seek( file, header[0], SEEK_CUR );   /* Skip the image ID field */
 
     pictureType     = header[ 2 ];
-    i.width         = ((size_t)header[ 12 ]) | (((size_t)header[ 13 ])<<8);
-    i.height        = ((size_t)header[ 14 ]) | (((size_t)header[ 15 ])<<8);
+    i.width         = READ_LITTLE_ENDIAN_16( header, 12 );
+    i.height        = READ_LITTLE_ENDIAN_16( header, 14 );
     i.bytePerPixel  = header[ 16 ] / 8;
     attributeByte   = header[ 17 ];
 
     colorMapPresent = header[ 1 ];
-    colorMapOffset  = ((size_t)header[ 3 ]) | (((size_t)header[ 4 ])<<8);
-    colorMapLength  = ((size_t)header[ 5 ]) | (((size_t)header[ 6 ])<<8);
+    colorMapOffset  = READ_LITTLE_ENDIAN_16( header, 3 );
+    colorMapLength  = READ_LITTLE_ENDIAN_16( header, 5 );
     i.colorMapBytePerPixel = header[ 7 ] / 8;
 
     /* sanity checks */
@@ -300,7 +301,8 @@ E_LOAD_RESULT load_tga( SImage* img, void* file, const SFileIOInterface* io )
         (!colorMapPresent||colorMapOffset>=colorMapLength) )
         return ELR_FILE_CORRUPTED;
 
-    if( i.colorMapBytePerPixel!=3 && i.colorMapBytePerPixel!=4 && colorMapPresent )
+    if( i.colorMapBytePerPixel!=3 && i.colorMapBytePerPixel!=4 &&
+        colorMapPresent )
         return ELR_NOT_SUPPORTED;
 
     if( i.bytePerPixel!=1 && (pictureType==GRAYSCALE ||

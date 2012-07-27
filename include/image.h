@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 #include "image_io.h"
+#include "image_hint.h"
 
 
 
@@ -75,6 +76,8 @@ typedef struct
     size_t height;
 
     E_COLOR_TYPE type;
+
+    IMAGE_HINTS hints;
 }
 SImage;
 
@@ -157,6 +160,22 @@ void image_save_custom( SImage* img, void* file, const SFileIOInterface* io,
 void image_allocate_buffer( SImage* img, size_t width, size_t height,
                             E_COLOR_TYPE type );
 
+/**
+ * \brief Set a hint for an image loader or exporter
+ *
+ * \param hint  The hint to set
+ * \param value The value to set for the hint
+ */
+void image_set_hint( SImage* img, E_IMAGE_HINT hint, size_t value );
+
+/**
+ * \brief Get a hint for an image loader or exporter
+ *
+ * \param hint The hint to get
+ *
+ * \return The value to set for the hint
+ */
+size_t image_get_hint( SImage* img, E_IMAGE_HINT hint );
 
 /**
  * \brief Guess the image file format from the file ending of a given

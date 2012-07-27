@@ -60,10 +60,7 @@ extern void save_txt( SImage* img, void* file, const SFileIOInterface* io );
 
 void image_init( SImage* img )
 {
-    img->image_buffer = NULL;
-    img->width        = 0;
-    img->height       = 0;
-    img->type         = ECT_NONE;
+    memset( img, 0, sizeof(SImage) );
 }
 
 void image_deinit( SImage* img )
@@ -231,6 +228,20 @@ void image_save_custom( SImage* img, void* file, const SFileIOInterface* io,
     case EIF_TXT: save_txt( img, file, io ); break;
 #endif
     };
+}
+
+void image_set_hint( SImage* img, E_IMAGE_HINT hint, size_t value )
+{
+    if( img && hint<EIH_NUM_HINTS )
+        img->hints[ hint ] = value;
+}
+
+size_t image_get_hint( SImage* img, E_IMAGE_HINT hint )
+{
+    if( img && hint<EIH_NUM_HINTS )
+        return img->hints[ hint ];
+
+    return 0;
 }
 
 

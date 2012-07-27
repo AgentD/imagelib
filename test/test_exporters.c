@@ -129,7 +129,10 @@ int main( int argc, char** argv)
     image_print_string( &image, 100, 500, 1.0f, 1.0f, 1.0f, 1.0f,
                         "RGBA test" );
 
+    image_set_hint( &image, EIH_ASCII_EXPORT_VT100_COLORS, 1 );
     image_save( &image, "rgba8/test.txt", EIF_AUTODETECT );
+    image_set_hint( &image, EIH_ASCII_EXPORT_VT100_COLORS, 0 );
+
     image_save( &image, "rgba8/test.tga", EIF_AUTODETECT );
     image_save( &image, "rgba8/test.bmp", EIF_AUTODETECT );
     image_save( &image, "rgba8/test.jpg", EIF_AUTODETECT );

@@ -24,6 +24,10 @@
       - Importing 8 bit per pixel color mapped images with RLE compression
       - Importing 8 bit per pixel color mapped images
       - Importing generic bitfield encoded images
+
+    TODO:
+      - Optimize loading, we read one pixel a time from the file!!
+      - Clead the code a bit
 */
 
 
@@ -207,12 +211,12 @@ E_LOAD_RESULT load_bmp( SImage* img, void* file, const SFileIOInterface* io )
     /* read the header */
     io->read( header, 1, 54, file );
 
-    bfOffBits     = ((size_t)header[10]) | ((size_t)header[11])<<8 | ((size_t)header[12])<<16 | ((size_t)header[13])<<24;
-    biWidth       = ((size_t)header[18]) | ((size_t)header[19])<<8 | ((size_t)header[20])<<16 | ((size_t)header[21])<<24;
-    biHeight      = ((size_t)header[22]) | ((size_t)header[23])<<8 | ((size_t)header[24])<<16 | ((size_t)header[25])<<24;
-    biBitCount    = ((size_t)header[28]) | ((size_t)header[29])<<8;
-    biCompression = ((size_t)header[30]) | ((size_t)header[31])<<8 | ((size_t)header[32])<<16 | ((size_t)header[33])<<24;
-    biClrUsed     = ((size_t)header[46]) | ((size_t)header[47])<<8 | ((size_t)header[48])<<16 | ((size_t)header[49])<<24;
+    bfOffBits     = READ_LITTLE_ENDIAN_32( header, 10 );
+    biWidth       = READ_LITTLE_ENDIAN_32( header, 18 );
+    biHeight      = READ_LITTLE_ENDIAN_32( header, 22 );
+    biBitCount    = READ_LITTLE_ENDIAN_16( header, 28 );
+    biCompression = READ_LITTLE_ENDIAN_32( header, 30 );
+    biClrUsed     = READ_LITTLE_ENDIAN_32( header, 46 );
 
     flipImage = (biHeight>0);
 
@@ -241,9 +245,9 @@ E_LOAD_RESULT load_bmp( SImage* img, void* file, const SFileIOInterface* io )
     {
         io->read( colorMask, 1, 12, file );
 
-        maskR = ((size_t)colorMask[0]) | ((size_t)colorMask[1])<<8 | ((size_t)colorMask[ 2])<<16 | ((size_t)colorMask[ 3])<<24;
-        maskG = ((size_t)colorMask[4]) | ((size_t)colorMask[5])<<8 | ((size_t)colorMask[ 6])<<16 | ((size_t)colorMask[ 7])<<24;
-        maskB = ((size_t)colorMask[8]) | ((size_t)colorMask[9])<<8 | ((size_t)colorMask[10])<<16 | ((size_t)colorMask[11])<<24;
+        maskR = READ_LITTLE_ENDIAN_32( colorMask, 0 );
+        maskG = READ_LITTLE_ENDIAN_32( colorMask, 4 );
+        maskB = READ_LITTLE_ENDIAN_32( colorMask, 8 );
 
         /*
             ORing the color masks must result in a continous block of
