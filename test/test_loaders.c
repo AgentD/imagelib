@@ -8,6 +8,21 @@ int main( )
 
     image_init( &img );
 
+    image_load( &img, "samples/feep.pbm", EIF_AUTODETECT );
+    image_save( &img, "feep.pbm.png", EIF_AUTODETECT );
+
+    image_load( &img, "samples/feep_gray.pbm", EIF_AUTODETECT );
+    image_save( &img, "feep_gray.pbm.png", EIF_AUTODETECT );
+
+    image_load( &img, "samples/rgb.pbm", EIF_AUTODETECT );
+    image_save( &img, "rgb.pbm.png", EIF_AUTODETECT );
+
+    image_load( &img, "samples/feep_grey_bin.pbm", EIF_AUTODETECT );
+    image_save( &img, "feep_grey_bin.pbm.png", EIF_AUTODETECT );
+
+    image_load( &img, "samples/rgb_bin.pbm", EIF_AUTODETECT );
+    image_save( &img, "rgb_bin.pbm.png", EIF_AUTODETECT );
+
     image_load( &img, "samples/lenna.txt", EIF_AUTODETECT );
     image_save( &img, "lenna.txt.png", EIF_AUTODETECT );
 

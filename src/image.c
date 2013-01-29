@@ -57,6 +57,10 @@ extern void save_txt( SImage* img, void* file, const SFileIOInterface* io );
 #endif
 
 
+#ifdef IMAGE_LOAD_PBM
+extern E_LOAD_RESULT load_pbm( SImage* img, void* file,
+                               const SFileIOInterface* io );
+#endif
 
 #ifdef IMAGE_SAVE_PBM
 extern void save_pbm( SImage* img, void* file, const SFileIOInterface* io );
@@ -169,6 +173,10 @@ E_LOAD_RESULT image_load_custom( SImage* img, void* file,
 
 #ifdef IMAGE_LOAD_TXT
     case EIF_TXT: r = load_txt( img, file, io ); break;
+#endif
+
+#ifdef IMAGE_LOAD_PBM
+    case EIF_PBM: r = load_pbm( img, file, io ); break;
 #endif
     };
 

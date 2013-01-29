@@ -2,7 +2,8 @@ set( IMAGE_IMPORT import/bmp.c
                   import/tga.c
                   import/jpg.c
                   import/png.c
-                  import/ascii.c )
+                  import/ascii.c
+                  import/pbm.c )
 
 set( IMAGE_EXPORT export/bmp.c
                   export/tga.c
