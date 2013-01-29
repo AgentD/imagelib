@@ -148,45 +148,45 @@ static void loadBMPrle( void* src, const SFileIOInterface* io,
     size_t i, j, index, padding;
     unsigned char v[2], c[2], R, G, B;
 
-    while( cur!=end && !io->eof( src ) )
+    while( cur<end && !io->eof( src ) )
     {
-        io->read( v, 1, 2, src );
+        io->read( v, 1, 2, src );          /* 2 byte command */
 
-        if( v[0] )
+        if( v[0] )                         /* v[0]>0: same color repeated */
         {
-            i = 4*((size_t)v[1]);
+            i = 4*((size_t)v[1]);              /* v[1] = color map index */
 
             B = colorMap[i  ];
             G = colorMap[i+1];
             R = colorMap[i+2];
 
-            for( j=0; j<v[0] && cur!=end; ++j, cur+=3 )
+            for( j=0; j<v[0] && cur<end; ++j ) /* repeate color v[0] times */
             {
-                cur[0] = R;
-                cur[1] = G;
-                cur[2] = B;
+                *(cur++) = R;
+                *(cur++) = G;
+                *(cur++) = B;
             }
         }
-        else
+        else                               /* v[0] == 0 */
         {
-            if( v[1] == 2 )
+            if( v[1] == 2 )                    /* v[1]==2: skip forward */
             {
                 io->read( c, 1, 2, src );
 
-                cur += 3*  ((size_t)c[0]);
-                cur += 3*w*((size_t)c[1]);
+                cur += 3*  ((size_t)c[0]);         /* skip pixels */
+                cur += 3*w*((size_t)c[1]);         /* skip rows */
             }
-            else if( v[1]>2 )
+            else if( v[1]>2 )                 /* read v[1] raw pixels */
             {
-                for( i=0; i<v[1] && cur!=end; ++i, cur+=3 )
+                for( i=0; i<v[1] && cur<end; ++i )
                 {
                     io->read( c, 1, 1, src );
 
                     index = 4*((size_t)c[0]);
 
-                    cur[2] = colorMap[index  ];
-                    cur[1] = colorMap[index+1];
-                    cur[0] = colorMap[index+2];
+                    *(cur++) = colorMap[index+2];
+                    *(cur++) = colorMap[index+1];
+                    *(cur++) = colorMap[index  ];
                 }
 
                 padding = (v[1] % 2);
