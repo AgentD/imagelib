@@ -6,8 +6,7 @@
 int main( int argc, char** argv )
 {
     SImage img;
-    size_t x, y, i;
-    char c[33];
+    size_t x, y;
 
     image_init( &img );
 
@@ -26,24 +25,6 @@ int main( int argc, char** argv )
                                                  1.0f - ((float)x)/255.0f,
                                                  1.0f );
         }
-    }
-
-    /* print a test string with line break */
-    image_print_string( &img, 120, 300, 0.0f, 0.0f, 1.0f, 0.5f,
-                        "Editing\nTest" );
-
-    /* print character table */
-    for( i=0, y=0; y<16; ++y )
-    {
-        for( x=0; x<32; ++x, ++i )
-        {
-            c[x  ] = (i=='\n') ? ' ' : i;
-            c[++x] = ' ';
-        }
-
-        c[32] = '\0';
-
-        image_print_string( &img, 400, 100+20*y, 0.0f, 0.0f, 1.0f, 1.0f, c );
     }
 
     image_save( &img, "test_edit.png", EIF_AUTODETECT );

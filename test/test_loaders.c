@@ -23,9 +23,6 @@ int main( )
     image_load( &img, "samples/rgb_bin.pbm", EIF_AUTODETECT );
     image_save( &img, "rgb_bin.pbm.png", EIF_AUTODETECT );
 
-    image_load( &img, "samples/lenna.txt", EIF_AUTODETECT );
-    image_save( &img, "lenna.txt.png", EIF_AUTODETECT );
-
     image_load( &img, "samples/lenna.jpg", EIF_AUTODETECT );
     image_save( &img, "lenna.jpg.png", EIF_AUTODETECT );
 

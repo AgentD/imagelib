@@ -1,9 +1,5 @@
 #include "image_edit.h"
-
 #include "util.h"
-#include "bitmap_font.h"
-
-#include <string.h>
 
 
 
@@ -88,45 +84,4 @@ void image_set_pixel( SImage* img, size_t x, size_t y,
         return;
     };
 }
-
-void image_print_string( SImage* img, size_t x, size_t y,
-                         float R, float G, float B, float A,
-                         const char* string )
-{
-#ifdef IMAGE_BITMAP_FONT
-    unsigned char char_buffer[ CHAR_WIDTH*CHAR_HEIGHT ];
-    unsigned char* src;
-
-    size_t X = x, Y = y, i, j, k;
-
-    memset( char_buffer, 0, CHAR_WIDTH*CHAR_HEIGHT );
-
-    for( i=0; string[i]!='\0'; ++i )
-    {
-        if( string[i]=='\n' )
-        {
-            X  = x;
-            Y += CHAR_HEIGHT;
-            continue;
-        }
-
-        render_character( string[i], char_buffer, 0, 0,
-                          CHAR_WIDTH, CHAR_HEIGHT );
-
-        for( j=0; j<CHAR_HEIGHT; ++j )
-        {
-            src = char_buffer + j*CHAR_WIDTH;
-
-            for( k=0; k<CHAR_WIDTH; ++k )
-            {
-                if( src[ k ] )
-                    image_set_pixel( img, X + k, Y + j, R, G, B, A );
-            }
-        }
-
-        X += CHAR_WIDTH;
-    }
-#endif
-}
-
 

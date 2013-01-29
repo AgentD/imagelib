@@ -91,10 +91,6 @@ int main( int argc, char** argv)
         }
     }
 
-    image_print_string( &image, 100, 500, 1.0f, 1.0f, 1.0f, 1.0f,
-                        "RGB test" );
-
-    image_save( &image, "rgb8/test.txt", EIF_AUTODETECT );
     image_save( &image, "rgb8/test.tga", EIF_AUTODETECT );
     image_save( &image, "rgb8/test.bmp", EIF_AUTODETECT );
     image_save( &image, "rgb8/test.jpg", EIF_AUTODETECT );
@@ -127,13 +123,6 @@ int main( int argc, char** argv)
         }
     }
 
-    image_print_string( &image, 100, 500, 1.0f, 1.0f, 1.0f, 1.0f,
-                        "RGBA test" );
-
-    image_set_hint( &image, EIH_ASCII_EXPORT_VT100_COLORS, 1 );
-    image_save( &image, "rgba8/test.txt", EIF_AUTODETECT );
-    image_set_hint( &image, EIH_ASCII_EXPORT_VT100_COLORS, 0 );
-
     image_save( &image, "rgba8/test.tga", EIF_AUTODETECT );
     image_save( &image, "rgba8/test.bmp", EIF_AUTODETECT );
     image_save( &image, "rgba8/test.jpg", EIF_AUTODETECT );
@@ -149,10 +138,6 @@ int main( int argc, char** argv)
         for( x=0; x<800; ++x )
             *(b++) = 255.0f*(((float)x) / 800.0f) * (((float)y) / 600.0f);
 
-    image_print_string( &image, 100, 500, 1.0f, 1.0f, 1.0f, 1.0f,
-                        "Grayscale Test" );
-
-    image_save( &image, "gray8/test.txt", EIF_AUTODETECT );
     image_save( &image, "gray8/test.tga", EIF_AUTODETECT );
     image_save( &image, "gray8/test.bmp", EIF_AUTODETECT );
     image_save( &image, "gray8/test.jpg", EIF_AUTODETECT );

@@ -2,17 +2,15 @@ set( IMAGE_IMPORT import/bmp.c
                   import/tga.c
                   import/jpg.c
                   import/png.c
-                  import/ascii.c
                   import/pbm.c )
 
 set( IMAGE_EXPORT export/bmp.c
                   export/tga.c
                   export/jpg.c
                   export/png.c
-                  export/ascii.c
                   export/pbm.c )
 
-set( IMAGE_LIB image.c bitmap_font.c image_edit.c io.c )
+set( IMAGE_LIB image.c image_edit.c io.c )
 
 
 if( IMAGE_LOAD_JPG OR IMAGE_SAVE_JPG )
