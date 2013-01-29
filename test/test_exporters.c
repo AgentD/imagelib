@@ -99,6 +99,7 @@ int main( int argc, char** argv)
     image_save( &image, "rgb8/test.bmp", EIF_AUTODETECT );
     image_save( &image, "rgb8/test.jpg", EIF_AUTODETECT );
     image_save( &image, "rgb8/test.png", EIF_AUTODETECT );
+    image_save( &image, "rgb8/test.pbm", EIF_AUTODETECT );
 
     /********************** generate RGBA test images ***********************/
     image_allocate_buffer( &image, 800, 600, ECT_RGBA8 );
@@ -137,6 +138,7 @@ int main( int argc, char** argv)
     image_save( &image, "rgba8/test.bmp", EIF_AUTODETECT );
     image_save( &image, "rgba8/test.jpg", EIF_AUTODETECT );
     image_save( &image, "rgba8/test.png", EIF_AUTODETECT );
+    image_save( &image, "rgba8/test.pbm", EIF_AUTODETECT );
 
     /******************** generate grayscale test images ********************/
     image_allocate_buffer( &image, 800, 600, ECT_GRAYSCALE8 );
@@ -155,6 +157,7 @@ int main( int argc, char** argv)
     image_save( &image, "gray8/test.bmp", EIF_AUTODETECT );
     image_save( &image, "gray8/test.jpg", EIF_AUTODETECT );
     image_save( &image, "gray8/test.png", EIF_AUTODETECT );
+    image_save( &image, "gray8/test.pbm", EIF_AUTODETECT );
 
     image_deinit( &image );
 

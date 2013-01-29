@@ -29,12 +29,14 @@ option( IMAGE_LOAD_BMP "Compile Microsoft Windows Bitmap(*.bmp) Image File loade
 option( IMAGE_LOAD_JPG "Compile JPEG Interchange Format(*.jpg) Image File loader" ON )
 option( IMAGE_LOAD_PNG "Compile Portable Network Graphics(*.png) Image File loader" ON )
 option( IMAGE_LOAD_TXT "Compile ASCII ART(*.txt) Image File loader" ON )
+option( IMAGE_LOAD_PBM "Compile Netpbm(*.pbm) Image File loader" ON )
 
 option( IMAGE_SAVE_TGA "Compile Truvision TARGA(*.tga) Image File writer" ON )
 option( IMAGE_SAVE_BMP "Compile Microsoft Windows Bitmap(*.bmp) Image File writer" ON )
 option( IMAGE_SAVE_JPG "Compile JPEG Interchange Format(*.jpg) Image File writer" ON )
 option( IMAGE_SAVE_PNG "Compile Portable Network Graphics(*.png) Image File writer" ON )
 option( IMAGE_SAVE_TXT "Compile ASCII art(*.txt) Image File writer" ON )
+option( IMAGE_SAVE_PBM "Compile Netpbm(*.pbm) Image File writer" ON )
 
 option( IMAGE_BITMAP_FONT "Compile built in bitmap font(required if ASCII art loader is enabled)" ON )
 
@@ -58,6 +60,10 @@ if( IMAGE_LOAD_TXT )
   add_definitions( -DIMAGE_LOAD_TXT )
 endif( )
 
+if( IMAGE_LOAD_PBM )
+  add_definitions( -DIMAGE_LOAD_PBM )
+endif( )
+
 
 if( IMAGE_SAVE_TGA )
   add_definitions( -DIMAGE_SAVE_TGA )
@@ -77,6 +83,10 @@ endif( )
 
 if( IMAGE_SAVE_TXT )
   add_definitions( -DIMAGE_SAVE_TXT )
+endif( )
+
+if( IMAGE_SAVE_PBM )
+  add_definitions( -DIMAGE_SAVE_PBM )
 endif( )
 
 

@@ -8,7 +8,8 @@ set( IMAGE_EXPORT export/bmp.c
                   export/tga.c
                   export/jpg.c
                   export/png.c
-                  export/ascii.c )
+                  export/ascii.c
+                  export/pbm.c )
 
 set( IMAGE_LIB image.c bitmap_font.c image_edit.c io.c )
 

@@ -40,7 +40,8 @@ typedef enum
     EIF_BMP,             /**< Microsoft Windows bitmap image file(*.bmp) */
     EIF_JPG,             /**< JPEG Interchange Format(*.jpg, *.jpeg) */
     EIF_PNG,             /**< Portable Network Graphics Format(*.png) */
-    EIF_TXT              /**< Textfile containing ASCII art(*.txt) */
+    EIF_TXT,             /**< Textfile containing ASCII art(*.txt) */
+    EIF_PBM              /**< Netpbm format(*.pbm) */
 }
 E_IMAGE_FILE;
 

@@ -58,6 +58,13 @@ extern void save_txt( SImage* img, void* file, const SFileIOInterface* io );
 
 
 
+#ifdef IMAGE_SAVE_PBM
+extern void save_pbm( SImage* img, void* file, const SFileIOInterface* io );
+#endif
+
+
+
+
 void image_init( SImage* img )
 {
     memset( img, 0, sizeof(SImage) );
@@ -227,6 +234,10 @@ void image_save_custom( SImage* img, void* file, const SFileIOInterface* io,
 #ifdef IMAGE_SAVE_TXT
     case EIF_TXT: save_txt( img, file, io ); break;
 #endif
+
+#ifdef IMAGE_SAVE_PBM
+    case EIF_PBM: save_pbm( img, file, io ); break;
+#endif
     };
 }
 
@@ -278,6 +289,10 @@ E_IMAGE_FILE image_guess_type( const char* filename )
 
     if( !strcmp( c, "JPG" ) || !strcmp( c, "JPEG" ) )
         return EIF_JPG;
+
+    if( !strcmp( c, "PPM" ) || !strcmp( c, "PGM" ) || !strcmp( c, "PBM" ) ||
+        !strcmp( c, "PNM" ) )
+        return EIF_PBM;
 
     return EIF_AUTODETECT;
 }
