@@ -9,6 +9,22 @@
 
 
 
+/*
+    NETBPM loading facilities.
+
+    What should work:
+      - Importing P1 ASCII bitmap images
+      - Importing P2 ASCII grayscale images
+      - Importing P3 ASCII RGB images
+      - Importing P5 binary grayscale images
+      - Importing P6 binary RGB images
+
+    What is implemented but has never been tested:
+      - Importing P4 binary bitmap images
+*/
+
+
+
 static void read_next_value( void* file, const SFileIOInterface* io,
                              char* buffer, size_t size )
 {
@@ -64,7 +80,7 @@ E_LOAD_RESULT load_pbm( SImage* img, void* file, const SFileIOInterface* io )
     /* save the format specifyer from the file */
     pbm_format = buffer[1];
 
-    /* read width */
+    /* read image size */
     read_next_value( file, io, buffer, sizeof(buffer) );
     width = strtol( buffer, NULL, 10 );
 
@@ -77,9 +93,11 @@ E_LOAD_RESULT load_pbm( SImage* img, void* file, const SFileIOInterface* io )
         read_next_value( file, io, buffer, sizeof(buffer) );
         max_val = strtol( buffer, NULL, 10 );
 
+        /* BPM spec says, must be in [1,65535] range */
         if( max_val<1 || max_val>65535 )
             return ELR_FILE_CORRUPTED;
 
+        /* compute scale factor for [0,255] range */
         scale = 255.0f/((float)max_val);
     }
 

@@ -27,37 +27,25 @@
 
     TODO:
       - Optimize loading, we read one pixel a time from the file!!
-      - Clead the code a bit
+      - Clean the code a bit
 */
 
 
 
-enum
-{
-    BI_RGB       = 0,
-    BI_RLE8      = 1,
-    BI_RLE4      = 2,
-    BI_BITFIELDS = 3
-};
+#define BI_RGB       0
+#define BI_RLE8      1
+#define BI_RLE4      2
+#define BI_BITFIELDS 3
 
 static void loadBMPbitfields( void* src, const SFileIOInterface* io,
-                              size_t w, size_t h, void* ptr, size_t bpp,
-                              size_t B, size_t G, size_t R, int flip )
+                              size_t w, size_t h, unsigned char* ptr,
+                              int bpp, int B, int G, int R )
 {
-    int    ystep = flip ? -3*w : 3*w;
+    int rshift=0, gshift=0, bshift=0, scaleR, scaleG, scaleB, v;
     size_t bytePerPixel = bpp/8;
-    size_t padding = (w*bytePerPixel) % 2;
-    size_t rshift=0, gshift=0, bshift=0;
-    size_t scaleR, scaleG, scaleB, x, v;
-
-    unsigned char* cur = (unsigned char*)ptr;
-    unsigned char* end = cur + h*3*w;
-
-    if( flip )
-    {
-        end  = cur - 3*w;
-        cur += (h-1)*3*w;
-    }
+    size_t padding = (w*bytePerPixel) % 2, x;
+    unsigned char v0[4] = {0,0,0,0};
+    unsigned char* end = ptr + h*3*w;
 
     /*
         We will read multibyte integers from the file and AND them with the
@@ -74,25 +62,19 @@ static void loadBMPbitfields( void* src, const SFileIOInterface* io,
     scaleB = 0xFF / (B>>bshift);
 
     /* for each scanline */
-    for( ; cur!=end; cur+=ystep )
+    while( ptr<end )
     {
-        unsigned char* row = cur;
-
         /* for each pixel in a scanline */
-        for( x=0; x<w; ++x, row+=3 )
+        for( x=0; x<w; ++x, ptr+=3 )
         {
-            unsigned char v0[4] = {0,0,0,0};
-
             /* Read the color value from the file */
             io->read( v0, 1, bytePerPixel, src );
-
-            v = ((size_t)v0[0])     | ((size_t)v0[1])<<8 |
-                ((size_t)v0[2])<<16 | ((size_t)v0[3])<<24;
+            v = READ_LITTLE_ENDIAN_32( v0, 0 );
 
             /* determine and store actual color values */
-            row[2] = (unsigned char)( (v & B)>>bshift )*scaleB;
-            row[1] = (unsigned char)( (v & G)>>gshift )*scaleG;
-            row[0] = (unsigned char)( (v & R)>>rshift )*scaleR;
+            ptr[0] = ((v & R)>>rshift)*scaleR;
+            ptr[1] = ((v & G)>>gshift)*scaleG;
+            ptr[2] = ((v & B)>>bshift)*scaleB;
         }
 
         /* Skip the zeroes added for padding */
@@ -101,36 +83,23 @@ static void loadBMPbitfields( void* src, const SFileIOInterface* io,
 }
 
 static void loadBMPcolormap( void* src, const SFileIOInterface* io,
-                             size_t w, size_t h, void* ptr,
-                             unsigned char* colorMap, int flip )
+                             size_t w, size_t h, unsigned char* ptr,
+                             unsigned char* colorMap )
 {
-    unsigned char* cur = (unsigned char*)ptr;
-    unsigned char* end = cur + h*3*w;
-    size_t padding = w % 2;
-    int ystep = flip ? -3*w : 3*w;
-    size_t x;
-
-    if( flip )
-    {
-        end  = cur - 3*w;
-        cur += (h-1)*3*w;
-    }
+    unsigned char i, *end = ptr + h*3*w;
+    size_t padding = w % 2, x;
 
     /* for each scanline */
-    for( ; cur!=end; cur+=ystep )
+    while( ptr<end )
     {
-        unsigned char* row = cur;
-
         /* for each pixel in a scanline */
-        for( x=0; x<w; ++x, row+=3 )
+        for( x=0; x<w; ++x, ptr+=3 )
         {
-            char i;
-
             io->read( &i, 1, 1, src );      /* read color map index */
 
-            row[0] = colorMap[ i*4     ];   /* store color from color map */
-            row[1] = colorMap[ i*4 + 1 ];
-            row[2] = colorMap[ i*4 + 2 ];
+            ptr[0] = colorMap[ i*4     ];   /* store color from color map */
+            ptr[1] = colorMap[ i*4 + 1 ];
+            ptr[2] = colorMap[ i*4 + 2 ];
         }
 
         /* Skip the zeroes added for padding */
@@ -139,60 +108,51 @@ static void loadBMPcolormap( void* src, const SFileIOInterface* io,
 }
 
 static void loadBMPrle( void* src, const SFileIOInterface* io,
-                        size_t w, size_t h, void* ptr,
+                        size_t w, size_t h, unsigned char* ptr,
                         unsigned char* colorMap )
 {
-    unsigned char* beg = (unsigned char*)ptr;
-    unsigned char* cur = beg;
-    unsigned char* end = beg + 3*w*h;
-    size_t i, j, index, padding;
+    unsigned char* end = ptr + 3*w*h;
+    size_t i, j, padding;
     unsigned char v[2], c[2], R, G, B;
 
-    while( cur<end && !io->eof( src ) )
+    while( ptr<end )
     {
         io->read( v, 1, 2, src );          /* 2 byte command */
 
         if( v[0] )                         /* v[0]>0: same color repeated */
         {
-            i = 4*((size_t)v[1]);              /* v[1] = color map index */
+            i = 4*v[1];                        /* v[1] = color map index */
 
             B = colorMap[i  ];
             G = colorMap[i+1];
             R = colorMap[i+2];
 
-            for( j=0; j<v[0] && cur<end; ++j ) /* repeate color v[0] times */
+            for( j=0; j<v[0] && ptr<end; ++j ) /* repeate color v[0] times */
             {
-                *(cur++) = R;
-                *(cur++) = G;
-                *(cur++) = B;
+                *(ptr++) = R;
+                *(ptr++) = G;
+                *(ptr++) = B;
             }
         }
-        else                               /* v[0] == 0 */
+        else if( v[1] == 2 )              /* v[1]==2: skip forward */
         {
-            if( v[1] == 2 )                    /* v[1]==2: skip forward */
+            io->read( c, 1, 2, src );
+            ptr += 3*(c[1]*w + c[0]);
+        }
+        else if( v[1]>2 )                 /* read v[1] raw pixels */
+        {
+            for( i=0; i<v[1] && ptr<end; ++i )
             {
-                io->read( c, 1, 2, src );
+                io->read( c, 1, 1, src );
+                i = 4*c[0];
 
-                cur += 3*  ((size_t)c[0]);         /* skip pixels */
-                cur += 3*w*((size_t)c[1]);         /* skip rows */
+                *(ptr++) = colorMap[i+2];
+                *(ptr++) = colorMap[i+1];
+                *(ptr++) = colorMap[i  ];
             }
-            else if( v[1]>2 )                 /* read v[1] raw pixels */
-            {
-                for( i=0; i<v[1] && cur<end; ++i )
-                {
-                    io->read( c, 1, 1, src );
 
-                    index = 4*((size_t)c[0]);
-
-                    *(cur++) = colorMap[index+2];
-                    *(cur++) = colorMap[index+1];
-                    *(cur++) = colorMap[index  ];
-                }
-
-                padding = (v[1] % 2);
-
-                io->seek( src, padding, SEEK_CUR );
-            }
+            padding = (v[1] % 2);
+            io->seek( src, padding, SEEK_CUR );
         }
     }
 }
@@ -202,11 +162,10 @@ static void loadBMPrle( void* src, const SFileIOInterface* io,
 E_LOAD_RESULT load_bmp( SImage* img, void* file, const SFileIOInterface* io )
 {
     unsigned char header[ 54 ];
-    size_t bfOffBits, biWidth, biBitCount, biCompression, biClrUsed;
-    size_t maskR=0, maskG=0, maskB=0, x;
-    int biHeight, flipImage;
-    unsigned char colorMask[12];
+    unsigned char colorMask[ 12 ];
     unsigned char* colorMap = NULL;
+    int bfOffBits, biWidth, biBitCount, biCompression, biClrUsed;
+    int maskR=0, maskG=0, maskB=0, x, biHeight, flipImage;
 
     /* read the header */
     io->read( header, 1, 54, file );
@@ -219,7 +178,6 @@ E_LOAD_RESULT load_bmp( SImage* img, void* file, const SFileIOInterface* io )
     biClrUsed     = READ_LITTLE_ENDIAN_32( header, 46 );
 
     flipImage = (biHeight>0);
-
     biHeight  = (biHeight<0) ? -biHeight : biHeight;
     biClrUsed = biClrUsed ? biClrUsed : 256;
 
@@ -288,18 +246,18 @@ E_LOAD_RESULT load_bmp( SImage* img, void* file, const SFileIOInterface* io )
     {
     case BI_BITFIELDS:
         loadBMPbitfields( file, io, biWidth, biHeight, img->image_buffer,
-                          biBitCount, maskR, maskG, maskB, flipImage );
+                          biBitCount, maskR, maskG, maskB );
         break;
     case BI_RGB:
         if( biBitCount==8 )
             loadBMPcolormap( file, io, biWidth, biHeight, img->image_buffer,
-                             colorMap, flipImage );
+                             colorMap );
         else if( biBitCount==16 )
             loadBMPbitfields( file, io, biWidth, biHeight, img->image_buffer,
-                              biBitCount, 0x1F, 0x3E0, 0x7C00, flipImage );
+                              biBitCount, 0x1F, 0x3E0, 0x7C00 );
         else
             loadBMPbitfields( file, io, biWidth, biHeight, img->image_buffer,
-                              biBitCount, 0xFF, 0xFF00, 0xFF0000, flipImage );
+                              biBitCount, 0xFF, 0xFF00, 0xFF0000 );
         break;
     case BI_RLE8:
         loadBMPrle( file, io, biWidth, biHeight, img->image_buffer,
@@ -307,6 +265,11 @@ E_LOAD_RESULT load_bmp( SImage* img, void* file, const SFileIOInterface* io )
         break;
     };
 
+    /* flip the origin to the right position */
+    if( flipImage )
+        image_flip_v( img );
+
+    /* cleanup */
     free( colorMap );
     return ELR_SUCESS;
 }
