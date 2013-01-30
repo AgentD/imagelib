@@ -23,7 +23,7 @@
 
 
 #define READ_BIG_ENDIAN_16( array, index )\
-    (((size_t)(array)[(index)]) | ((size_t)(array)[(index)+1])<<8)
+    (((size_t)(array)[(index)+1]) | ((size_t)(array)[(index)])<<8)
 
 
 
