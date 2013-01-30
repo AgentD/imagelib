@@ -17,8 +17,6 @@ set( CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin" )
 include_directories( ${CMAKE_SOURCE_DIR}/include/
                      ${CMAKE_SOURCE_DIR}/src/
                      ${CMAKE_SOURCE_DIR}/src/jpglib/
-                     ${CMAKE_SOURCE_DIR}/src/zlib/
-                     ${CMAKE_SOURCE_DIR}/src/libpng/
                    )
 
 #----------------------------------------------------------------------

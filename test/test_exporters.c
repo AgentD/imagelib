@@ -1,5 +1,4 @@
 #include "image.h"
-#include "image_edit.h"
 
 #ifdef _WIN32
     #include <direct.h>

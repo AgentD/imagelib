@@ -10,7 +10,7 @@ set( IMAGE_EXPORT export/bmp.c
                   export/png.c
                   export/pbm.c )
 
-set( IMAGE_LIB image.c image_edit.c io.c )
+set( IMAGE_LIB image.c io.c )
 
 
 if( IMAGE_LOAD_JPG OR IMAGE_SAVE_JPG )
