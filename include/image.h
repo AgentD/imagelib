@@ -160,6 +160,21 @@ void image_save_custom( SImage* img, void* file, const SFileIOInterface* io,
 void image_allocate_buffer( SImage* img, size_t width, size_t height,
                             E_COLOR_TYPE type );
 
+/** \brief Flip an image vertically */
+void image_flip_v( SImage* img );
+
+/** \brief Flip an image horizontally */
+void image_flip_h( SImage* img );
+
+/**
+ * \brief Swap two color channels of an image
+ *
+ * \param img A pointer t the image structure.
+ * \param c1  The index of the first channel.
+ * \param c2  The index of the second channel.
+ */
+void image_swap_channels( SImage* img, int c1, int c2 );
+
 /**
  * \brief Set a hint for an image loader or exporter
  *
