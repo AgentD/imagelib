@@ -79,8 +79,10 @@ endif( )
 # Get everything to compile
 #----------------------------------------------------------------------
 
-if( CMAKE_COMPILER_IS_GNUC )
-  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ansi -pedantic -Wall -Wextra -Werror -ggdb" )
+if( CMAKE_COMPILER_IS_GNUCC OR MINGW )
+  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ansi -pedantic" )
+  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Werror" )
+  set( CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb" )
 endif( )
 
 if( IMAGE_LOAD_PNG OR IMAGE_SAVE_PNG )

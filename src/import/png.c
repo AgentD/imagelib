@@ -22,7 +22,6 @@
 
 E_LOAD_RESULT load_png( SImage* img, void* file, const SFileIOInterface* io )
 {
-    int bitDepth, colorType;
     unsigned int width, height, result;
     unsigned char* input;
     size_t length;

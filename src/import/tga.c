@@ -43,7 +43,7 @@ static void load_cmap( void* file, const SFileIOInterface* io,
                        size_t bpp, size_t cmap_bpp )
 {
     unsigned char *mapPtr, *ptr;
-    unsigned char c0[ 4 ] = { 0, 0, 0, 0 }, temp;
+    unsigned char c0[ 4 ] = { 0, 0, 0, 0 };
     size_t j, i, c, k;
 
     ptr = img->image_buffer;

@@ -357,6 +357,8 @@ E_LOAD_RESULT image_load_custom( SImage* img, void* file,
 #ifdef IMAGE_LOAD_PBM
     case EIF_PBM: r = load_pbm( img, file, io ); break;
 #endif
+    default:
+        break;
     };
 
     if( r!=ELR_SUCESS )
@@ -421,6 +423,8 @@ void image_save_custom( SImage* img, void* file, const SFileIOInterface* io,
 #ifdef IMAGE_SAVE_PBM
     case EIF_PBM: save_pbm( img, file, io ); break;
 #endif
+    default:
+        break;
     };
 }
 

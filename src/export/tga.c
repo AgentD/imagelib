@@ -37,6 +37,7 @@ void save_tga( SImage* img, void* file, const SFileIOInterface* io )
     case ECT_GRAYSCALE8: header[2] = 3; bpp = 1;                 break;
     case ECT_RGB8:       header[2] = 2; bpp = 3;                 break;
     case ECT_RGBA8:      header[2] = 2; bpp = 4; header[17] = 8; break;
+    default:                                                     return;
     };
 
     header[16]  = bpp*8;

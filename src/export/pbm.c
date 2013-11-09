@@ -33,10 +33,13 @@ void save_pbm( SImage* img, void* file, const SFileIOInterface* io )
     case ECT_RGBA8:
         io->write( "P6\n", 1, 2, file );    /* binary RGB */
         break;
+    default:
+        return;
     };
 
     /* <width> <height>\n */
-    sprintf( text_buffer, "%zu %zu\n", img->width, img->height );
+    sprintf( text_buffer, "%lu %lu\n", (unsigned long)img->width,
+                                       (unsigned long)img->height );
     io->write( text_buffer, 1, strlen(text_buffer), file );
 
     /* <max color value>\n */

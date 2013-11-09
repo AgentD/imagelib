@@ -33,6 +33,7 @@ void save_png( SImage* img, void* file, const SFileIOInterface* io )
     case ECT_GRAYSCALE8: colortype = LCT_GREY; break;
     case ECT_RGB8:       colortype = LCT_RGB;  break;
     case ECT_RGBA8:      colortype = LCT_RGBA; break;
+    default:                                   return;
     };
 
     lodepng_encode_memory( &buffer, &length, img->image_buffer,

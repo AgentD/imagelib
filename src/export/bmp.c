@@ -36,6 +36,7 @@ void save_bmp( SImage* img, void* file, const SFileIOInterface* io )
     case ECT_GRAYSCALE8: header[28] =  8; bpp = 1; realBPP = 1; break;
     case ECT_RGB8:       header[28] = 24; bpp = 3; realBPP = 3; break;
     case ECT_RGBA8:      header[28] = 24; bpp = 3; realBPP = 4; break;
+    default:                                                    return;
     };
 
     size = img->width * img->height*bpp;
@@ -63,7 +64,9 @@ void save_bmp( SImage* img, void* file, const SFileIOInterface* io )
     {
         for( i=0; i<256; ++i )
         {
-            unsigned char v[4] = { i, i, i, 0 };
+            unsigned char v[4];
+            v[0] = v[1] = v[2] = i;
+            v[3] = 0;
 
             io->write( v, 1, 4, file );
         }

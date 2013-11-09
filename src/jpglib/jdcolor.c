@@ -293,6 +293,7 @@ METHODDEF(void)
 start_pass_dcolor (j_decompress_ptr cinfo)
 {
   /* no work needed */
+  (void)cinfo;
 }
 
 
