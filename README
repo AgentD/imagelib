@@ -15,16 +15,16 @@
  first release.
 
  More than a year later, after using the code for my thesis, but not working
- of it (as I ran out of boredomeness^^) I came to the conclusion that I should
- clean the code (the internals are filthy), add test suits and documentation,
+ on it (as I ran out of boredomeness^^) I came to the conclusion that I should
+ clean the code (the internals were filthy), add test suits and documentation,
  convert the hole thing from C++ to C and maybe continue working on more
  loaders/exporters.
 
 
- Because this project (tough small) is one of my bigger out-of-boredome
- projects, I would apreciate any comments, bugfixes and contributions under
- the condition that any contribution goes into the public domain too.
- Long things short: Feel free to drop me a line: david.oberhollenzer@tele2.at.
+ If you actually use this code, you can use it for whatever you want without
+ any conditions whatsoever, but nevertheless, I would apreciate any hints,
+ comments, bugfixes, contributions, etc... under the condition that any
+ contribution goes into the public domain too.
 
 
   Features
@@ -44,20 +44,20 @@
                   24/32 (RGB/RGBA) bpp color mapped with or without RLE,
                   24/32 (RGB/RGBA) bpp truecolor with or without RLE
               - Windows Bitmap (*.bmp):
-                  Can load everything, except 1/2/4 bpp color formats
+                  Can load everything with at least 8 bit per pixel
               - PNG's Not Gif (*.png):
                   Using LodePNG
               - JPEG interchange format (*.jpg):
                   All formats supported
                   Requires jpeglib
-              - ASCII Art (using a built in bitmap font)
+              - Netpbm (*.pbm, *.ppm, *.pgm, *.pnm):
+                  All ASCII and binary formats
 
      Exporting: - Targa Image File (*.tga)
                 - Windows Bitmap (*.bmp)
-                - PNG's Not Gif (*.png)
+                - PNG's Not Gif (*.png): using LodePNG
                 - JPEG interchange format (*.jpg): requires libjpeg
-                - ASCII Art: image to text using avarage brightness of a block
-                             and optionally VT100 color codes.
+                - Netpbm (*.pbm, *.ppm, *.pgm, *.pnm)
 
 
   Licensing
@@ -78,7 +78,7 @@
  namely LodePNG and the jpeglib library. Those libraries are not in the public
  domain and you will have to respect their terms and conditions of usage and
  redistribution if you use them. Their usage is optional and can be configured
- out the build system.
+ using the build system.
 
  The LodePNG license can be found in the file "lodepng-LICENSE"
  The libjpeg license can be found in the file "libjpeg-LICENSE"
