@@ -55,7 +55,7 @@ typedef struct
     /** \brief Returns non-zero if the end of file has been hit */
     int (* eof )( void* file );
 }
-SFileIOInterface;
+image_io_t;
 
 #ifdef __cplusplus
 extern "C"
@@ -67,7 +67,7 @@ extern "C"
  *
  * \param io A pointer to the callback structure to write to
  */
-void image_io_init_stdio( SFileIOInterface* io );
+void image_io_init_stdio( image_io_t* io );
 
 #ifdef __cplusplus
 }

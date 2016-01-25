@@ -21,7 +21,7 @@
 */
 
 #ifdef IMAGE_LOAD_PBM
-static void read_next_value( void* file, const SFileIOInterface* io,
+static void read_next_value( void* file, const image_io_t* io,
                              char* buffer, size_t size )
 {
     size_t i;
@@ -56,7 +56,7 @@ static void read_next_value( void* file, const SFileIOInterface* io,
 
 
 
-E_LOAD_RESULT load_pbm( SImage* img, void* file, const SFileIOInterface* io )
+E_LOAD_RESULT load_pbm( image_t* img, void* file, const image_io_t* io )
 {
     char buffer[ 40 ], pbm_format;
     size_t width, height, i, j, size;

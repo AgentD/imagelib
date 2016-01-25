@@ -13,7 +13,7 @@
 */
 
 #ifdef IMAGE_SAVE_BMP
-void save_bmp( SImage* img, void* file, const SFileIOInterface* io )
+void save_bmp( image_t* img, void* file, const image_io_t* io )
 {
     const char zero[4] = { 0, 0, 0, 0 };
     size_t bpp, realBPP, size, i, dy, padding, x;

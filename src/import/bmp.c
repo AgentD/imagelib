@@ -31,7 +31,7 @@
 #define BI_RLE4      2
 #define BI_BITFIELDS 3
 
-static void loadBMPbitfields( void* src, const SFileIOInterface* io,
+static void loadBMPbitfields( void* src, const image_io_t* io,
                               size_t w, size_t h, unsigned char* ptr,
                               int bpp, int B, int G, int R )
 {
@@ -76,7 +76,7 @@ static void loadBMPbitfields( void* src, const SFileIOInterface* io,
     }
 }
 
-static void loadBMPcolormap( void* src, const SFileIOInterface* io,
+static void loadBMPcolormap( void* src, const image_io_t* io,
                              size_t w, size_t h, unsigned char* ptr,
                              unsigned char* colorMap )
 {
@@ -101,7 +101,7 @@ static void loadBMPcolormap( void* src, const SFileIOInterface* io,
     }
 }
 
-static void loadBMPrle( void* src, const SFileIOInterface* io,
+static void loadBMPrle( void* src, const image_io_t* io,
                         size_t w, size_t h, unsigned char* ptr,
                         unsigned char* colorMap )
 {
@@ -153,7 +153,7 @@ static void loadBMPrle( void* src, const SFileIOInterface* io,
 
 
 
-E_LOAD_RESULT load_bmp( SImage* img, void* file, const SFileIOInterface* io )
+E_LOAD_RESULT load_bmp( image_t* img, void* file, const image_io_t* io )
 {
     unsigned char header[ 54 ];
     unsigned char colorMask[ 12 ];

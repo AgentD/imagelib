@@ -6,67 +6,67 @@
 #include <stdio.h>
 
 #ifdef IMAGE_LOAD_TGA
-extern E_LOAD_RESULT load_tga( SImage* img, void* file,
-                               const SFileIOInterface* io );
+extern E_LOAD_RESULT load_tga( image_t* img, void* file,
+                               const image_io_t* io );
 #endif
 
 #ifdef IMAGE_SAVE_TGA
-extern void save_tga( SImage* img, void* file, const SFileIOInterface* io );
+extern void save_tga( image_t* img, void* file, const image_io_t* io );
 #endif
 
 
 #ifdef IMAGE_LOAD_JPG
-extern E_LOAD_RESULT load_jpg( SImage* img, void* file,
-                               const SFileIOInterface* io );
+extern E_LOAD_RESULT load_jpg( image_t* img, void* file,
+                               const image_io_t* io );
 #endif
 
 #ifdef IMAGE_SAVE_JPG
-extern void save_jpg( SImage* img, void* file, const SFileIOInterface* io );
+extern void save_jpg( image_t* img, void* file, const image_io_t* io );
 #endif
 
 
 #ifdef IMAGE_LOAD_BMP
-extern E_LOAD_RESULT load_bmp( SImage* img, void* file,
-                               const SFileIOInterface* io );
+extern E_LOAD_RESULT load_bmp( image_t* img, void* file,
+                               const image_io_t* io );
 #endif
 
 #ifdef IMAGE_SAVE_BMP
-extern void save_bmp( SImage* img, void* file, const SFileIOInterface* io );
+extern void save_bmp( image_t* img, void* file, const image_io_t* io );
 #endif
 
 
 #ifdef IMAGE_LOAD_PNG
-extern E_LOAD_RESULT load_png( SImage* img, void* file,
-                               const SFileIOInterface* io );
+extern E_LOAD_RESULT load_png( image_t* img, void* file,
+                               const image_io_t* io );
 #endif
 
 #ifdef IMAGE_SAVE_PNG
-extern void save_png( SImage* img, void* file, const SFileIOInterface* io );
+extern void save_png( image_t* img, void* file, const image_io_t* io );
 #endif
 
 
 #ifdef IMAGE_LOAD_PBM
-extern E_LOAD_RESULT load_pbm( SImage* img, void* file,
-                               const SFileIOInterface* io );
+extern E_LOAD_RESULT load_pbm( image_t* img, void* file,
+                               const image_io_t* io );
 #endif
 
 #ifdef IMAGE_SAVE_PBM
-extern void save_pbm( SImage* img, void* file, const SFileIOInterface* io );
+extern void save_pbm( image_t* img, void* file, const image_io_t* io );
 #endif
 
 
 
-void image_init( SImage* img )
+void image_init( image_t* img )
 {
-    memset( img, 0, sizeof(SImage) );
+    memset( img, 0, sizeof(image_t) );
 }
 
-void image_deinit( SImage* img )
+void image_deinit( image_t* img )
 {
     free( img->image_buffer );
 }
 
-int image_allocate_buffer( SImage* img, size_t width, size_t height,
+int image_allocate_buffer( image_t* img, size_t width, size_t height,
                            E_COLOR_TYPE type )
 {
     size_t byteperpixel = 0;
@@ -101,7 +101,7 @@ int image_allocate_buffer( SImage* img, size_t width, size_t height,
     return 1;
 }
 
-void image_flip_v( SImage* img )
+void image_flip_v( image_t* img )
 {
     size_t row_length, i, j;
     unsigned char *start_ptr, *end_ptr;
@@ -140,7 +140,7 @@ void image_flip_v( SImage* img )
     }
 }
 
-void image_flip_h( SImage* img )
+void image_flip_h( image_t* img )
 {
     unsigned char *r0, *r1, *r2, *r3, temp;
     size_t i, j, row_length;
@@ -226,7 +226,7 @@ void image_flip_h( SImage* img )
     }
 }
 
-void image_swap_channels( SImage* img, int c1, int c2 )
+void image_swap_channels( image_t* img, int c1, int c2 )
 {
     unsigned char* ptr;
     unsigned char temp;
@@ -278,10 +278,10 @@ void image_swap_channels( SImage* img, int c1, int c2 )
 
 /****************************************************************************/
 
-E_LOAD_RESULT image_load( SImage* img, const char* filename,
+E_LOAD_RESULT image_load( image_t* img, const char* filename,
                           E_IMAGE_FILE type )
 {
-    SFileIOInterface stdio;
+    image_io_t stdio;
     E_LOAD_RESULT r;
     FILE* f;
 
@@ -301,9 +301,8 @@ E_LOAD_RESULT image_load( SImage* img, const char* filename,
     return r;
 }
 
-E_LOAD_RESULT image_load_custom( SImage* img, void* file,
-                                 const SFileIOInterface* io,
-                                 E_IMAGE_FILE type )
+E_LOAD_RESULT image_load_custom( image_t* img, void* file,
+                                 const image_io_t* io, E_IMAGE_FILE type )
 {
     E_LOAD_RESULT r = ELR_UNKNOWN_FILE_FORMAT;
 
@@ -346,9 +345,9 @@ E_LOAD_RESULT image_load_custom( SImage* img, void* file,
 }
 
 
-void image_save( SImage* img, const char* filename, E_IMAGE_FILE type )
+void image_save( image_t* img, const char* filename, E_IMAGE_FILE type )
 {
-    SFileIOInterface stdio;
+    image_io_t stdio;
     FILE* f;
 
     image_io_init_stdio( &stdio );
@@ -366,7 +365,7 @@ void image_save( SImage* img, const char* filename, E_IMAGE_FILE type )
     fclose( f );
 }
 
-void image_save_custom( SImage* img, void* file, const SFileIOInterface* io,
+void image_save_custom( image_t* img, void* file, const image_io_t* io,
                         E_IMAGE_FILE type )
 {
     switch( type )
@@ -395,13 +394,13 @@ void image_save_custom( SImage* img, void* file, const SFileIOInterface* io,
     };
 }
 
-void image_set_hint( SImage* img, E_IMAGE_HINT hint, size_t value )
+void image_set_hint( image_t* img, E_IMAGE_HINT hint, int value )
 {
     if( hint < EIH_NUM_HINTS )
         img->hints[ hint ] = value;
 }
 
-size_t image_get_hint( SImage* img, E_IMAGE_HINT hint )
+int image_get_hint( image_t* img, E_IMAGE_HINT hint )
 {
     return hint < EIH_NUM_HINTS ? img->hints[ hint ] : 0;
 }

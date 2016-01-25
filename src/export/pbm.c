@@ -15,7 +15,7 @@
 */
 
 #ifdef IMAGE_SAVE_PBM
-void save_pbm( SImage* img, void* file, const SFileIOInterface* io )
+void save_pbm( image_t* img, void* file, const image_io_t* io )
 {
     char text_buffer[ 40 ];
     unsigned char* ptr;

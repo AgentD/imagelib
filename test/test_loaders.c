@@ -4,7 +4,7 @@
 
 int main( )
 {
-    SImage img;
+    image_t img;
 
     image_init( &img );
 

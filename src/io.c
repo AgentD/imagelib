@@ -1,10 +1,7 @@
 #include "image_io.h"
-
 #include <stdio.h>
 
-
-
-void image_io_init_stdio( SFileIOInterface* io )
+void image_io_init_stdio( image_io_t* io )
 {
     io->read  = (size_t(*)(void*,size_t,size_t,void*))fread;
     io->write = (size_t(*)(const void*,size_t,size_t,void*))fwrite;

@@ -35,9 +35,8 @@
 #define RGB_RLE          10
 #define GRAYSCALE_RLE    11
 
-static void load_cmap( void* file, const SFileIOInterface* io,
-                       SImage* img, unsigned char* cmap,
-                       size_t bpp, size_t cmap_bpp )
+static void load_cmap( void* file, const image_io_t* io, image_t* img,
+                       unsigned char* cmap, size_t bpp, size_t cmap_bpp )
 {
     unsigned char *mapPtr, *ptr;
     unsigned char c0[ 4 ] = { 0, 0, 0, 0 };
@@ -63,8 +62,8 @@ static void load_cmap( void* file, const SFileIOInterface* io,
     }
 }
 
-static void load_cmap_rle( void* file, const SFileIOInterface* io,
-                           SImage* img, unsigned char* cmap,
+static void load_cmap_rle( void* file, const image_io_t* io,
+                           image_t* img, unsigned char* cmap,
                            size_t bpp, size_t cmap_bpp )
 {
     unsigned char packet=0, data[4] = {0,0,0,0}, *t;
@@ -111,8 +110,8 @@ static void load_cmap_rle( void* file, const SFileIOInterface* io,
     }
 }
 
-static void load_rle( void* file, const SFileIOInterface* io,
-                      size_t bpp, SImage* img )
+static void load_rle( void* file, const image_io_t* io,
+                      size_t bpp, image_t* img )
 {
     unsigned char packet = 0, data[ 4 ] = {0,0,0,0};
     unsigned char* ptr = img->image_buffer;
@@ -149,7 +148,7 @@ static void load_rle( void* file, const SFileIOInterface* io,
 
 
 
-E_LOAD_RESULT load_tga( SImage* img, void* file, const SFileIOInterface* io )
+E_LOAD_RESULT load_tga( image_t* img, void* file, const image_io_t* io )
 {
     unsigned char header[ 18 ];
     int width, height, bpp, cmap_bpp, have_cmap, pic_type;

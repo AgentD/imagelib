@@ -14,7 +14,7 @@
 
 #include <stdlib.h>
 
-void save_png( SImage* img, void* file, const SFileIOInterface* io )
+void save_png( image_t* img, void* file, const image_io_t* io )
 {
     unsigned char* buffer;
     size_t length;

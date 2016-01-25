@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-E_LOAD_RESULT load_png( SImage* img, void* file, const SFileIOInterface* io )
+E_LOAD_RESULT load_png( image_t* img, void* file, const image_io_t* io )
 {
     unsigned int width, height, result;
     unsigned char* input;

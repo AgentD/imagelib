@@ -69,7 +69,7 @@ static boolean fill_input_buffer( j_decompress_ptr cinfo )
 
 
 
-E_LOAD_RESULT load_jpg( SImage* img, void* file, const SFileIOInterface* io )
+E_LOAD_RESULT load_jpg( image_t* img, void* file, const image_io_t* io )
 {
     size_t length;
     unsigned char** rowPtr = NULL;

@@ -14,7 +14,7 @@
 */
 
 #ifdef IMAGE_SAVE_TGA
-void save_tga( SImage* img, void* file, const SFileIOInterface* io )
+void save_tga( image_t* img, void* file, const image_io_t* io )
 {
     unsigned char header[ 18 ];
     size_t bpp = 0;

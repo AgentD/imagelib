@@ -64,9 +64,9 @@ typedef struct
 
     E_COLOR_TYPE type;
 
-    IMAGE_HINTS hints;
+    int hints[ EIH_NUM_HINTS ];
 }
-SImage;
+image_t;
 
 #ifdef __cplusplus
 extern "C"
@@ -78,14 +78,14 @@ extern "C"
  *
  * Call this before doing anything with an image.
  */
-void image_init( SImage* img );
+void image_init( image_t* img );
 
 /**
  * \brief Uninitialise an image structure
  *
  * Call this once you are done with an image.
  */
-void image_deinit( SImage* img );
+void image_deinit( image_t* img );
 
 /**
  * \brief Load an image from a file
@@ -99,7 +99,7 @@ void image_deinit( SImage* img );
  *
  * \return ELR_SUCESS(=0) on sucess, or a loading error otherwise.
  */
-E_LOAD_RESULT image_load( SImage* img, const char* filename,
+E_LOAD_RESULT image_load( image_t* img, const char* filename,
                           E_IMAGE_FILE type );
 
 
@@ -113,9 +113,8 @@ E_LOAD_RESULT image_load( SImage* img, const char* filename,
  *
  * \return ELR_SUCESS(=0) on sucess, or a loading error otherwise.
  */
-E_LOAD_RESULT image_load_custom( SImage* img, void* file,
-                                 const SFileIOInterface* io,
-                                 E_IMAGE_FILE type );
+E_LOAD_RESULT image_load_custom( image_t* img, void* file,
+                                 const image_io_t* io, E_IMAGE_FILE type );
 
 /**
  * \brief Store the contents of the image buffer to the given file
@@ -126,7 +125,7 @@ E_LOAD_RESULT image_load_custom( SImage* img, void* file,
  *                 If EIF_AUTODETECT, the type will be determined using the
  *                 last three characters in the filename.
  */
-void image_save( SImage* img, const char* filename, E_IMAGE_FILE type );
+void image_save( image_t* img, const char* filename, E_IMAGE_FILE type );
 
 /**
  * \brief Store the contents of the image buffer to the given file
@@ -136,7 +135,7 @@ void image_save( SImage* img, const char* filename, E_IMAGE_FILE type );
  * \param io   The custom I/O callbacks
  * \param type What image file format to use for storing the image file
  */
-void image_save_custom( SImage* img, void* file, const SFileIOInterface* io,
+void image_save_custom( image_t* img, void* file, const image_io_t* io,
                         E_IMAGE_FILE type );
 
 /**
@@ -149,14 +148,14 @@ void image_save_custom( SImage* img, void* file, const SFileIOInterface* io,
  *
  * \return Non-zero on success, zero on failure
  */
-int image_allocate_buffer( SImage* img, size_t width, size_t height,
+int image_allocate_buffer( image_t* img, size_t width, size_t height,
                            E_COLOR_TYPE type );
 
 /** \brief Flip an image vertically */
-void image_flip_v( SImage* img );
+void image_flip_v( image_t* img );
 
 /** \brief Flip an image horizontally */
-void image_flip_h( SImage* img );
+void image_flip_h( image_t* img );
 
 /**
  * \brief Swap two color channels of an image
@@ -165,7 +164,7 @@ void image_flip_h( SImage* img );
  * \param c1  The index of the first channel.
  * \param c2  The index of the second channel.
  */
-void image_swap_channels( SImage* img, int c1, int c2 );
+void image_swap_channels( image_t* img, int c1, int c2 );
 
 /**
  * \brief Set a hint for an image loader or exporter
@@ -173,7 +172,7 @@ void image_swap_channels( SImage* img, int c1, int c2 );
  * \param hint  The hint to set
  * \param value The value to set for the hint
  */
-void image_set_hint( SImage* img, E_IMAGE_HINT hint, size_t value );
+void image_set_hint( image_t* img, E_IMAGE_HINT hint, int value );
 
 /**
  * \brief Get a hint for an image loader or exporter
@@ -182,7 +181,7 @@ void image_set_hint( SImage* img, E_IMAGE_HINT hint, size_t value );
  *
  * \return The value to set for the hint
  */
-size_t image_get_hint( SImage* img, E_IMAGE_HINT hint );
+int image_get_hint( image_t* img, E_IMAGE_HINT hint );
 
 /**
  * \brief Guess the image file format from the file ending of a given

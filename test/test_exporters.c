@@ -49,7 +49,7 @@ int isMandelbrot( float X, float Y, float* iter )
 
 int main( void )
 {
-    SImage image;
+    image_t image;
     unsigned char* b;
     size_t x, y;
 

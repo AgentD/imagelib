@@ -36,7 +36,7 @@ struct enc_state
     uint8_t qt_luma[64];
     uint8_t qt_chroma[64];
 
-    const SFileIOInterface* io;
+    const image_io_t* io;
     void* fd;
 };
 
@@ -661,7 +661,7 @@ static void encode_main(struct enc_state* state, const unsigned char* img,
     state->io->write(buffer, 1, 2, state->fd);
 }
 
-void save_jpg( SImage* img, void* file, const SFileIOInterface* io )
+void save_jpg( image_t* img, void* file, const image_io_t* io )
 {
     struct enc_state state = { 0 };
     int i, components, quality;
