@@ -1,12 +1,9 @@
-#ifdef IMAGE_SAVE_PBM
-
 #include "image.h"
 #include "util.h"
 
 #include <string.h>
 #include <stdlib.h>
-
-
+#include <stdio.h>
 
 /*
     The PBM exporting facilities.
@@ -17,6 +14,7 @@
       - exporting ECT_RGBA8 images
 */
 
+#ifdef IMAGE_SAVE_PBM
 void save_pbm( SImage* img, void* file, const SFileIOInterface* io )
 {
     char text_buffer[ 40 ];
@@ -68,6 +66,5 @@ void save_pbm( SImage* img, void* file, const SFileIOInterface* io )
         }
     }
 }
-
 #endif
 

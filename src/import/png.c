@@ -1,10 +1,4 @@
-#ifdef IMAGE_LOAD_PNG
-
-
-
 #include "image.h"
-
-
 
 /*
     The PNG loading facilities.
@@ -13,12 +7,11 @@
       - Importing PNG images using LodePNG and storing them as RGBA8
 */
 
-
+#ifdef IMAGE_LOAD_PNG
 #include "lodepng.h"
 
 #include <stdlib.h>
-
-
+#include <stdio.h>
 
 E_LOAD_RESULT load_png( SImage* img, void* file, const SFileIOInterface* io )
 {

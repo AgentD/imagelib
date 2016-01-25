@@ -1,14 +1,9 @@
-#ifdef IMAGE_LOAD_BMP
-
-
-
 #include "image.h"
 #include "util.h"
 
 #include <string.h>
 #include <stdlib.h>
-
-
+#include <stdio.h>
 
 /*
     Bitmap loading facilities.
@@ -30,8 +25,7 @@
       - Clean the code a bit
 */
 
-
-
+#ifdef IMAGE_LOAD_BMP
 #define BI_RGB       0
 #define BI_RLE8      1
 #define BI_RLE4      2

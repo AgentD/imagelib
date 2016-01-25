@@ -1,18 +1,7 @@
 #ifndef IMAGE_IO_H
 #define IMAGE_IO_H
 
-
-
 #include <stddef.h>
-
-
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-
 
 typedef struct
 {
@@ -68,7 +57,10 @@ typedef struct
 }
 SFileIOInterface;
 
-
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 /**
  * \brief Initialises the IO callbacks with stdio file functions
@@ -76,8 +68,6 @@ SFileIOInterface;
  * \param io A pointer to the callback structure to write to
  */
 void image_io_init_stdio( SFileIOInterface* io );
-
-
 
 #ifdef __cplusplus
 }

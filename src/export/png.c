@@ -1,10 +1,4 @@
-#ifdef IMAGE_SAVE_PNG
-
-
-
 #include "image.h"
-
-
 
 /*
    The PNG exporting facilities.
@@ -15,12 +9,10 @@
     - exporting ECT_RGBA8 images
 */
 
-
+#ifdef IMAGE_SAVE_PNG
 #include "lodepng.h"
 
 #include <stdlib.h>
-
-
 
 void save_png( SImage* img, void* file, const SFileIOInterface* io )
 {
@@ -43,6 +35,5 @@ void save_png( SImage* img, void* file, const SFileIOInterface* io )
 
     free( buffer );
 }
-
 #endif
 

@@ -1,5 +1,3 @@
-#ifdef IMAGE_LOAD_PBM
-
 #include "image.h"
 #include "util.h"
 
@@ -7,8 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-
-
 
 /*
     NETBPM loading facilities.
@@ -24,8 +20,7 @@
       - Importing P4 binary bitmap images
 */
 
-
-
+#ifdef IMAGE_LOAD_PBM
 static void read_next_value( void* file, const SFileIOInterface* io,
                              char* buffer, size_t size )
 {

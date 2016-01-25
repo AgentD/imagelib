@@ -3,9 +3,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-
-
-
+#include <stdio.h>
 
 #ifdef IMAGE_LOAD_TGA
 extern E_LOAD_RESULT load_tga( SImage* img, void* file,
@@ -58,7 +56,6 @@ extern void save_pbm( SImage* img, void* file, const SFileIOInterface* io );
 
 
 
-
 void image_init( SImage* img )
 {
     memset( img, 0, sizeof(SImage) );
@@ -69,44 +66,39 @@ void image_deinit( SImage* img )
     free( img->image_buffer );
 }
 
-void image_allocate_buffer( SImage* img, size_t width, size_t height,
-                            E_COLOR_TYPE type )
+int image_allocate_buffer( SImage* img, size_t width, size_t height,
+                           E_COLOR_TYPE type )
 {
     size_t byteperpixel = 0;
 
-    /* free any existing buffer and reset attributes concerning the buffer */
-    if( img->image_buffer )
-        free( img->image_buffer );
+    free( img->image_buffer );
 
     img->image_buffer = NULL;
     img->width        = 0;
     img->height       = 0;
     img->type         = ECT_NONE;
 
-    /* sanity check */
     if( !width || !height )
-        return;
+        return 0;
 
-    /* determine number of bytes per pixel */
     switch( type )
     {
     case ECT_GRAYSCALE8: byteperpixel = 1; break;
     case ECT_RGB8:       byteperpixel = 3; break;
     case ECT_RGBA8:      byteperpixel = 4; break;
     default:
-        return;
+        return 0;
     };
 
-    /* allocate the buffer */
     img->image_buffer = malloc( width*height*byteperpixel );
 
     if( !img->image_buffer )
-        return;
+        return 0;
 
-    /* on success, set the attributers concerning the buffer */
     img->width  = width;
     img->height = height;
     img->type   = type;
+    return 1;
 }
 
 void image_flip_v( SImage* img )
@@ -116,11 +108,9 @@ void image_flip_v( SImage* img )
     unsigned char *a, *b;
     unsigned char temp;
 
-    /* sanity check */
-    if( !img || !img->width || !img->height || !img->image_buffer )
+    if( !img->width || !img->height || !img->image_buffer )
         return;
 
-    /* determine bytes per scanline */
     switch( img->type )
     {
     case ECT_GRAYSCALE8: row_length =     img->width; break;
@@ -130,7 +120,6 @@ void image_flip_v( SImage* img )
         return;
     }
 
-    /* flip the image */
     start_ptr = img->image_buffer;
     end_ptr   = start_ptr + (img->height-1)*row_length;
 
@@ -156,20 +145,16 @@ void image_flip_h( SImage* img )
     unsigned char *r0, *r1, *r2, *r3, temp;
     size_t i, j, row_length;
 
-    /* sanity check */
-    if( !img || !img->width || !img->height || !img->image_buffer )
+    if( !img->width || !img->height || !img->image_buffer )
         return;
 
-    /* determine bytes per pixel */
     switch( img->type )
     {
     case ECT_GRAYSCALE8:
         r0 = img->image_buffer;
 
-        /* for each scanline */
         for( i=0; i<img->height; ++i, r0+=img->width )
         {
-            /* reverse the scanline */
             for( j=0; j<img->width/2; ++j )
             {
                 temp = r0[ img->width-1-j ];
@@ -184,10 +169,8 @@ void image_flip_h( SImage* img )
         r2 = r1+1;
         row_length = 3*img->width;
 
-        /* for each scanline */
         for( i=0; i<img->height; ++i )
         {
-            /* reverse the scanline */
             for( j=0; j<row_length/2; j+=3 )
             {
                 temp = r0[ row_length-3-j ];
@@ -215,10 +198,8 @@ void image_flip_h( SImage* img )
         r3 = r2+1;
         row_length = 4*img->width;
 
-        /* for each scanline */
         for( i=0; i<img->height; ++i )
         {
-            /* reverse the scanline */
             for( j=0; j<row_length/2; j+=4 )
             {
                 temp = r0[ row_length-4-j ];
@@ -251,14 +232,9 @@ void image_swap_channels( SImage* img, int c1, int c2 )
     unsigned char temp;
     size_t i, j;
 
-    /* sanity check */
-    if( !img || !img->width || !img->height || !img->image_buffer )
+    if( !img->width || !img->height || !img->image_buffer || c1==c2 )
         return;
 
-    if( c1==c2 )
-        return;
-
-    /* */
     switch( img->type )
     {
     case ECT_GRAYSCALE8:
@@ -311,21 +287,17 @@ E_LOAD_RESULT image_load( SImage* img, const char* filename,
 
     image_io_init_stdio( &stdio );
 
-    /* try to open the file */
     f = fopen( filename, "rb" );
 
     if( !f )
        return ELR_FILE_OPEN_FAILED;
 
-    /* try to determine the format from the extension if required */
     if( type == EIF_AUTODETECT )
        type = image_guess_type( filename );
 
     r = image_load_custom( img, f, &stdio, type );
 
-    /* cleanup and return */
     fclose( f );
-
     return r;
 }
 
@@ -335,7 +307,6 @@ E_LOAD_RESULT image_load_custom( SImage* img, void* file,
 {
     E_LOAD_RESULT r = ELR_UNKNOWN_FILE_FORMAT;
 
-    /* call the coresponding loader routine */
     switch( type )
     {
 #ifdef IMAGE_LOAD_TGA
@@ -382,20 +353,16 @@ void image_save( SImage* img, const char* filename, E_IMAGE_FILE type )
 
     image_io_init_stdio( &stdio );
 
-    /* try to open the file */
     f = fopen( filename, "wb" );
 
     if( !f )
         return;
 
-    /* try to determine the format from the extension if required */
     if( type==EIF_AUTODETECT )
         type = image_guess_type( filename );
 
-    /* exporter the image */
     image_save_custom( img, f, &stdio, type );
 
-    /* cleanup and return */
     fclose( f );
 }
 
@@ -430,25 +397,22 @@ void image_save_custom( SImage* img, void* file, const SFileIOInterface* io,
 
 void image_set_hint( SImage* img, E_IMAGE_HINT hint, size_t value )
 {
-    if( img && hint<EIH_NUM_HINTS )
+    if( hint < EIH_NUM_HINTS )
         img->hints[ hint ] = value;
 }
 
 size_t image_get_hint( SImage* img, E_IMAGE_HINT hint )
 {
-    if( img && hint<EIH_NUM_HINTS )
-        return img->hints[ hint ];
-
-    return 0;
+    return hint < EIH_NUM_HINTS ? img->hints[ hint ] : 0;
 }
 
 
 E_IMAGE_FILE image_guess_type( const char* filename )
 {
+    const char* extension;
     char c[5];
 
-    /* Get the filename extension in uppercase */
-    const char* extension = strrchr( filename, '.' );
+    extension = strrchr( filename, '.' );
 
     if( !extension )
         return EIF_AUTODETECT;
@@ -461,7 +425,6 @@ E_IMAGE_FILE image_guess_type( const char* filename )
     c[2] = toupper( c[2] );
     c[3] = toupper( c[3] );
 
-    /* determine the type from the extension */
     if( !strcmp( c, "TGA" ) )
         return EIF_TGA;
 

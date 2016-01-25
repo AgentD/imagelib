@@ -1,8 +1,6 @@
 #ifndef IMAGE_HINT_H
 #define IMAGE_HINT_H
 
-
-
 typedef enum
 {
     /** \brief JPEG exporter quality. Value between 1 and 3. Default: 3 */
@@ -13,11 +11,7 @@ typedef enum
 }
 E_IMAGE_HINT;
 
-
-
 typedef size_t IMAGE_HINTS[EIH_NUM_HINTS];
-
-
 
 #endif /* IMAGE_HINT_H */
 

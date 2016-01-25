@@ -712,6 +712,5 @@ void save_jpg( SImage* img, void* file, const SFileIOInterface* io )
     huff_expand(&state);
     encode_main(&state,img->image_buffer,img->width,img->height,components);
 }
-
 #endif
 

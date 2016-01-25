@@ -1,14 +1,9 @@
-#ifdef IMAGE_LOAD_TGA
-
-
-
 #include "image.h"
 #include "util.h"
 
 #include <string.h>
 #include <stdlib.h>
-
-
+#include <stdio.h>
 
 /*
     The TGA loading facilities.
@@ -29,6 +24,8 @@
       - Flip the image horizontally during loading if needed to move the
         origin to the upper left corner
 */
+
+#ifdef IMAGE_LOAD_TGA
 
 #define COLOR_MAPPED      1
 #define RGB               2

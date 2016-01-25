@@ -1,13 +1,7 @@
-#ifdef IMAGE_SAVE_BMP
-
-
-
 #include "image.h"
 #include "util.h"
 
 #include <string.h>
-
-
 
 /*
     Bitmap exporting facilities.
@@ -18,8 +12,7 @@
       - exporting ECT_RGBA8 images
 */
 
-
-
+#ifdef IMAGE_SAVE_BMP
 void save_bmp( SImage* img, void* file, const SFileIOInterface* io )
 {
     const char zero[4] = { 0, 0, 0, 0 };
@@ -111,6 +104,5 @@ void save_bmp( SImage* img, void* file, const SFileIOInterface* io )
         }
     }
 }
-
 #endif
 

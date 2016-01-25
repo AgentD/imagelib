@@ -1,21 +1,8 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
-
-
-#include <stdio.h>
-
 #include "image_io.h"
 #include "image_hint.h"
-
-
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-
 
 typedef enum
 {
@@ -81,7 +68,10 @@ typedef struct
 }
 SImage;
 
-
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 /**
  * \brief Initialise an image structure
@@ -156,9 +146,11 @@ void image_save_custom( SImage* img, void* file, const SFileIOInterface* io,
  * \param height The height of the image to hold
  * \param type   The pixel format. This is used to determine the number
  *               of bits per pixel.
+ *
+ * \return Non-zero on success, zero on failure
  */
-void image_allocate_buffer( SImage* img, size_t width, size_t height,
-                            E_COLOR_TYPE type );
+int image_allocate_buffer( SImage* img, size_t width, size_t height,
+                           E_COLOR_TYPE type );
 
 /** \brief Flip an image vertically */
 void image_flip_v( SImage* img );
@@ -202,8 +194,6 @@ size_t image_get_hint( SImage* img, E_IMAGE_HINT hint );
  * \return An image file format enumerator, or EIF_AUTODETECT(=0) on failure
  */
 E_IMAGE_FILE image_guess_type( const char* filename );
-
-
 
 #ifdef __cplusplus
 }

@@ -1,14 +1,8 @@
-#ifdef IMAGE_SAVE_TGA
-
-
-
 #include "image.h"
 #include "util.h"
 
 #include <string.h>
 #include <stdlib.h>
-
-
 
 /*
     The TGA exporting facilities.
@@ -19,6 +13,7 @@
       - exporting ECT_RGBA8 images
 */
 
+#ifdef IMAGE_SAVE_TGA
 void save_tga( SImage* img, void* file, const SFileIOInterface* io )
 {
     unsigned char header[ 18 ];
@@ -73,6 +68,5 @@ void save_tga( SImage* img, void* file, const SFileIOInterface* io )
         }
     }
 }
-
 #endif
 

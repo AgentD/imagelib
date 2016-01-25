@@ -1,10 +1,4 @@
-#ifdef IMAGE_LOAD_JPG
-
-
-
 #include "image.h"
-
-
 
 /*
     The JPEG loading facilities.
@@ -13,16 +7,12 @@
       - Importing JPEG images using libjpeg and storing them as RGB8 images
 */
 
-
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <setjmp.h>
 
+#ifdef IMAGE_LOAD_JPG
 #include "jpeglib.h"
-
-
 
 /* struct for handling jpeg errors */
 typedef struct
