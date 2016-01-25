@@ -56,7 +56,7 @@
      Exporting: - Targa Image File (*.tga)
                 - Windows Bitmap (*.bmp)
                 - PNG's Not Gif (*.png): using LodePNG
-                - JPEG interchange format (*.jpg): requires libjpeg
+                - JPEG interchange format (*.jpg)
                 - Netpbm (*.pbm, *.ppm, *.pgm, *.pnm)
 
 
@@ -78,7 +78,8 @@
  namely LodePNG and the jpeglib library. Those libraries are not in the public
  domain and you will have to respect their terms and conditions of usage and
  redistribution if you use them. Their usage is optional and can be configured
- using the build system.
+ using the build system. The jpeg exporter is based on the public domain
+ "TinyJPEG" source and does not require the jpeglib.
 
  The LodePNG license can be found in the file "lodepng-LICENSE"
  The libjpeg license can be found in the file "libjpeg-LICENSE"

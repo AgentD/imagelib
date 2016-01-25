@@ -13,6 +13,10 @@
     array[ index   ] =  value     & 0xFF; \
     array[ index+1 ] = (value>>8) & 0xFF
 
+#define WRITE_BIG_ENDIAN_16( value, array, index ) \
+    array[ index   ] = ((value)>>8) & 0xFF; \
+    array[ index+1 ] =  (value)     & 0xFF
+
 #define READ_LITTLE_ENDIAN_32( array, index )\
     (((size_t)(array)[(index)  ])     | ((size_t)(array)[(index)+1])<<8 |\
      ((size_t)(array)[(index)+2])<<16 | ((size_t)(array)[(index)+3])<<24)

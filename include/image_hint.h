@@ -5,7 +5,7 @@
 
 typedef enum
 {
-    /** \brief JPEG exporter quality. Value between 0 and 100. Default: 75 */
+    /** \brief JPEG exporter quality. Value between 1 and 3. Default: 3 */
     EIH_JPEG_EXPORT_QUALITY = 0,
 
     /** \brief Not a hint, but the number of possible hints. */

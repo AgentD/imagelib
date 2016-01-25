@@ -98,7 +98,7 @@ if( IMAGE_SAVE_PNG )
   add_definitions( -DLODEPNG_COMPILE_ENCODER )
 endif( )
 
-if( IMAGE_LOAD_JPG OR IMAGE_SAVE_JPG )
+if( IMAGE_LOAD_JPG )
   add_subdirectory( src/jpglib )
 endif( )
 

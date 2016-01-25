@@ -13,8 +13,12 @@ set( IMAGE_EXPORT export/bmp.c
 set( IMAGE_LIB image.c io.c )
 
 
-if( IMAGE_LOAD_JPG OR IMAGE_SAVE_JPG )
+if( IMAGE_LOAD_JPG )
   set( IMAGE_DEP ${IMAGE_DEP} jpglib )
+endif( )
+
+if( IMAGE_SAVE_JPG AND UNIX )
+  set( IMAGE_DEP ${IMAGE_DEP} m )
 endif( )
 
 if( IMAGE_LOAD_PNG OR IMAGE_SAVE_PNG )
