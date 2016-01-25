@@ -77,7 +77,7 @@ E_LOAD_RESULT load_jpg( image_t* img, void* file, const image_io_t* io )
     struct jpeg_decompress_struct cinfo;
     struct jpeg_source_mgr jsrc;
     m_jpeg_error_mgr jerr;
-    size_t ystep, i, rows = 0;
+    size_t ystep, i, rows;
 
     /* Read the file into a buffer */
     io->seek( file, 0, SEEK_END );
@@ -142,6 +142,7 @@ E_LOAD_RESULT load_jpg( image_t* img, void* file, const image_io_t* io )
         rowPtr[ i ] = (unsigned char*)img->image_buffer + i*ystep;
 
     /* Read all scanlines from the file */
+    rows = 0;
     while( cinfo.output_scanline < cinfo.output_height )
         rows += jpeg_read_scanlines( &cinfo, &rowPtr[ rows ],
                                      cinfo.output_height - rows );

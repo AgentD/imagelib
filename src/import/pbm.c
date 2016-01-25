@@ -60,9 +60,9 @@ E_LOAD_RESULT load_pbm( image_t* img, void* file, const image_io_t* io )
 {
     char buffer[ 40 ], pbm_format;
     size_t width, height, i, j, size;
+    int val, max_val=0xFF;
     unsigned char* ptr;
-    int val, max_val;
-    float scale;
+    float scale=1.0f;
 
     /* read format identifyer */
     io->read( buffer, 1, 3, file );

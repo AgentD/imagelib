@@ -33,6 +33,7 @@ freely, subject to the following restrictions:
       - Removed error strings
       - Removed documentation from the bottom of the header file
       - Moved preprocessor compilation flags into CMake build system
+      - Fixed some compiler warnings
  */
 
 #include "lodepng.h"
@@ -4575,7 +4576,7 @@ returns 2 if the palette is semi-translucent.
 static unsigned getPaletteTranslucency(const unsigned char* palette, size_t palettesize)
 {
   size_t i, key = 0;
-  unsigned r, g, b; /*the value of the color with alpha 0, so long as color keying is possible*/
+  unsigned r=0, g=0, b=0; /*the value of the color with alpha 0, so long as color keying is possible*/
   for(i = 0; i < palettesize; i++)
   {
     if(!key && palette[4 * i + 3] == 0)
