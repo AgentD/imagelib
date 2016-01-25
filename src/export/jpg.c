@@ -14,7 +14,6 @@
 #include "util.h"
 
 #ifdef IMAGE_SAVE_JPG
-#include <stdint.h>
 #include <string.h>
 #include <math.h>
 
