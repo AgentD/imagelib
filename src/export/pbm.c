@@ -15,13 +15,15 @@
 */
 
 #ifdef IMAGE_SAVE_PBM
-void save_pbm( image_t* img, void* file, const image_io_t* io )
-{
-    char text_buffer[ 40 ];
-    unsigned char* ptr;
-    size_t i, j;
+#define PIXBUFF 256
 
-    /* generate magic value */
+void save_pbm( const image_t* img, void* file, const image_io_t* io )
+{
+    unsigned char temp[ PIXBUFF*3 ], *dst;
+    const unsigned char* ptr;
+    char text_buffer[ 40 ];
+    size_t i, j, k, len;
+
     switch( img->type )
     {
     case ECT_GRAYSCALE8:
@@ -35,22 +37,18 @@ void save_pbm( image_t* img, void* file, const image_io_t* io )
         return;
     };
 
-    /* <width> <height>\n */
     sprintf( text_buffer, "%lu %lu\n", (unsigned long)img->width,
                                        (unsigned long)img->height );
     io->write( text_buffer, 1, strlen(text_buffer), file );
-
-    /* <max color value>\n */
     io->write( "255\n", 1, 4, file );
 
-    /* raw image data */
     if( img->type == ECT_GRAYSCALE8 )
     {
-        io->write( img->image_buffer, 1, img->width*img->height, file );
+        io->write( img->image_buffer, img->width, img->height, file );
     }
     else if( img->type == ECT_RGB8 )
     {
-        io->write( img->image_buffer, 1, img->width*img->height*3, file );
+        io->write( img->image_buffer, img->width*3, img->height, file );
     }
     else if( img->type == ECT_RGBA8 )
     {
@@ -58,10 +56,20 @@ void save_pbm( image_t* img, void* file, const image_io_t* io )
 
         for( i=0; i<img->height; ++i )
         {
-            for( j=0; j<img->width; ++j )
+            for( j=0; j<img->width; j+=len )
             {
-                io->write( ptr, 1, 3, file );
-                ptr += 4;
+                len = img->width - j;
+                if( len > PIXBUFF )
+                    len = PIXBUFF;
+
+                for( dst=temp, k=0; k<len; ++k, dst+=3, ptr+=4 )
+                {
+                    dst[0] = ptr[0];
+                    dst[1] = ptr[1];
+                    dst[2] = ptr[2];
+                }
+
+                io->write( temp, 3, len, file );
             }
         }
     }

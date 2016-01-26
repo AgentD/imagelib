@@ -11,7 +11,7 @@ extern E_LOAD_RESULT load_tga( image_t* img, void* file,
 #endif
 
 #ifdef IMAGE_SAVE_TGA
-extern void save_tga( image_t* img, void* file, const image_io_t* io );
+extern void save_tga( const image_t* img, void* file, const image_io_t* io );
 #endif
 
 
@@ -21,7 +21,7 @@ extern E_LOAD_RESULT load_jpg( image_t* img, void* file,
 #endif
 
 #ifdef IMAGE_SAVE_JPG
-extern void save_jpg( image_t* img, void* file, const image_io_t* io );
+extern void save_jpg( const image_t* img, void* file, const image_io_t* io );
 #endif
 
 
@@ -31,7 +31,7 @@ extern E_LOAD_RESULT load_bmp( image_t* img, void* file,
 #endif
 
 #ifdef IMAGE_SAVE_BMP
-extern void save_bmp( image_t* img, void* file, const image_io_t* io );
+extern void save_bmp( const image_t* img, void* file, const image_io_t* io );
 #endif
 
 
@@ -41,7 +41,7 @@ extern E_LOAD_RESULT load_png( image_t* img, void* file,
 #endif
 
 #ifdef IMAGE_SAVE_PNG
-extern void save_png( image_t* img, void* file, const image_io_t* io );
+extern void save_png( const image_t* img, void* file, const image_io_t* io );
 #endif
 
 
@@ -51,7 +51,7 @@ extern E_LOAD_RESULT load_pbm( image_t* img, void* file,
 #endif
 
 #ifdef IMAGE_SAVE_PBM
-extern void save_pbm( image_t* img, void* file, const image_io_t* io );
+extern void save_pbm( const image_t* img, void* file, const image_io_t* io );
 #endif
 
 
@@ -345,7 +345,7 @@ E_LOAD_RESULT image_load_custom( image_t* img, void* file,
 }
 
 
-void image_save( image_t* img, const char* filename, E_IMAGE_FILE type )
+void image_save( const image_t* img, const char* filename, E_IMAGE_FILE type )
 {
     image_io_t stdio;
     FILE* f;
@@ -365,7 +365,7 @@ void image_save( image_t* img, const char* filename, E_IMAGE_FILE type )
     fclose( f );
 }
 
-void image_save_custom( image_t* img, void* file, const image_io_t* io,
+void image_save_custom( const image_t* img, void* file, const image_io_t* io,
                         E_IMAGE_FILE type )
 {
     switch( type )
@@ -400,7 +400,7 @@ void image_set_hint( image_t* img, E_IMAGE_HINT hint, int value )
         img->hints[ hint ] = value;
 }
 
-int image_get_hint( image_t* img, E_IMAGE_HINT hint )
+int image_get_hint( const image_t* img, E_IMAGE_HINT hint )
 {
     return hint < EIH_NUM_HINTS ? img->hints[ hint ] : 0;
 }

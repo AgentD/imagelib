@@ -14,12 +14,13 @@
 */
 
 #ifdef IMAGE_SAVE_TGA
-void save_tga( image_t* img, void* file, const image_io_t* io )
+#define PIXBUFF 128
+
+void save_tga( const image_t* img, void* file, const image_io_t* io )
 {
-    unsigned char header[ 18 ];
-    size_t bpp = 0;
-    unsigned char* ptr;
-    unsigned char* end;
+    unsigned char header[ 18 ], temp[ PIXBUFF*4 ], *dst;
+    const unsigned char *ptr, *end;
+    size_t i = 0, bpp = 0;
 
     /* generate a TGA header */
     memset( header, 0, 18 );
@@ -43,30 +44,54 @@ void save_tga( image_t* img, void* file, const image_io_t* io )
     /* write image data */
     ptr = img->image_buffer;
     end = ptr + img->width*img->height*bpp;
+    dst = temp;
 
     if( img->type == ECT_GRAYSCALE8 )
     {
-        io->write( img->image_buffer, 1, img->width*img->height, file );
+        io->write( img->image_buffer, img->width, img->height, file );
     }
-    else
+    else if( img->type == ECT_RGB8 )
     {
-        for( ; ptr!=end; ptr+=bpp )
+        while( ptr!=end )
         {
-            unsigned char temp;
+            dst[0] = ptr[2];
+            dst[1] = ptr[1];
+            dst[2] = ptr[0];
+            ptr += 3;
+            dst += 3;
+            ++i;
 
-            /* swap red and blue */
-            temp   = ptr[0];
-            ptr[0] = ptr[2];
-            ptr[2] = temp;
-
-            io->write( ptr, 1, bpp, file );
-
-            /* swap red and blue back */
-            temp   = ptr[0];
-            ptr[0] = ptr[2];
-            ptr[2] = temp;
+            if( i >= PIXBUFF )
+            {
+                io->write( temp, 3, PIXBUFF, file );
+                i = 0;
+                dst = temp;
+            }
         }
     }
+    else if( img->type == ECT_RGBA8 )
+    {
+        while( ptr!=end )
+        {
+            dst[0] = ptr[2];
+            dst[1] = ptr[1];
+            dst[2] = ptr[0];
+            dst[3] = ptr[3];
+            ptr += 4;
+            dst += 4;
+            ++i;
+
+            if( i >= PIXBUFF )
+            {
+                io->write( temp, 4, PIXBUFF, file );
+                i = 0;
+                dst = temp;
+            }
+        }
+    }
+
+    if( i )
+        io->write( temp, 1, i*bpp, file );
 }
 #endif
 

@@ -125,7 +125,7 @@ E_LOAD_RESULT image_load_custom( image_t* img, void* file,
  *                 If EIF_AUTODETECT, the type will be determined using the
  *                 last three characters in the filename.
  */
-void image_save( image_t* img, const char* filename, E_IMAGE_FILE type );
+void image_save(const image_t* img, const char* filename, E_IMAGE_FILE type);
 
 /**
  * \brief Store the contents of the image buffer to the given file
@@ -135,7 +135,7 @@ void image_save( image_t* img, const char* filename, E_IMAGE_FILE type );
  * \param io   The custom I/O callbacks
  * \param type What image file format to use for storing the image file
  */
-void image_save_custom( image_t* img, void* file, const image_io_t* io,
+void image_save_custom( const image_t* img, void* file, const image_io_t* io,
                         E_IMAGE_FILE type );
 
 /**
@@ -181,7 +181,7 @@ void image_set_hint( image_t* img, E_IMAGE_HINT hint, int value );
  *
  * \return The value to set for the hint
  */
-int image_get_hint( image_t* img, E_IMAGE_HINT hint );
+int image_get_hint( const image_t* img, E_IMAGE_HINT hint );
 
 /**
  * \brief Guess the image file format from the file ending of a given

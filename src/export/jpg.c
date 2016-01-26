@@ -661,7 +661,7 @@ static void encode_main(struct enc_state* state, const unsigned char* img,
     state->io->write(buffer, 1, 2, state->fd);
 }
 
-void save_jpg( image_t* img, void* file, const image_io_t* io )
+void save_jpg( const image_t* img, void* file, const image_io_t* io )
 {
     struct enc_state state = { 0 };
     int i, components, quality;

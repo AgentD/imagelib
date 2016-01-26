@@ -13,13 +13,15 @@
 */
 
 #ifdef IMAGE_SAVE_BMP
-void save_bmp( image_t* img, void* file, const image_io_t* io )
+#define PIXBUFF 256
+
+static const char zero[4] = { 0, 0, 0, 0 };
+
+void save_bmp( const image_t* img, void* file, const image_io_t* io )
 {
-    const char zero[4] = { 0, 0, 0, 0 };
+    unsigned char header[ 54 ], temp[PIXBUFF*3], *dst;
     size_t bpp, realBPP, size, i, dy, padding, x;
-    unsigned char header[ 54 ];
-    unsigned char* ptr;
-    unsigned char* end;
+    const unsigned char *ptr, *end;
 
     /********* generate a BMP header *********/
     memset( header, 0, 54 );
@@ -55,14 +57,22 @@ void save_bmp( image_t* img, void* file, const image_io_t* io )
     /********* Write a dummy color map for grayscale images ********/
     if( img->type==ECT_GRAYSCALE8 )
     {
-        for( i=0; i<256; ++i )
+        for( x=0, i=0; i<256; ++i )
         {
-            unsigned char v[4];
-            v[0] = v[1] = v[2] = i;
-            v[3] = 0;
+            temp[x++] = i;
+            temp[x++] = i;
+            temp[x++] = i;
+            temp[x++] = 0;
 
-            io->write( v, 1, 4, file );
+            if( x >= sizeof(temp) )
+            {
+                io->write( temp, 1, x, file );
+                x = 0;
+            }
         }
+
+        if( x )
+            io->write( temp, 1, x, file );
     }
 
     /********* Write the image data to the file *********/
@@ -75,29 +85,29 @@ void save_bmp( image_t* img, void* file, const image_io_t* io )
     {
         for( ; ptr!=end; ptr+=dy )
         {
-            io->write( ptr,  1, dy*bpp,  file );
+            io->write( ptr,  1, dy,      file );
             io->write( zero, 1, padding, file );
         }
     }
     else
     {
-        for( ; ptr!=end; ptr+=dy )
+        while( ptr!=end )
         {
-            for( x=0; x<dy; x+=realBPP )
+            for( x=0; x<img->width; x+=size )
             {
-                unsigned char temp;
+                size = img->width - x;
 
-                /* swap red and blue */
-                temp     = ptr[x];
-                ptr[x  ] = ptr[x+2];
-                ptr[x+2] = temp;
+                if( size > PIXBUFF )
+                    size = PIXBUFF;
 
-                io->write( &ptr[ x ], 1, bpp, file );
+                for( dst=temp, i=0; i<size; ++i, dst+=3, ptr+=realBPP )
+                {
+                    dst[0] = ptr[2];
+                    dst[1] = ptr[1];
+                    dst[2] = ptr[0];
+                }
 
-                /* swap red and blue */
-                temp     = ptr[x];
-                ptr[x  ] = ptr[x+2];
-                ptr[x+2] = temp;
+                io->write( temp, 1, bpp * size, file );
             }
 
             io->write( zero, 1, padding, file );
