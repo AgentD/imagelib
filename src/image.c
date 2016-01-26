@@ -59,6 +59,8 @@ extern void save_pbm( const image_t* img, void* file, const image_io_t* io );
 void image_init( image_t* img )
 {
     memset( img, 0, sizeof(image_t) );
+
+    img->hints[ EIH_JPEG_EXPORT_QUALITY ] = 3;
 }
 
 void image_deinit( image_t* img )
