@@ -236,6 +236,8 @@ void image_swap_channels( image_t* img, int c1, int c2 )
 
     if( !img->width || !img->height || !img->image_buffer || c1==c2 )
         return;
+    if( c1<0 || c2<0 )
+        return;
 
     switch( img->type )
     {
