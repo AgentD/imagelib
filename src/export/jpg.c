@@ -556,10 +556,14 @@ static void encode_main(struct enc_state* state, const unsigned char* img,
               state->ht_vals[LUMA_DC], HUFF_DC, 0);
     write_DHT(state, state->ht_bits[LUMA_AC],
               state->ht_vals[LUMA_AC], HUFF_AC, 0);
-    write_DHT(state, state->ht_bits[CHROMA_DC],
-              state->ht_vals[CHROMA_DC], HUFF_DC, 1);
-    write_DHT(state, state->ht_bits[CHROMA_AC],
-              state->ht_vals[CHROMA_AC], HUFF_AC, 1);
+
+    if( components>=3 )
+    {
+        write_DHT(state, state->ht_bits[CHROMA_DC],
+                  state->ht_vals[CHROMA_DC], HUFF_DC, 1);
+        write_DHT(state, state->ht_bits[CHROMA_AC],
+                  state->ht_vals[CHROMA_AC], HUFF_AC, 1);
+    }
 
     /* Write start of scan */
     WRITE_BIG_ENDIAN_16( 0xFFDA, buffer, 0 );           /* SOS */
